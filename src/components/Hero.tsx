@@ -38,7 +38,7 @@ const Hero = () => {
             </p>
           </div>
           
-          <div className="flex flex-col md:flex-row gap-4 md:gap-6 pt-4 w-full max-w-lg md:max-w-none">
+          <div className="flex flex-col md:flex-row md:justify-center gap-4 md:gap-6 pt-4 w-full max-w-lg md:max-w-none">
             <Button asChild size="lg" className="gap-2 btn-glow text-sm md:text-base px-6 md:px-8 py-3 md:py-4 w-full md:w-auto h-12 md:h-12">
               <Link to="/products">
                 <ShoppingBag className="h-4 w-4 md:h-5 md:w-5" />
