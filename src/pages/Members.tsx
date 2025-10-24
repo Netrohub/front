@@ -6,10 +6,16 @@ import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Badge } from "@/components/ui/badge";
 import { Skeleton } from "@/components/ui/skeleton";
 import { Users, MapPin, Calendar } from "lucide-react";
-import { useMembers } from "@/hooks/useApi";
+// import { useMembers } from "@/hooks/useApi";
 
 const Members = () => {
-  const { data: members, isLoading: loading, error } = useMembers();
+  // Temporarily disabled until backend endpoint is implemented
+  // const { data: members, isLoading: loading, error } = useMembers();
+  
+  // Mock data for now
+  const members = [];
+  const loading = false;
+  const error = null;
 
   const getInitials = (name: string) => {
     return name
@@ -108,8 +114,8 @@ const Members = () => {
         {!loading && (!members || members.length === 0) && (
           <div className="text-center py-12">
             <Users className="h-16 w-16 mx-auto text-muted-foreground mb-4" />
-            <h3 className="text-xl font-semibold mb-2">No members yet</h3>
-            <p className="text-muted-foreground">Be the first to join our community!</p>
+            <h3 className="text-xl font-semibold mb-2">Members feature coming soon</h3>
+            <p className="text-muted-foreground">This feature is currently under development.</p>
           </div>
         )}
       </main>
