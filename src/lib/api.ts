@@ -269,8 +269,8 @@ class ApiClient {
       body: JSON.stringify(credentials),
     });
     
-    if (response.data.token) {
-      this.setToken(response.data.token);
+    if (response.data.access_token) {
+      this.setToken(response.data.access_token);
     }
     
     return response.data;
@@ -282,8 +282,8 @@ class ApiClient {
       body: JSON.stringify(userData),
     });
     
-    if (response.data.token) {
-      this.setToken(response.data.token);
+    if (response.data.access_token) {
+      this.setToken(response.data.access_token);
     }
     
     return response.data;
