@@ -1,0 +1,350 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+/* Nexo Marketplace - Stellar Dark Theme Design System */
+
+@layer base {
+  :root {
+    /* Dark Space Theme Base Colors */
+    --background: 222 47% 8%;
+    --foreground: 0 0% 98%;
+
+    --card: 222 47% 11%;
+    --card-foreground: 0 0% 98%;
+
+    --popover: 222 47% 11%;
+    --popover-foreground: 0 0% 98%;
+
+    /* Stellar Primary - Purple/Blue Gradient Base */
+    --primary: 258 90% 66%;
+    --primary-foreground: 0 0% 100%;
+    --primary-glow: 258 90% 76%;
+    
+    /* Stellar Accent - Cosmic Purple */
+    --accent: 280 85% 65%;
+    --accent-foreground: 0 0% 100%;
+    
+    /* Secondary - Deep Space Blue */
+    --secondary: 217 33% 17%;
+    --secondary-foreground: 0 0% 98%;
+
+    /* Muted - Darker Elements */
+    --muted: 217 33% 15%;
+    --muted-foreground: 215 20% 65%;
+
+    --destructive: 0 84% 60%;
+    --destructive-foreground: 0 0% 100%;
+
+    /* Glass Morphism Borders */
+    --border: 217 33% 20%;
+    --input: 217 33% 20%;
+    --ring: 258 90% 66%;
+
+    --radius: 0.75rem;
+    
+    /* Stellar Gradients */
+    --gradient-primary: linear-gradient(135deg, hsl(258 90% 66%), hsl(280 85% 65%));
+    --gradient-hero: linear-gradient(135deg, hsl(258 90% 66% / 0.2), hsl(280 85% 65% / 0.1));
+    --gradient-nebula: linear-gradient(180deg, hsl(258 90% 66% / 0.15), hsl(222 47% 8% / 0.95));
+    --gradient-cosmic: linear-gradient(45deg, hsl(258 90% 66% / 0.1), hsl(217 91% 60% / 0.1), hsl(280 85% 65% / 0.1));
+    
+    /* Glass Morphism Effects */
+    --glass-bg: hsl(222 47% 11% / 0.6);
+    --glass-border: hsl(258 90% 76% / 0.2);
+    --glass-shadow: 0 8px 32px 0 hsl(258 90% 66% / 0.1);
+    
+    /* Glow Effects */
+    --glow-primary: 0 0 30px hsl(258 90% 66% / 0.5);
+    --glow-accent: 0 0 30px hsl(280 85% 65% / 0.5);
+    --glow-card: 0 8px 32px hsl(258 90% 66% / 0.15);
+    
+    /* Shadows */
+    --shadow-card: 0 4px 24px hsl(0 0% 0% / 0.3);
+    --shadow-card-hover: 0 12px 48px hsl(258 90% 66% / 0.25);
+    
+    /* Transitions */
+    --transition-smooth: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+    --transition-bounce: all 0.4s cubic-bezier(0.68, -0.55, 0.265, 1.55);
+
+    --sidebar-background: 222 47% 11%;
+    --sidebar-foreground: 0 0% 98%;
+    --sidebar-primary: 258 90% 66%;
+    --sidebar-primary-foreground: 0 0% 100%;
+    --sidebar-accent: 217 33% 17%;
+    --sidebar-accent-foreground: 0 0% 98%;
+    --sidebar-border: 217 33% 20%;
+    --sidebar-ring: 258 90% 66%;
+  }
+}
+
+@layer base {
+  * {
+    @apply border-border;
+  }
+
+  body {
+    @apply bg-background text-foreground;
+    font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+    font-feature-settings: 'rlig' 1, 'calt' 1;
+  }
+  
+  /* Arabic font support */
+  [lang="ar"],
+  [dir="rtl"] {
+    font-family: 'IBM Plex Sans Arabic', 'Noto Sans Arabic', 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+  }
+  
+  /* RTL Support with Emoji Handling */
+  [dir="rtl"] {
+    direction: rtl;
+  }
+
+  /* Fix emoji color inheritance in Arabic/RTL - emojis should maintain default color */
+  [lang="ar"] *,
+  [dir="rtl"] * {
+    /* Prevent emojis from inheriting gradient text colors */
+    -webkit-text-fill-color: inherit;
+  }
+
+  /* Ensure emojis don't get gradient colors */
+  [lang="ar"] .bg-clip-text,
+  [dir="rtl"] .bg-clip-text {
+    background-clip: text;
+    -webkit-background-clip: text;
+  }
+
+  /* Reset emoji-specific elements to use default emoji rendering */
+  [lang="ar"] span:has(emoji),
+  [dir="rtl"] span:has(emoji),
+  [lang="ar"] *:is([data-emoji]),
+  [dir="rtl"] *:is([data-emoji]) {
+    -webkit-text-fill-color: initial;
+    color: initial;
+    background-clip: unset !important;
+    -webkit-background-clip: unset !important;
+  }
+  
+  /* Ensure emojis display properly in RTL text */
+  [dir="rtl"] * {
+    unicode-bidi: plaintext;
+  }
+  
+  /* Keep emojis in correct position without flipping */
+  [dir="rtl"] img.emoji,
+  [dir="rtl"] .emoji {
+    display: inline-block;
+    direction: ltr;
+    unicode-bidi: embed;
+  }
+  
+  /* RTL-specific layout fixes */
+  [dir="rtl"] .glass-card,
+  [dir="rtl"] .btn-glow,
+  [dir="rtl"] .card-hover {
+    text-align: right;
+  }
+  
+  /* Flip icons in RTL */
+  [dir="rtl"] .lucide {
+    transform: scaleX(-1);
+  }
+  
+  /* Keep certain icons unflipped */
+  [dir="rtl"] .lucide-shopping-cart,
+  [dir="rtl"] .lucide-star,
+  [dir="rtl"] .lucide-heart,
+  [dir="rtl"] .lucide-search,
+  [dir="rtl"] .lucide-globe,
+  [dir="rtl"] .lucide-user {
+    transform: scaleX(1);
+  }
+  
+  h1, h2, h3, h4, h5, h6 {
+    font-family: 'Poppins', sans-serif;
+    @apply font-bold tracking-tight;
+  }
+  
+  /* Stellar Background */
+  #root {
+    background: var(--background);
+    background-image: 
+      radial-gradient(at 0% 0%, hsl(258 90% 66% / 0.1) 0px, transparent 50%),
+      radial-gradient(at 100% 0%, hsl(280 85% 65% / 0.08) 0px, transparent 50%),
+      radial-gradient(at 100% 100%, hsl(217 91% 60% / 0.05) 0px, transparent 50%);
+    min-height: 100vh;
+  }
+}
+
+@layer components {
+  /* Glass Morphism Card */
+  .glass-card {
+    background: var(--glass-bg);
+    backdrop-filter: blur(12px);
+    -webkit-backdrop-filter: blur(12px);
+    border: 1px solid var(--glass-border);
+    box-shadow: var(--glass-shadow);
+    transition: var(--transition-smooth);
+  }
+  
+  .glass-card:hover {
+    border-color: hsl(258 90% 76% / 0.4);
+    box-shadow: var(--glow-card);
+    transform: translateY(-4px);
+  }
+  
+  /* Enhanced Card Hover */
+  .card-hover {
+    transition: var(--transition-smooth);
+    box-shadow: var(--shadow-card);
+    border: 1px solid var(--border);
+  }
+  
+  .card-hover:hover {
+    box-shadow: var(--shadow-card-hover);
+    transform: translateY(-4px);
+    border-color: hsl(258 90% 76% / 0.3);
+  }
+  
+  /* Gradient Backgrounds */
+  .gradient-primary {
+    background: var(--gradient-primary);
+  }
+  
+  .gradient-hero {
+    background: var(--gradient-hero);
+  }
+  
+  .gradient-nebula {
+    background: var(--gradient-nebula);
+  }
+  
+  .gradient-cosmic {
+    background: var(--gradient-cosmic);
+  }
+  
+  /* Glow Button */
+  .btn-glow {
+    position: relative;
+    background: var(--gradient-primary);
+    transition: var(--transition-smooth);
+  }
+  
+  .btn-glow::before {
+    content: '';
+    position: absolute;
+    inset: -2px;
+    background: var(--gradient-primary);
+    border-radius: inherit;
+    filter: blur(8px);
+    opacity: 0;
+    transition: var(--transition-smooth);
+    z-index: -1;
+  }
+  
+  .btn-glow:hover::before {
+    opacity: 0.7;
+  }
+  
+  .btn-glow:hover {
+    box-shadow: var(--glow-primary);
+    transform: translateY(-2px);
+  }
+  
+  /* Starfield Animation */
+  @keyframes float {
+    0%, 100% { transform: translateY(0px) scale(1); }
+    50% { transform: translateY(-20px) scale(1.05); }
+  }
+  
+  @keyframes twinkle {
+    0%, 100% { opacity: 1; }
+    50% { opacity: 0.3; }
+  }
+  
+  @keyframes drift {
+    0% { transform: translateX(0); }
+    100% { transform: translateX(-50%); }
+  }
+  
+  .float-animation {
+    animation: float 6s ease-in-out infinite;
+  }
+  
+  .twinkle-animation {
+    animation: twinkle 3s ease-in-out infinite;
+  }
+  
+  /* Cosmic Border Animation */
+  @keyframes border-rotate {
+    0% { border-image-source: linear-gradient(0deg, hsl(258 90% 66%), hsl(280 85% 65%)); }
+    25% { border-image-source: linear-gradient(90deg, hsl(258 90% 66%), hsl(280 85% 65%)); }
+    50% { border-image-source: linear-gradient(180deg, hsl(258 90% 66%), hsl(280 85% 65%)); }
+    75% { border-image-source: linear-gradient(270deg, hsl(258 90% 66%), hsl(280 85% 65%)); }
+    100% { border-image-source: linear-gradient(360deg, hsl(258 90% 66%), hsl(280 85% 65%)); }
+  }
+  
+  /* Scrollbar Styling */
+  ::-webkit-scrollbar {
+    width: 10px;
+    height: 10px;
+  }
+  
+  ::-webkit-scrollbar-track {
+    background: hsl(var(--muted));
+  }
+  
+  ::-webkit-scrollbar-thumb {
+    background: var(--gradient-primary);
+    border-radius: 5px;
+  }
+  
+  ::-webkit-scrollbar-thumb:hover {
+    background: hsl(var(--primary-glow));
+  }
+  
+  /* Input Focus Glow */
+  input:focus, textarea:focus, select:focus {
+    box-shadow: 0 0 0 3px hsl(258 90% 66% / 0.2);
+  }
+  
+  /* Badge Glow */
+  .badge-glow {
+    background: var(--gradient-primary);
+    box-shadow: 0 4px 12px hsl(258 90% 66% / 0.4);
+  }
+  
+  /* Respect user's motion preferences */
+  @media (prefers-reduced-motion: reduce) {
+    *,
+    *::before,
+    *::after {
+      animation-duration: 0.01ms !important;
+      animation-iteration-count: 1 !important;
+      transition-duration: 0.01ms !important;
+      scroll-behavior: auto !important;
+    }
+    
+    .float-animation,
+    .twinkle-animation {
+      animation: none;
+    }
+  }
+  
+  /* Performance optimizations */
+  .will-change-transform {
+    will-change: transform;
+  }
+  
+  .will-change-opacity {
+    will-change: opacity;
+  }
+  
+  /* GPU acceleration for smoother animations */
+  .glass-card,
+  .btn-glow,
+  .card-hover {
+    transform: translateZ(0);
+    backface-visibility: hidden;
+  }
+}
