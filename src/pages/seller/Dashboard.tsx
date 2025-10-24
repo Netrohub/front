@@ -142,65 +142,24 @@ const advancedSettings = [
 const SellerDashboard = () => {
   const { user } = useAuth();
   const navigate = useNavigate();
-  
-  // Check if user has Elite plan
-  const isElitePlan = user?.subscription?.plan === 'Elite';
-  
-  // If not Elite, redirect to upgrade page
-  if (!isElitePlan) {
-    return (
-      <SellerLayout>
-        <div className="space-y-6">
-          <Card className="glass-card p-8 text-center border border-orange-500/30">
-            <div className="flex flex-col items-center gap-4">
-              <div className="p-4 rounded-full bg-orange-500/10 border border-orange-500/20">
-                <Crown className="h-12 w-12 text-orange-500" />
-              </div>
-              <div>
-                <h1 className="text-3xl font-black bg-gradient-to-r from-orange-500 to-yellow-500 bg-clip-text text-transparent mb-2">
-                  Elite Access Required
-                </h1>
-                <p className="text-foreground/60 mb-6">
-                  This advanced seller dashboard is only available to Elite plan subscribers.
-                </p>
-                <div className="flex gap-4 justify-center">
-                  <Button asChild className="btn-glow">
-                    <Link to="/pricing">
-                      Upgrade to Elite
-                      <Crown className="h-4 w-4 ml-2" />
-                    </Link>
-                  </Button>
-                  <Button asChild variant="outline">
-                    <Link to="/account/dashboard">
-                      View Basic Dashboard
-                    </Link>
-                  </Button>
-                </div>
-              </div>
-            </div>
-          </Card>
-        </div>
-      </SellerLayout>
-    );
-  }
 
   return (
     <SellerLayout>
       <div className="space-y-6">
-        {/* Elite Header */}
+        {/* Header */}
         <div className="flex items-center justify-between">
           <div>
             <div className="flex items-center gap-3 mb-2">
-              <Crown className="h-8 w-8 text-yellow-500" />
-              <h1 className="text-3xl font-black bg-gradient-to-r from-yellow-500 to-orange-500 bg-clip-text text-transparent">
-                Elite Seller Dashboard
+              <TrendingUp className="h-8 w-8 text-primary" />
+              <h1 className="text-3xl font-black bg-gradient-to-r from-primary to-accent bg-clip-text text-transparent">
+                Seller Dashboard
               </h1>
             </div>
-            <p className="text-foreground/60">Advanced analytics and AI-powered insights for elite sellers</p>
+            <p className="text-foreground/60">Analytics and insights for sellers</p>
           </div>
-          <Badge className="bg-gradient-to-r from-yellow-500 to-orange-500 text-white border-0">
-            <Crown className="h-3 w-3 mr-1" />
-            Elite Plan
+          <Badge className="bg-gradient-to-r from-primary to-accent text-white border-0">
+            <TrendingUp className="h-3 w-3 mr-1" />
+            Seller
           </Badge>
         </div>
 
@@ -340,29 +299,29 @@ const SellerDashboard = () => {
           </div>
         </Card>
 
-        {/* Elite Benefits */}
-        <Card className="glass-card p-6 border border-yellow-500/30 bg-gradient-to-r from-yellow-500/5 to-orange-500/5">
+        {/* Seller Benefits */}
+        <Card className="glass-card p-6 border border-primary/30 bg-gradient-to-r from-primary/5 to-accent/5">
           <div className="flex items-start gap-4">
-            <div className="p-3 rounded-xl bg-yellow-500/10 border border-yellow-500/20">
-              <Crown className="h-6 w-6 text-yellow-500" />
+            <div className="p-3 rounded-xl bg-primary/10 border border-primary/20">
+              <TrendingUp className="h-6 w-6 text-primary" />
             </div>
             <div className="flex-1">
-              <h3 className="text-lg font-bold text-foreground mb-2">Elite Plan Benefits</h3>
+              <h3 className="text-lg font-bold text-foreground mb-2">Seller Benefits</h3>
               <p className="text-foreground/60 mb-4">
-                You're enjoying premium features including AI insights, advanced analytics, and priority support.
+                Access to analytics, insights, and tools to help you grow your business.
               </p>
               <div className="grid md:grid-cols-3 gap-4 text-sm">
                 <div className="flex items-center gap-2">
                   <Shield className="h-4 w-4 text-green-500" />
-                  <span>Priority Support</span>
+                  <span>Secure Payments</span>
                 </div>
                 <div className="flex items-center gap-2">
                   <Brain className="h-4 w-4 text-purple-500" />
-                  <span>AI-Powered Insights</span>
+                  <span>Analytics</span>
                 </div>
                 <div className="flex items-center gap-2">
                   <BarChart3 className="h-4 w-4 text-blue-500" />
-                  <span>Advanced Analytics</span>
+                  <span>Growth Tools</span>
                 </div>
               </div>
             </div>

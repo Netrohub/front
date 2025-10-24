@@ -62,47 +62,6 @@ const customerSegments = [];
 
 const SellerAnalytics = () => {
   const { user } = useAuth();
-  
-  // Check if user has Elite plan
-  const isElitePlan = user?.subscription?.plan === 'Elite';
-  
-  // If not Elite, show upgrade prompt
-  if (!isElitePlan) {
-    return (
-      <SellerLayout>
-        <div className="space-y-6">
-          <Card className="glass-card p-8 text-center border border-orange-500/30">
-            <div className="flex flex-col items-center gap-4">
-              <div className="p-4 rounded-full bg-orange-500/10 border border-orange-500/20">
-                <Crown className="h-12 w-12 text-orange-500" />
-              </div>
-              <div>
-                <h1 className="text-3xl font-black bg-gradient-to-r from-orange-500 to-yellow-500 bg-clip-text text-transparent mb-2">
-                  Elite Analytics Required
-                </h1>
-                <p className="text-foreground/60 mb-6">
-                  Advanced analytics and detailed insights are only available to Elite plan subscribers.
-                </p>
-                <div className="flex gap-4 justify-center">
-                  <Button asChild className="btn-glow">
-                    <Link to="/pricing">
-                      Upgrade to Elite
-                      <Crown className="h-4 w-4 ml-2" />
-                    </Link>
-                  </Button>
-                  <Button asChild variant="outline">
-                    <Link to="/account/dashboard">
-                      View Basic Stats
-                    </Link>
-                  </Button>
-                </div>
-              </div>
-            </div>
-          </Card>
-        </div>
-      </SellerLayout>
-    );
-  }
 
   return (
     <SellerLayout>
@@ -118,9 +77,9 @@ const SellerAnalytics = () => {
             </div>
             <p className="text-foreground/60">Deep insights into your business performance</p>
           </div>
-          <Badge className="bg-gradient-to-r from-yellow-500 to-orange-500 text-white border-0">
-            <Crown className="h-3 w-3 mr-1" />
-            Elite Analytics
+          <Badge className="bg-gradient-to-r from-blue-500 to-purple-500 text-white border-0">
+            <BarChart3 className="h-3 w-3 mr-1" />
+            Analytics
           </Badge>
         </div>
 

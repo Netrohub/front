@@ -237,17 +237,10 @@ const Navbar = () => {
                     </DropdownMenuItem>
                     {user?.roles?.includes('seller') && (
                       <DropdownMenuItem asChild>
-                        {user?.subscription?.plan === 'Elite' ? (
-                          <Link to="/seller/dashboard" className="cursor-pointer">
-                            <User className="mr-2 h-4 w-4" />
-                            <span>{t('sellerDashboard')}</span>
-                          </Link>
-                        ) : (
-                          <div className="cursor-not-allowed opacity-50" title="Elite plan required">
-                            <User className="mr-2 h-4 w-4" />
-                            <span>{t('sellerDashboard')} (Elite Only)</span>
-                          </div>
-                        )}
+                        <Link to="/seller/dashboard" className="cursor-pointer">
+                          <User className="mr-2 h-4 w-4" />
+                          <span>{t('sellerDashboard')}</span>
+                        </Link>
                       </DropdownMenuItem>
                     )}
                     {user?.roles?.includes('admin') && (

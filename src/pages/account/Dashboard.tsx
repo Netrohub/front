@@ -191,24 +191,12 @@ const Dashboard = () => {
                 Add Funds
               </Link>
             </Button>
-            {isElitePlan ? (
-              <Button asChild variant="outline" className="glass-card border-border/50 justify-start">
-                <Link to="/seller/dashboard">
-                  <TrendingUp className="h-4 w-4 mr-2" />
-                  View Analytics
-                </Link>
-              </Button>
-            ) : (
-              <Button 
-                variant="outline" 
-                className="glass-card border-border/50 justify-start opacity-50 cursor-not-allowed"
-                disabled
-                title="Elite plan required"
-              >
+            <Button asChild variant="outline" className="glass-card border-border/50 justify-start">
+              <Link to="/seller/dashboard">
                 <TrendingUp className="h-4 w-4 mr-2" />
-                View Analytics (Elite Only)
-              </Button>
-            )}
+                View Analytics
+              </Link>
+            </Button>
           </div>
         </Card>
 
@@ -362,13 +350,13 @@ const Dashboard = () => {
               <Star className="h-6 w-6 text-primary" />
             </div>
             <div className="flex-1">
-              <h3 className="text-lg font-bold text-foreground mb-2">Upgrade to Elite</h3>
+              <h3 className="text-lg font-bold text-foreground mb-2">Account Status</h3>
               <p className="text-foreground/60 mb-4">
-                Get access to advanced analytics, premium features, and priority support.
+                Your account is active and ready to use all features.
               </p>
               <Button asChild className="btn-glow">
                 <Link to="/pricing">
-                  Upgrade Now
+                  View Plans
                   <ArrowRight className="h-4 w-4 ml-2" />
                 </Link>
               </Button>

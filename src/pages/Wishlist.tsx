@@ -1,4 +1,5 @@
 import Navbar from "@/components/Navbar";
+import MobileNav from "@/components/MobileNav";
 import Footer from "@/components/Footer";
 import Starfield from "@/components/Starfield";
 import ProductCard from "@/components/ProductCard";
@@ -47,7 +48,7 @@ const Wishlist = () => {
   const { t } = useLanguage();
   
   return (
-    <div className="min-h-screen flex flex-col relative">
+    <div className="min-h-screen flex flex-col relative pb-20">
       <Starfield />
       <Navbar />
       

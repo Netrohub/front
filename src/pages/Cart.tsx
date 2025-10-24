@@ -1,5 +1,6 @@
 import { useState } from "react";
 import Navbar from "@/components/Navbar";
+import MobileNav from "@/components/MobileNav";
 import Footer from "@/components/Footer";
 import Starfield from "@/components/Starfield";
 import { Button } from "@/components/ui/button";
@@ -77,7 +78,7 @@ const Cart = () => {
   };
 
   return (
-    <div className="min-h-screen flex flex-col relative">
+    <div className="min-h-screen flex flex-col relative pb-20">
       <Starfield />
       <Navbar />
       
@@ -243,6 +244,7 @@ const Cart = () => {
       </main>
       
       <Footer />
+      <MobileNav />
     </div>
   );
 };

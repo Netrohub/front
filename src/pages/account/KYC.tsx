@@ -254,23 +254,12 @@ const KYC = () => {
         </Card>
 
         <div className="flex gap-3">
-          {user?.subscription?.plan === 'Elite' ? (
-            <Button asChild className="flex-1 btn-glow">
-              <Link to="/seller/dashboard">
-                Go to Seller Dashboard
-                <ArrowRight className="h-4 w-4 ml-2" />
-              </Link>
-            </Button>
-          ) : (
-            <Button 
-              className="flex-1 btn-glow opacity-50 cursor-not-allowed" 
-              disabled
-              title="Elite plan required for seller dashboard"
-            >
-              Go to Seller Dashboard (Elite Only)
+          <Button asChild className="flex-1 btn-glow">
+            <Link to="/seller/dashboard">
+              Go to Seller Dashboard
               <ArrowRight className="h-4 w-4 ml-2" />
-            </Button>
-          )}
+            </Link>
+          </Button>
           <Button asChild variant="outline" className="flex-1">
             <Link to="/account/dashboard">
               Back to Account
