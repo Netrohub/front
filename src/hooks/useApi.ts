@@ -453,13 +453,3 @@ export const useListSocialAccount = () => {
   });
 };
 
-// Members Hooks
-export const useMembers = () => {
-  return useQuery({
-    queryKey: queryKeys.members,
-    queryFn: () => apiClient.getMembers(),
-    staleTime: 5 * 60 * 1000, // 5 minutes
-    retry: false, // Don't retry since endpoint doesn't exist
-    enabled: false, // Disable by default until backend endpoint is implemented
-  });
-};

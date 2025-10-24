@@ -525,12 +525,6 @@ class ApiClient {
     return response;
   }
 
-  // Members (temporarily disabled - endpoint not implemented in backend)
-  async getMembers(): Promise<User[]> {
-    // TODO: Implement /members endpoint in backend
-    console.warn('getMembers: /members endpoint not implemented in backend');
-    return [];
-  }
 
   // Utility Methods
   setToken(token: string): void {
