@@ -269,7 +269,7 @@ class ApiClient {
       body: JSON.stringify(credentials),
     });
     
-    if (response.data.access_token) {
+    if (response.data && response.data.access_token) {
       this.setToken(response.data.access_token);
     }
     
@@ -282,7 +282,7 @@ class ApiClient {
       body: JSON.stringify(userData),
     });
     
-    if (response.data.access_token) {
+    if (response.data && response.data.access_token) {
       this.setToken(response.data.access_token);
     }
     
