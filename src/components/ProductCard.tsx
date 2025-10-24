@@ -44,7 +44,7 @@ const ProductCard = ({ id, name, price, image, category, rating, reviews, featur
   
   return (
     <Link to={`/products/${id}`} onMouseEnter={handleMouseEnter}>
-      <Card className="glass-card overflow-hidden group cursor-pointer hover:scale-[1.02] transition-transform">
+      <Card className="glass-card overflow-hidden group cursor-pointer hover:scale-[1.02] transition-transform touch-target">
       <CardContent className="p-0">
         <div className="relative aspect-[4/3] overflow-hidden bg-muted/30">
           <img

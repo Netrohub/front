@@ -288,7 +288,7 @@ const Login = () => {
                       id="identifier"
                       type="text"
                       placeholder="your@email.com or username"
-                      className="pl-10 glass-card border-border/50 focus:border-primary/50"
+                      className="pl-10 glass-card border-border/50 focus:border-primary/50 mobile-text"
                       {...emailForm.register("identifier")}
                     />
                   </div>
@@ -309,7 +309,7 @@ const Login = () => {
                       type="password"
                       placeholder="••••••••"
                       autoComplete="current-password"
-                      className="pl-10 glass-card border-border/50 focus:border-primary/50"
+                      className="pl-10 glass-card border-border/50 focus:border-primary/50 mobile-text"
                       {...currentForm.register("password")}
                     />
                   </div>

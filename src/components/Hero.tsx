@@ -37,14 +37,14 @@ const Hero = () => {
           </div>
           
           <div className="flex flex-col sm:flex-row gap-4 pt-4 px-4">
-            <Button asChild size="lg" className="gap-2 btn-glow text-base px-6 sm:px-8 py-4 sm:py-6 w-full sm:w-auto">
+            <Button asChild size="lg" className="gap-2 btn-glow text-base px-6 sm:px-8 py-4 sm:py-6 w-full sm:w-auto touch-target">
               <Link to="/products">
                 <ShoppingBag className="h-5 w-5" />
                 {t('exploreProducts')}
                 <ArrowRight className="h-4 w-4" />
               </Link>
             </Button>
-            <Button asChild size="lg" variant="outline" className="gap-2 glass-card border-primary/30 hover:border-primary/50 text-base px-6 sm:px-8 py-4 sm:py-6 w-full sm:w-auto">
+            <Button asChild size="lg" variant="outline" className="gap-2 glass-card border-primary/30 hover:border-primary/50 text-base px-6 sm:px-8 py-4 sm:py-6 w-full sm:w-auto touch-target">
               <Link to="/seller/onboarding">
                 {t('becomeASeller')}
               </Link>

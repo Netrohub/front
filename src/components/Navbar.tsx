@@ -283,35 +283,35 @@ const Navbar = () => {
 
       {/* Mobile Menu */}
       {mobileMenuOpen && (
-        <div className="md:hidden border-t border-border/50 glass-card">
+        <div className="md:hidden border-t border-border/50 glass-card mobile-scroll">
           <div className="container mx-auto px-4 py-4">
             <div className="space-y-4">
               {/* Mobile Navigation Links */}
               <div className="space-y-2">
                 <Link 
                   to="/" 
-                  className="block px-4 py-3 rounded-lg text-foreground/70 hover:bg-primary/10 hover:text-primary transition-colors"
+                  className="block px-4 py-3 rounded-lg text-foreground/70 hover:bg-primary/10 hover:text-primary transition-colors touch-target"
                   onClick={() => setMobileMenuOpen(false)}
                 >
                   {t('home')}
                 </Link>
                 <Link 
                   to="/products" 
-                  className="block px-4 py-3 rounded-lg text-foreground/70 hover:bg-primary/10 hover:text-primary transition-colors"
+                  className="block px-4 py-3 rounded-lg text-foreground/70 hover:bg-primary/10 hover:text-primary transition-colors touch-target"
                   onClick={() => setMobileMenuOpen(false)}
                 >
                   {t('products')}
                 </Link>
                 <Link 
                   to="/members" 
-                  className="block px-4 py-3 rounded-lg text-foreground/70 hover:bg-primary/10 hover:text-primary transition-colors"
+                  className="block px-4 py-3 rounded-lg text-foreground/70 hover:bg-primary/10 hover:text-primary transition-colors touch-target"
                   onClick={() => setMobileMenuOpen(false)}
                 >
                   {t('members')}
                 </Link>
                 <Link 
                   to="/leaderboard" 
-                  className="block px-4 py-3 rounded-lg text-foreground/70 hover:bg-primary/10 hover:text-primary transition-colors"
+                  className="block px-4 py-3 rounded-lg text-foreground/70 hover:bg-primary/10 hover:text-primary transition-colors touch-target"
                   onClick={() => setMobileMenuOpen(false)}
                 >
                   {t('leaderboard')}
