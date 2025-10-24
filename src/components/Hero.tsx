@@ -7,25 +7,25 @@ const Hero = () => {
   const { t } = useLanguage();
   
   return (
-    <section className="relative py-12 sm:py-16 md:py-20 lg:py-24 xl:py-32 overflow-hidden">
+    <section className="relative py-16 md:py-24 lg:py-32 overflow-hidden">
       {/* Cosmic gradient background */}
       <div className="absolute inset-0 gradient-nebula opacity-80" />
       
       {/* Glow effects - mobile first */}
-      <div className="absolute top-1/4 left-1/4 w-32 h-32 sm:w-48 sm:h-48 md:w-64 md:h-64 lg:w-96 lg:h-96 bg-primary/20 rounded-full blur-[60px] sm:blur-[80px] md:blur-[100px] lg:blur-[120px] animate-pulse" />
-      <div className="absolute bottom-1/4 right-1/4 w-32 h-32 sm:w-48 sm:h-48 md:w-64 md:h-64 lg:w-96 lg:h-96 bg-accent/20 rounded-full blur-[60px] sm:blur-[80px] md:blur-[100px] lg:blur-[120px] animate-pulse" style={{ animationDelay: '1s' }} />
+      <div className="absolute top-1/4 left-1/4 w-48 h-48 md:w-64 md:h-64 lg:w-96 lg:h-96 bg-primary/20 rounded-full blur-[80px] md:blur-[100px] lg:blur-[120px] animate-pulse" />
+      <div className="absolute bottom-1/4 right-1/4 w-48 h-48 md:w-64 md:h-64 lg:w-96 lg:h-96 bg-accent/20 rounded-full blur-[80px] md:blur-[100px] lg:blur-[120px] animate-pulse" style={{ animationDelay: '1s' }} />
       
-      <div className="container mx-auto px-3 sm:px-4 relative z-10">
-        <div className="flex flex-col items-center text-center space-y-4 sm:space-y-6 md:space-y-8">
-          <div className="inline-flex items-center gap-2 px-3 py-2 sm:px-4 sm:py-2 rounded-full glass-card border border-primary/30 mb-2 sm:mb-4">
-            <Sparkles className="h-3 w-3 sm:h-4 sm:w-4 text-primary animate-pulse" />
-            <span className="text-xs sm:text-sm font-medium bg-gradient-to-r from-primary to-accent bg-clip-text text-transparent">
+      <div className="container mx-auto px-4 md:px-6 lg:px-8 relative z-10">
+        <div className="flex flex-col items-center text-center space-y-6 md:space-y-8">
+          <div className="inline-flex items-center gap-2 px-4 py-2 md:px-6 md:py-3 rounded-full glass-card border border-primary/30 mb-4">
+            <Sparkles className="h-4 w-4 md:h-5 md:w-5 text-primary animate-pulse" />
+            <span className="text-sm md:text-base font-medium bg-gradient-to-r from-primary to-accent bg-clip-text text-transparent">
               {t('welcomeMessage')}
             </span>
           </div>
           
-          <div className="space-y-3 sm:space-y-4 md:space-y-6 max-w-5xl w-full">
-            <h1 className="text-2xl sm:text-3xl md:text-4xl lg:text-5xl xl:text-6xl 2xl:text-7xl font-black tracking-tight leading-tight px-2 break-words">
+          <div className="space-y-4 md:space-y-6 max-w-5xl w-full">
+            <h1 className="text-2xl md:text-4xl lg:text-6xl font-black tracking-tight leading-tight px-2 break-words">
               <span className="block">
                 {t('heroTitle')}
               </span>
@@ -33,20 +33,20 @@ const Hero = () => {
                 Marketplace
               </span>
             </h1>
-            <p className="text-sm sm:text-base md:text-lg lg:text-xl text-foreground/70 max-w-3xl mx-auto leading-relaxed px-2 sm:px-4 break-words">
+            <p className="text-sm md:text-base lg:text-lg text-foreground/70 max-w-3xl mx-auto leading-relaxed px-4 break-words">
               {t('heroDescription')}
             </p>
           </div>
           
-          <div className="flex flex-col sm:flex-row gap-3 sm:gap-4 pt-2 sm:pt-4 px-2 sm:px-4 w-full max-w-lg sm:max-w-none">
-            <Button asChild size="lg" className="gap-2 btn-glow text-sm sm:text-base px-4 sm:px-6 md:px-8 py-3 sm:py-4 md:py-6 w-full sm:w-auto min-h-[44px] touch-target">
+          <div className="flex flex-col md:flex-row gap-4 md:gap-6 pt-4 w-full max-w-lg md:max-w-none">
+            <Button asChild size="lg" className="gap-2 btn-glow text-sm md:text-base px-6 md:px-8 py-3 md:py-4 w-full md:w-auto h-12 md:h-12">
               <Link to="/products">
-                <ShoppingBag className="h-4 w-4 sm:h-5 sm:w-5" />
+                <ShoppingBag className="h-4 w-4 md:h-5 md:w-5" />
                 {t('exploreProducts')}
-                <ArrowRight className="h-3 w-3 sm:h-4 sm:w-4" />
+                <ArrowRight className="h-4 w-4" />
               </Link>
             </Button>
-            <Button asChild size="lg" variant="outline" className="gap-2 glass-card border-primary/30 hover:border-primary/50 text-sm sm:text-base px-4 sm:px-6 md:px-8 py-3 sm:py-4 md:py-6 w-full sm:w-auto min-h-[44px] touch-target">
+            <Button asChild size="lg" variant="outline" className="gap-2 glass-card border-primary/30 hover:border-primary/50 text-sm md:text-base px-6 md:px-8 py-3 md:py-4 w-full md:w-auto h-12 md:h-12">
               <Link to="/seller/onboarding">
                 {t('becomeASeller')}
               </Link>
@@ -54,22 +54,22 @@ const Hero = () => {
           </div>
           
           {/* Feature badges - mobile first */}
-          <div className="flex flex-col sm:flex-row justify-center items-center gap-3 sm:gap-4 md:gap-6 pt-4 sm:pt-6 md:pt-8 px-2 sm:px-4 w-full">
-            <div className="flex items-center gap-2 text-xs sm:text-sm text-foreground/70 min-h-[44px] px-2">
+          <div className="flex flex-col md:flex-row justify-center items-center gap-4 md:gap-6 pt-6 md:pt-8 w-full">
+            <div className="flex items-center gap-2 text-sm md:text-base text-foreground/70 h-12 px-4">
               <div className="p-2 rounded-lg bg-primary/10 border border-primary/20">
-                <Shield className="h-3 w-3 sm:h-4 sm:w-4 text-primary" />
+                <Shield className="h-4 w-4 md:h-5 md:w-5 text-primary" />
               </div>
               <span className="whitespace-nowrap">{t('securePayments')}</span>
             </div>
-            <div className="flex items-center gap-2 text-xs sm:text-sm text-foreground/70 min-h-[44px] px-2">
+            <div className="flex items-center gap-2 text-sm md:text-base text-foreground/70 h-12 px-4">
               <div className="p-2 rounded-lg bg-accent/10 border border-accent/20">
-                <Zap className="h-3 w-3 sm:h-4 sm:w-4 text-accent" />
+                <Zap className="h-4 w-4 md:h-5 md:w-5 text-accent" />
               </div>
               <span className="whitespace-nowrap">{t('instantAccess')}</span>
             </div>
-            <div className="flex items-center gap-2 text-xs sm:text-sm text-foreground/70 min-h-[44px] px-2">
+            <div className="flex items-center gap-2 text-sm md:text-base text-foreground/70 h-12 px-4">
               <div className="p-2 rounded-lg bg-primary/10 border border-primary/20">
-                <Sparkles className="h-3 w-3 sm:h-4 sm:w-4 text-primary" />
+                <Sparkles className="h-4 w-4 md:h-5 md:w-5 text-primary" />
               </div>
               <span className="whitespace-nowrap">{t('support247')}</span>
             </div>

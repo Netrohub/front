@@ -7,7 +7,7 @@ import Starfield from "@/components/Starfield";
 
 const Index = () => {
   return (
-    <div className="min-h-screen flex flex-col relative">
+    <div className="min-h-screen flex flex-col relative pb-20 md:pb-0">
       <Starfield />
       <Navbar />
       <main className="flex-1 relative z-10">
