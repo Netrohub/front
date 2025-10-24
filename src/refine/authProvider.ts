@@ -12,11 +12,8 @@ export interface User {
 export const authProvider: AuthProvider = {
   login: async ({ email, password, remember }) => {
     try {
-      // Get CSRF cookie first
-      await adminApiClient.get('/sanctum/csrf-cookie');
-      
-      // Login request
-      const { data } = await adminApiClient.post('/login', {
+      // Login request (NestJS doesn't need CSRF cookie)
+      const { data } = await adminApiClient.post('/auth/login', {
         email,
         password,
         remember: remember || false,
@@ -50,7 +47,7 @@ export const authProvider: AuthProvider = {
 
   logout: async () => {
     try {
-      await adminApiClient.post('/logout');
+      await adminApiClient.post('/auth/logout');
     } catch (error) {
       console.warn('Logout request failed:', error);
     } finally {
@@ -72,7 +69,7 @@ export const authProvider: AuthProvider = {
     }
 
     try {
-      const { data } = await adminApiClient.get('/api/user');
+      const { data } = await adminApiClient.get('/auth/me');
       return {
         authenticated: true,
         user: data,

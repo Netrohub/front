@@ -363,7 +363,7 @@ export const dataProvider: DataProvider = {
   },
 
   getApiUrl: () => {
-    return 'http://localhost:8083';
+    return 'https://api.nxoland.com/api';
   },
 
   custom: async ({ url, method, filters, sorters, payload, query, headers, meta }) => {
