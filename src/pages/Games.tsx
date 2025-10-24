@@ -1,5 +1,6 @@
 import { useState, useMemo } from "react";
 import Navbar from "@/components/Navbar";
+import MobileNav from "@/components/MobileNav";
 import Footer from "@/components/Footer";
 import Starfield from "@/components/Starfield";
 import ProductCard from "@/components/ProductCard";
@@ -137,7 +138,7 @@ const Games = () => {
   }, [searchQuery, selectedPlatform]);
 
   return (
-    <div className="min-h-screen flex flex-col relative">
+    <div className="min-h-screen flex flex-col relative pb-20 md:pb-0">
       <Starfield />
       <Navbar />
       
@@ -328,6 +329,7 @@ const Games = () => {
       </main>
       
       <Footer />
+      <MobileNav />
     </div>
   );
 };

@@ -1,4 +1,5 @@
 import Navbar from "@/components/Navbar";
+import MobileNav from "@/components/MobileNav";
 import Hero from "@/components/Hero";
 import CategoryGrid from "@/components/CategoryGrid";
 import FeaturedProducts from "@/components/FeaturedProducts";
@@ -16,6 +17,7 @@ const Index = () => {
         <FeaturedProducts />
       </main>
       <Footer />
+      <MobileNav />
     </div>
   );
 };
