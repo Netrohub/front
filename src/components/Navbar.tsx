@@ -171,28 +171,16 @@ const Navbar = () => {
             </form>
           </div>
 
-          <div className="flex items-center gap-2">
+          <div className="flex items-center gap-1 sm:gap-2">
             <LanguageSwitcher />
-            
-            {/* Sell Button - Mobile Only */}
-            <Button 
-              asChild 
-              variant="outline" 
-              size="sm" 
-              className="md:hidden glass-card border-primary/30 hover:bg-primary/10 hover:text-primary transition-colors"
-            >
-              <Link to="/seller/onboarding">
-                <span className="text-sm font-medium">Sell</span>
-              </Link>
-            </Button>
             
             {isAuthenticated ? (
               <>
                 <Button asChild variant="ghost" size="icon" className="relative hover:bg-primary/10 hover:text-primary transition-colors">
                   <Link to="/cart">
-                    <ShoppingCart className="h-5 w-5" />
+                    <ShoppingCart className="h-4 w-4 sm:h-5 sm:w-5" />
                     {cartCount > 0 && (
-                      <span className="absolute -right-1 -top-1 flex h-5 w-5 items-center justify-center rounded-full gradient-primary text-[10px] font-bold text-primary-foreground shadow-lg">
+                      <span className="absolute -right-1 -top-1 flex h-4 w-4 sm:h-5 sm:w-5 items-center justify-center rounded-full gradient-primary text-[9px] sm:text-[10px] font-bold text-primary-foreground shadow-lg">
                         {cartCount}
                       </span>
                     )}
@@ -201,10 +189,10 @@ const Navbar = () => {
                 
                 <DropdownMenu>
                   <DropdownMenuTrigger asChild>
-                    <Button variant="ghost" className="relative h-8 w-8 rounded-full">
-                      <Avatar className="h-8 w-8">
+                    <Button variant="ghost" className="relative h-7 w-7 sm:h-8 sm:w-8 rounded-full">
+                      <Avatar className="h-7 w-7 sm:h-8 sm:w-8">
                         <AvatarImage src={avatar || user?.avatar || ""} alt={user?.name || ""} />
-                        <AvatarFallback className="bg-primary/10 text-primary">
+                        <AvatarFallback className="bg-primary/10 text-primary text-xs sm:text-sm">
                           {user?.name?.charAt(0).toUpperCase() || "U"}
                         </AvatarFallback>
                       </Avatar>
@@ -268,10 +256,10 @@ const Navbar = () => {
               </>
             ) : (
               <>
-                <Button asChild variant="ghost" size="sm">
+                <Button asChild variant="ghost" size="sm" className="text-xs sm:text-sm px-2 sm:px-3">
                   <Link to="/login">{t('login')}</Link>
                 </Button>
-                <Button asChild size="sm">
+                <Button asChild size="sm" className="text-xs sm:text-sm px-2 sm:px-3">
                   <Link to="/register">{t('register')}</Link>
                 </Button>
               </>
