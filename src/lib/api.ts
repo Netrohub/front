@@ -44,9 +44,9 @@ export interface User {
 
 export interface AuthResponse {
   user: User;
-  token: string;
+  access_token: string;
   token_type: string;
-  expires_in: number;
+  expires_in: string;
 }
 
 export interface LoginRequest {
@@ -269,11 +269,11 @@ class ApiClient {
       body: JSON.stringify(credentials),
     });
     
-    if (response.data && response.data.access_token) {
-      this.setToken(response.data.access_token);
+    if (response && response.access_token) {
+      this.setToken(response.access_token);
     }
     
-    return response.data;
+    return response;
   }
 
   async register(userData: RegisterRequest): Promise<AuthResponse> {
@@ -282,11 +282,11 @@ class ApiClient {
       body: JSON.stringify(userData),
     });
     
-    if (response.data && response.data.access_token) {
-      this.setToken(response.data.access_token);
+    if (response && response.access_token) {
+      this.setToken(response.access_token);
     }
     
-    return response.data;
+    return response;
   }
 
   async logout(): Promise<void> {
@@ -299,7 +299,7 @@ class ApiClient {
 
   async getCurrentUser(): Promise<User> {
     const response = await this.request<User>('/auth/me');
-    return response.data;
+    return response;
   }
 
   async verifyPhone(phone: string, code: string): Promise<void> {
@@ -327,23 +327,23 @@ class ApiClient {
     });
     
     const response = await this.request<PaginatedResponse<Product>>(`/products?${params}`);
-    return response.data;
+    return response;
   }
 
   async getProduct(id: number): Promise<Product> {
     const response = await this.request<Product>(`/products/${id}`);
-    return response.data;
+    return response;
   }
 
   async getFeaturedProducts(): Promise<Product[]> {
     const response = await this.request<Product[]>('/products?featured=true');
-    return response.data;
+    return response;
   }
 
   // Cart Methods
   async getCart(): Promise<Cart> {
     const response = await this.request<Cart>('/cart');
-    return response.data;
+    return response;
   }
 
   async addToCart(productId: number, quantity: number = 1): Promise<void> {
@@ -374,23 +374,23 @@ class ApiClient {
       method: 'POST',
       body: JSON.stringify(data),
     });
-    return response.data;
+    return response;
   }
 
   async getOrders(page: number = 1): Promise<PaginatedResponse<Order>> {
     const response = await this.request<PaginatedResponse<Order>>(`/orders?page=${page}`);
-    return response.data;
+    return response;
   }
 
   async getOrder(id: number): Promise<Order> {
     const response = await this.request<Order>(`/orders/${id}`);
-    return response.data;
+    return response;
   }
 
   // Wishlist Methods
   async getWishlist(): Promise<Product[]> {
     const response = await this.request<Product[]>('/wishlist');
-    return response.data;
+    return response;
   }
 
   async addToWishlist(productId: number): Promise<void> {
@@ -406,17 +406,17 @@ class ApiClient {
   // Dispute Methods
   async getDisputes(): Promise<Dispute[]> {
     const response = await this.request<Dispute[]>('/disputes');
-    return response.data;
+    return response;
   }
 
   async getAdminDisputes(): Promise<Dispute[]> {
     const response = await this.request<Dispute[]>('/disputes/admin/all');
-    return response.data;
+    return response;
   }
 
   async getDispute(id: number): Promise<Dispute> {
     const response = await this.request<Dispute>(`/disputes/${id}`);
-    return response.data;
+    return response;
   }
 
   async createDispute(data: CreateDisputeRequest): Promise<Dispute> {
@@ -424,7 +424,7 @@ class ApiClient {
       method: 'POST',
       body: JSON.stringify(data),
     });
-    return response.data;
+    return response;
   }
 
   async addDisputeMessage(disputeId: number, message: string): Promise<DisputeMessage> {
@@ -432,7 +432,7 @@ class ApiClient {
       method: 'POST',
       body: JSON.stringify({ message }),
     });
-    return response.data;
+    return response;
   }
 
   async uploadDisputeEvidence(disputeId: number, evidence: FormData): Promise<DisputeEvidence> {
@@ -441,7 +441,7 @@ class ApiClient {
       headers: {}, // Let browser set Content-Type for FormData
       body: evidence,
     });
-    return response.data;
+    return response;
   }
 
   // Admin Dispute Methods
@@ -451,18 +451,18 @@ class ApiClient {
       method: 'PUT',
       body: JSON.stringify({ status, resolution }),
     });
-    return response.data;
+    return response;
   }
 
   // Seller Methods
   async getSellerDashboard(): Promise<SellerDashboard> {
     const response = await this.request<SellerDashboard>('/seller/dashboard');
-    return response.data;
+    return response;
   }
 
   async getSellerProducts(): Promise<Product[]> {
     const response = await this.request<Product[]>('/seller/products');
-    return response.data;
+    return response;
   }
 
   async createProduct(data: FormData): Promise<Product> {
@@ -471,7 +471,7 @@ class ApiClient {
       headers: {}, // Let browser set Content-Type for FormData
       body: data,
     });
-    return response.data;
+    return response;
   }
 
   async updateProduct(id: number, data: FormData): Promise<Product> {
@@ -480,7 +480,7 @@ class ApiClient {
       headers: {}, // Let browser set Content-Type for FormData
       body: data,
     });
-    return response.data;
+    return response;
   }
 
   async deleteProduct(id: number): Promise<void> {
@@ -489,17 +489,17 @@ class ApiClient {
 
   async getSellerOrders(): Promise<SellerOrder[]> {
     const response = await this.request<SellerOrder[]>('/seller/orders');
-    return response.data;
+    return response;
   }
 
   async getSellerPayouts(): Promise<SellerPayout[]> {
     const response = await this.request<SellerPayout[]>('/seller/payouts');
-    return response.data;
+    return response;
   }
 
   async getSellerNotifications(): Promise<any[]> {
     const response = await this.request<any[]>('/seller/notifications');
-    return response.data;
+    return response;
   }
 
   async listGamingAccount(data: FormData): Promise<Product> {
@@ -508,7 +508,7 @@ class ApiClient {
       headers: {}, // Let browser set Content-Type for FormData
       body: data,
     });
-    return response.data;
+    return response;
   }
 
   async listSocialAccount(data: FormData): Promise<Product> {
@@ -517,7 +517,7 @@ class ApiClient {
       headers: {}, // Let browser set Content-Type for FormData
       body: data,
     });
-    return response.data;
+    return response;
   }
 
   // Members (temporarily disabled - endpoint not implemented in backend)
