@@ -11,7 +11,7 @@ const Hero = () => {
       {/* Cosmic gradient background */}
       <div className="absolute inset-0 gradient-nebula opacity-80" />
       
-      {/* Glow effects - mobile optimized */}
+      {/* Glow effects - mobile first */}
       <div className="absolute top-1/4 left-1/4 w-48 h-48 sm:w-64 sm:h-64 md:w-96 md:h-96 bg-primary/20 rounded-full blur-[80px] sm:blur-[100px] md:blur-[120px] animate-pulse" />
       <div className="absolute bottom-1/4 right-1/4 w-48 h-48 sm:w-64 sm:h-64 md:w-96 md:h-96 bg-accent/20 rounded-full blur-[80px] sm:blur-[100px] md:blur-[120px] animate-pulse" style={{ animationDelay: '1s' }} />
       
@@ -51,7 +51,7 @@ const Hero = () => {
             </Button>
           </div>
           
-          {/* Feature badges - mobile optimized */}
+          {/* Feature badges - mobile first */}
           <div className="flex flex-wrap justify-center gap-3 sm:gap-4 md:gap-6 pt-6 sm:pt-8 px-4">
             <div className="flex items-center gap-2 text-xs sm:text-sm text-foreground/70 min-h-[44px]">
               <div className="p-2 rounded-lg bg-primary/10 border border-primary/20">
