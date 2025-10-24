@@ -2,29 +2,62 @@
 @tailwind components;
 @tailwind utilities;
 
+/* Mobile-first responsive design enhancements */
+.touch-target {
+  min-height: 44px;
+  min-width: 44px;
+}
+
+/* Better mobile scrolling */
+.mobile-scroll {
+  -webkit-overflow-scrolling: touch;
+  scroll-behavior: smooth;
+}
+
+/* Mobile-friendly glass cards */
+.glass-card {
+  backdrop-filter: blur(8px);
+  -webkit-backdrop-filter: blur(8px);
+}
+
+/* Mobile text sizing - prevent zoom on iOS */
+.mobile-text {
+  font-size: 16px;
+}
+
 /* Mobile-specific enhancements */
 @media (max-width: 768px) {
-  /* Improve touch targets */
-  .touch-target {
+  /* Ensure all interactive elements are touch-friendly */
+  button, a, input, select, textarea {
     min-height: 44px;
     min-width: 44px;
   }
   
-  /* Better mobile scrolling */
-  .mobile-scroll {
-    -webkit-overflow-scrolling: touch;
-    scroll-behavior: smooth;
+  /* Improve text readability on mobile */
+  body {
+    font-size: 16px;
+    line-height: 1.5;
   }
   
-  /* Mobile-friendly glass cards */
+  /* Better spacing for mobile */
+  .container {
+    padding-left: 1rem;
+    padding-right: 1rem;
+  }
+  
+  /* Mobile-optimized cards */
   .glass-card {
-    backdrop-filter: blur(8px);
-    -webkit-backdrop-filter: blur(8px);
+    border-radius: 0.75rem;
+    padding: 0.75rem;
   }
   
-  /* Mobile text sizing */
-  .mobile-text {
-    font-size: 16px; /* Prevent zoom on iOS */
+  /* Mobile navigation improvements */
+  .mobile-nav {
+    position: fixed;
+    bottom: 0;
+    left: 0;
+    right: 0;
+    z-index: 50;
   }
 }
 

@@ -44,7 +44,7 @@ const ProductCard = ({ id, name, price, image, category, rating, reviews, featur
   
   return (
     <Link to={`/products/${id}`} onMouseEnter={handleMouseEnter}>
-      <Card className="glass-card overflow-hidden group cursor-pointer hover:scale-[1.02] transition-transform touch-target">
+      <Card className="glass-card overflow-hidden group cursor-pointer hover:scale-[1.02] transition-transform touch-target min-h-[44px]">
       <CardContent className="p-0">
         <div className="relative aspect-[4/3] overflow-hidden bg-muted/30">
           <img
@@ -53,38 +53,38 @@ const ProductCard = ({ id, name, price, image, category, rating, reviews, featur
             className="h-full w-full object-cover transition-all duration-500 group-hover:scale-110"
           />
           {featured && (
-            <Badge className="absolute left-3 top-3 badge-glow border-0 font-semibold">
+            <Badge className="absolute left-2 top-2 sm:left-3 sm:top-3 badge-glow border-0 font-semibold text-xs sm:text-sm">
               ⭐ {t('featured')}
             </Badge>
           )}
           <div className="absolute inset-0 bg-gradient-to-t from-background/80 via-transparent to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300" />
         </div>
-        <div className="p-3 space-y-2">
-          <div className="flex items-center justify-between">
-            <Badge variant="secondary" className="text-[10px] bg-primary/10 text-primary border-primary/20 hover:bg-primary/20 px-2 py-0.5">
+        <div className="p-2 sm:p-3 space-y-2">
+          <div className="flex items-center justify-between gap-2">
+            <Badge variant="secondary" className="text-[9px] sm:text-[10px] bg-primary/10 text-primary border-primary/20 hover:bg-primary/20 px-1.5 sm:px-2 py-0.5">
               {category}
             </Badge>
             <div className="flex items-center gap-1 text-xs">
               <Star className="h-3 w-3 fill-primary text-primary" />
-              <span className="font-semibold text-foreground">{rating}</span>
-              <span className="text-muted-foreground text-[10px]">({reviews})</span>
+              <span className="font-semibold text-foreground text-xs sm:text-sm">{rating}</span>
+              <span className="text-muted-foreground text-[9px] sm:text-[10px]">({reviews})</span>
             </div>
           </div>
-          <h3 className="line-clamp-2 font-semibold text-sm group-hover:text-primary transition-colors min-h-[2.5rem]">{name}</h3>
+          <h3 className="line-clamp-2 font-semibold text-xs sm:text-sm group-hover:text-primary transition-colors min-h-[2rem] sm:min-h-[2.5rem] leading-tight">{name}</h3>
           <div className="flex items-baseline gap-2">
-            <p className="text-xl font-bold bg-gradient-to-r from-primary to-accent bg-clip-text text-transparent">
+            <p className="text-lg sm:text-xl font-bold bg-gradient-to-r from-primary to-accent bg-clip-text text-transparent">
               ${price.toFixed(2)}
             </p>
           </div>
         </div>
       </CardContent>
-      <CardFooter className="p-3 pt-0">
+      <CardFooter className="p-2 sm:p-3 pt-0">
         <Button 
-          className="w-full gap-2 btn-glow text-sm h-9"
+          className="w-full gap-2 btn-glow text-xs sm:text-sm h-8 sm:h-9 min-h-[44px] touch-target"
           onClick={handleAddToCart}
           disabled={addToCart.isPending}
         >
-          <ShoppingCart className="h-3.5 w-3.5" />
+          <ShoppingCart className="h-3 w-3 sm:h-3.5 sm:w-3.5" />
           {addToCart.isPending ? t('adding') || 'Adding...' : t('addToCart')}
         </Button>
       </CardFooter>

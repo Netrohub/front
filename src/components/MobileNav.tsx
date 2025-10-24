@@ -29,7 +29,7 @@ const MobileNav = () => {
             <Link
               key={item.path}
               to={item.path}
-              className={`flex flex-col items-center justify-center gap-1 transition-colors relative ${
+              className={`flex flex-col items-center justify-center gap-1 transition-colors relative min-h-[44px] min-w-[44px] ${
                 isActive
                   ? "text-primary"
                   : "text-foreground/60 hover:text-foreground"
@@ -43,7 +43,7 @@ const MobileNav = () => {
                   </Badge>
                 )}
               </div>
-              <span className="text-[10px] font-medium">{item.label}</span>
+              <span className="text-[10px] font-medium leading-tight">{item.label}</span>
               {isActive && (
                 <div className="absolute top-0 left-1/2 -translate-x-1/2 w-8 h-0.5 bg-primary rounded-full" />
               )}
