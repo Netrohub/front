@@ -58,7 +58,7 @@ npm run preview
 
 Create `.env.development` for local development:
 ```env
-VITE_API_BASE_URL=http://localhost:3000/api
+VITE_API_BASE_URL=https://api.nxoland.com/api
 ```
 
 Create `.env.production` for production:
@@ -130,7 +130,7 @@ The included `nginx.conf` provides:
 ## 🌐 API Integration
 
 The frontend connects to the NestJS backend API:
-- **Development**: `http://localhost:3000/api`
+- **Development**: `https://api.nxoland.com/api`
 - **Production**: `https://api.nxoland.com/api`
 
 ## 📄 License
