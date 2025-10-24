@@ -93,20 +93,11 @@ const Navbar = () => {
   };
   
   return (
-    <nav className="sticky top-0 z-50 w-full border-b border-border/50 glass-card">
-      <div className="container mx-auto px-4 md:px-6 lg:px-8">
-        <div className="flex h-16 items-center justify-between">
-          <div className="flex items-center gap-4">
-            {/* Mobile menu button */}
-            <Button
-              variant="ghost"
-              size="icon"
-              className="md:hidden h-10 w-10"
-              onClick={() => setMobileMenuOpen(!mobileMenuOpen)}
-            >
-              {mobileMenuOpen ? <X className="h-5 w-5" /> : <Menu className="h-5 w-5" />}
-            </Button>
-            
+    <>
+      {/* Mobile Header - Simple logo only */}
+      <nav className="md:hidden sticky top-0 z-50 w-full border-b border-border/50 glass-card">
+        <div className="container mx-auto px-4">
+          <div className="flex h-16 items-center justify-center">
             <Link to="/" className="flex items-center gap-3 group">
               <div className="relative flex h-10 w-10 items-center justify-center">
                 <div className="absolute inset-0 rounded-lg gradient-primary blur-md opacity-75 group-hover:opacity-100 transition-opacity"></div>
@@ -122,6 +113,30 @@ const Navbar = () => {
                 Nexo
               </span>
             </Link>
+          </div>
+        </div>
+      </nav>
+
+      {/* Desktop Header - Full navigation */}
+      <nav className="hidden md:block sticky top-0 z-50 w-full border-b border-border/50 glass-card">
+        <div className="container mx-auto px-4 md:px-6 lg:px-8">
+          <div className="flex h-16 items-center justify-between">
+            <div className="flex items-center gap-4">
+              <Link to="/" className="flex items-center gap-3 group">
+                <div className="relative flex h-10 w-10 items-center justify-center">
+                  <div className="absolute inset-0 rounded-lg gradient-primary blur-md opacity-75 group-hover:opacity-100 transition-opacity"></div>
+                  <div className="relative flex h-10 w-10 items-center justify-center rounded-lg gradient-primary shadow-lg group-hover:scale-110 transition-transform">
+                    <svg className="w-6 h-6 text-primary-foreground" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                      <path d="M12 2L2 7L12 12L22 7L12 2Z" fill="currentColor" fillOpacity="0.9"/>
+                      <path d="M2 17L12 22L22 17" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/>
+                      <path d="M2 12L12 17L22 12" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/>
+                    </svg>
+                  </div>
+                </div>
+                <span className="text-xl font-bold bg-gradient-to-r from-primary via-accent to-primary bg-clip-text text-transparent tracking-tight">
+                  Nexo
+                </span>
+              </Link>
             
             <div className="hidden md:flex items-center gap-6">
               <Link to="/" className="text-sm font-medium text-foreground/70 hover:text-primary transition-colors relative group">
@@ -268,64 +283,8 @@ const Navbar = () => {
           </div>
         </div>
       </div>
-
-      {/* Mobile Menu */}
-      {mobileMenuOpen && (
-        <div className="md:hidden border-t border-border/50 glass-card mobile-scroll">
-          <div className="container mx-auto px-4 py-4">
-            <div className="space-y-4">
-              {/* Mobile Navigation Links */}
-              <div className="space-y-2">
-                <Link 
-                  to="/" 
-                  className="block px-4 py-3 rounded-lg text-foreground/70 hover:bg-primary/10 hover:text-primary transition-colors touch-target"
-                  onClick={() => setMobileMenuOpen(false)}
-                >
-                  {t('home')}
-                </Link>
-                <Link 
-                  to="/products" 
-                  className="block px-4 py-3 rounded-lg text-foreground/70 hover:bg-primary/10 hover:text-primary transition-colors touch-target"
-                  onClick={() => setMobileMenuOpen(false)}
-                >
-                  {t('products')}
-                </Link>
-                <Link 
-                  to="/members" 
-                  className="block px-4 py-3 rounded-lg text-foreground/70 hover:bg-primary/10 hover:text-primary transition-colors touch-target"
-                  onClick={() => setMobileMenuOpen(false)}
-                >
-                  {t('members')}
-                </Link>
-                <Link 
-                  to="/leaderboard" 
-                  className="block px-4 py-3 rounded-lg text-foreground/70 hover:bg-primary/10 hover:text-primary transition-colors touch-target"
-                  onClick={() => setMobileMenuOpen(false)}
-                >
-                  {t('leaderboard')}
-                </Link>
-              </div>
-
-              {/* Mobile Auth Section */}
-              {!isAuthenticated && (
-                <div className="pt-4 border-t border-border/30 space-y-2">
-                  <Button asChild variant="outline" className="w-full">
-                    <Link to="/login" onClick={() => setMobileMenuOpen(false)}>
-                      {t('login')}
-                    </Link>
-                  </Button>
-                  <Button asChild className="w-full">
-                    <Link to="/register" onClick={() => setMobileMenuOpen(false)}>
-                      {t('register')}
-                    </Link>
-                  </Button>
-                </div>
-              )}
-            </div>
-          </div>
-        </div>
-      )}
-    </nav>
+      </nav>
+    </>
   );
 };
 

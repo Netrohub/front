@@ -132,7 +132,7 @@ const Products = () => {
   }
 
   return (
-    <div className="min-h-screen flex flex-col relative pb-20 md:pb-0">
+    <div className="min-h-screen flex flex-col relative pb-20">
       <Starfield />
       <Navbar />
       
