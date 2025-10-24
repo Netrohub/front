@@ -12,6 +12,14 @@ export const useCurrentUser = () => {
   });
 };
 
+export const useMembers = () => {
+  return useQuery({
+    queryKey: ['members'],
+    queryFn: () => apiClient.getMembers(),
+    staleTime: 5 * 60 * 1000, // 5 minutes
+  });
+};
+
 export const useLogin = () => {
   const queryClient = useQueryClient();
   

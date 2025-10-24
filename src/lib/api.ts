@@ -302,6 +302,11 @@ class ApiClient {
     return response;
   }
 
+  async getMembers(): Promise<User[]> {
+    const response = await this.request<User[]>('/users/members');
+    return response;
+  }
+
   async verifyPhone(phone: string, code: string): Promise<void> {
     await this.request('/auth/verify-phone', {
       method: 'POST',
