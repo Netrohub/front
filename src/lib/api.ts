@@ -310,7 +310,7 @@ class ApiClient {
   }
 
   async submitKYC(data: FormData): Promise<void> {
-    await this.request('/auth/kyc', {
+    await this.request('/kyc/complete', {
       method: 'POST',
       headers: {}, // Let browser set Content-Type for FormData
       body: data,
@@ -394,9 +394,8 @@ class ApiClient {
   }
 
   async addToWishlist(productId: number): Promise<void> {
-    await this.request('/wishlist', {
+    await this.request(`/wishlist/${productId}`, {
       method: 'POST',
-      body: JSON.stringify({ product_id: productId }),
     });
   }
 
@@ -407,6 +406,11 @@ class ApiClient {
   // Dispute Methods
   async getDisputes(): Promise<Dispute[]> {
     const response = await this.request<Dispute[]>('/disputes');
+    return response.data;
+  }
+
+  async getAdminDisputes(): Promise<Dispute[]> {
+    const response = await this.request<Dispute[]>('/disputes/admin/all');
     return response.data;
   }
 
@@ -441,10 +445,6 @@ class ApiClient {
   }
 
   // Admin Dispute Methods
-  async getAdminDisputes(): Promise<Dispute[]> {
-    const response = await this.request<Dispute[]>('/admin/disputes');
-    return response.data;
-  }
 
   async updateDisputeStatus(disputeId: number, status: string, resolution?: string): Promise<Dispute> {
     const response = await this.request<Dispute>(`/admin/disputes/${disputeId}`, {
@@ -456,7 +456,7 @@ class ApiClient {
 
   // Seller Methods
   async getSellerDashboard(): Promise<SellerDashboard> {
-    const response = await this.request<SellerDashboard>('/seller/dashboard-metrics');
+    const response = await this.request<SellerDashboard>('/seller/dashboard');
     return response.data;
   }
 
@@ -520,10 +520,11 @@ class ApiClient {
     return response.data;
   }
 
-  // Members
+  // Members (temporarily disabled - endpoint not implemented in backend)
   async getMembers(): Promise<User[]> {
-    const response = await this.request<User[]>('/members');
-    return response.data;
+    // TODO: Implement /members endpoint in backend
+    console.warn('getMembers: /members endpoint not implemented in backend');
+    return [];
   }
 
   // Utility Methods
