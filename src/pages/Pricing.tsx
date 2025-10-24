@@ -96,7 +96,7 @@ const Pricing = () => {
   const { user, isAuthenticated } = useAuth();
   const [upgradeDialogOpen, setUpgradeDialogOpen] = useState(false);
   const [selectedPlan, setSelectedPlan] = useState<typeof plans[0] | null>(null);
-  const [currentPlan] = useState("Pro"); // Mock current plan
+  const [currentPlan] = useState(user?.subscription?.plan || "Free"); // Get from user data
   const [isUpgrading, setIsUpgrading] = useState(false);
 
   // Calculate prorated upgrade cost
@@ -105,8 +105,8 @@ const Pricing = () => {
     const currentPrice = planPrices[currentPlan] || 0;
     const newPrice = planPrices[newPlan] || 0;
     
-    // Days remaining in current billing cycle (mock: 15 days out of 30)
-    const daysRemaining = 15;
+    // Days remaining in current billing cycle (get from user subscription data)
+    const daysRemaining = 15; // TODO: Get from user subscription
     const daysInMonth = 30;
     
     // Calculate prorated credit from current plan

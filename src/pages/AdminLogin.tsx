@@ -104,10 +104,9 @@ const AdminLogin = () => {
         </form>
 
         <div className="mt-6 p-4 bg-muted/50 rounded-lg">
-          <h3 className="font-semibold text-sm mb-2">Demo Credentials:</h3>
+          <h3 className="font-semibold text-sm mb-2">Admin Access:</h3>
           <p className="text-xs text-muted-foreground">
-            <strong>Email:</strong> admin@nxoland.com<br />
-            <strong>Password:</strong> admin123
+            Contact your system administrator for access credentials.
           </p>
         </div>
 

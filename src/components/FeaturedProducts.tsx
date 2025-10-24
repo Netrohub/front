@@ -1,71 +1,11 @@
 import ProductCard from "./ProductCard";
 import { useLanguage } from "@/contexts/LanguageContext";
-
-const products = [
-  {
-    id: "1",
-    name: "Premium Wireless Headphones",
-    price: 299.99,
-    image: "https://images.unsplash.com/photo-1505740420928-5e560c06d30e?w=800&q=80",
-    category: "Audio",
-    rating: 4.8,
-    reviews: 234,
-    featured: true,
-  },
-  {
-    id: "2",
-    name: "Smart Watch Pro",
-    price: 399.99,
-    image: "https://images.unsplash.com/photo-1523275335684-37898b6baf30?w=800&q=80",
-    category: "Wearables",
-    rating: 4.6,
-    reviews: 189,
-    featured: true,
-  },
-  {
-    id: "3",
-    name: "Professional Camera Kit",
-    price: 1299.99,
-    image: "https://images.unsplash.com/photo-1526170375885-4d8ecf77b99f?w=800&q=80",
-    category: "Photography",
-    rating: 4.9,
-    reviews: 156,
-    featured: true,
-  },
-  {
-    id: "4",
-    name: "Gaming Laptop Ultra",
-    price: 1899.99,
-    image: "https://images.unsplash.com/photo-1603302576837-37561b2e2302?w=800&q=80",
-    category: "Computers",
-    rating: 4.7,
-    reviews: 342,
-    featured: false,
-  },
-  {
-    id: "5",
-    name: "Wireless Mechanical Keyboard",
-    price: 159.99,
-    image: "https://images.unsplash.com/photo-1595225476474-87563907a212?w=800&q=80",
-    category: "Electronics",
-    rating: 4.5,
-    reviews: 278,
-    featured: false,
-  },
-  {
-    id: "6",
-    name: "4K Action Camera",
-    price: 349.99,
-    image: "https://images.unsplash.com/photo-1563298723-dcfebaa392e3?w=800&q=80",
-    category: "Photography",
-    rating: 4.8,
-    reviews: 167,
-    featured: false,
-  },
-];
+import { useProducts } from "@/hooks/useApi";
+import { Loader2 } from "lucide-react";
 
 const FeaturedProducts = () => {
   const { t } = useLanguage();
+  const { data: productsData, isLoading, error } = useProducts({ featured: true, per_page: 6 });
   
   return (
     <section className="py-16 relative">
@@ -80,11 +20,37 @@ const FeaturedProducts = () => {
           <p className="text-foreground/60 text-lg">{t('premiumVerified')}</p>
         </div>
         
-        <div className="grid gap-6 sm:grid-cols-2 lg:grid-cols-3">
-          {products.map((product) => (
-            <ProductCard key={product.id} {...product} />
-          ))}
-        </div>
+        {isLoading ? (
+          <div className="flex justify-center items-center py-12">
+            <Loader2 className="h-8 w-8 animate-spin text-primary" />
+          </div>
+        ) : error ? (
+          <div className="text-center py-12">
+            <p className="text-destructive text-lg">Failed to load featured products</p>
+            <p className="text-foreground/60 mt-2">Please try again later</p>
+          </div>
+        ) : productsData && productsData.data.length > 0 ? (
+          <div className="grid gap-6 sm:grid-cols-2 lg:grid-cols-3">
+            {productsData.data.map((product) => (
+              <ProductCard 
+                key={product.id}
+                id={product.id}
+                name={product.title}
+                price={product.price}
+                image={product.images[0] || "/placeholder.svg"}
+                category={product.category}
+                rating={product.rating}
+                reviews={product.reviews_count}
+                featured={product.featured}
+              />
+            ))}
+          </div>
+        ) : (
+          <div className="text-center py-12">
+            <p className="text-foreground/60 text-lg">No featured products available</p>
+            <p className="text-foreground/40 mt-2">Check back later for new featured items</p>
+          </div>
+        )}
       </div>
     </section>
   );

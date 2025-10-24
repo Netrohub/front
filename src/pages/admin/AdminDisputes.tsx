@@ -29,42 +29,7 @@ import {
 import { Link } from "react-router-dom";
 import { useLanguage } from "@/contexts/LanguageContext";
 
-// Mock disputes data
-const mockDisputes = [
-  {
-    id: 1,
-    orderId: "ORD-12345",
-    customer: "John Doe",
-    seller: "ProGamer_Elite",
-    reason: "Product not as described",
-    status: "open",
-    priority: "high",
-    createdAt: "2024-01-20",
-    amount: 449.99,
-  },
-  {
-    id: 2,
-    orderId: "ORD-12346",
-    customer: "Jane Smith",
-    seller: "SocialKing",
-    reason: "Product not received",
-    status: "in_review",
-    priority: "medium",
-    createdAt: "2024-01-19",
-    amount: 299.99,
-  },
-  {
-    id: 3,
-    orderId: "ORD-12347",
-    customer: "Mike Johnson",
-    seller: "GamingPro",
-    reason: "Account credentials invalid",
-    status: "open",
-    priority: "critical",
-    createdAt: "2024-01-18",
-    amount: 599.99,
-  },
-];
+// Disputes data will be loaded from the API
 
 const AdminDisputes = () => {
   const { t } = useLanguage();
@@ -107,7 +72,12 @@ const AdminDisputes = () => {
     }
   };
 
-  const filteredDisputes = mockDisputes.filter((dispute) => {
+  // TODO: Replace with real API call
+  const disputes = [];
+  const loading = false;
+  const error = null;
+
+  const filteredDisputes = disputes.filter((dispute) => {
     const matchesSearch =
       dispute.orderId.toLowerCase().includes(searchQuery.toLowerCase()) ||
       dispute.customer.toLowerCase().includes(searchQuery.toLowerCase()) ||
@@ -118,10 +88,10 @@ const AdminDisputes = () => {
   });
 
   const stats = {
-    total: mockDisputes.length,
-    open: mockDisputes.filter((d) => d.status === "open").length,
-    in_review: mockDisputes.filter((d) => d.status === "in_review").length,
-    resolved: mockDisputes.filter((d) => d.status === "resolved").length,
+    total: disputes.length,
+    open: disputes.filter((d) => d.status === "open").length,
+    in_review: disputes.filter((d) => d.status === "in_review").length,
+    resolved: disputes.filter((d) => d.status === "resolved").length,
   };
 
   return (

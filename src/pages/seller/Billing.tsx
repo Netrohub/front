@@ -12,46 +12,11 @@ import {
   DollarSign
 } from "lucide-react";
 
-const paymentMethods = [
-  {
-    id: 1,
-    type: "visa",
-    last4: "4242",
-    expiry: "12/25",
-    isDefault: true,
-  },
-  {
-    id: 2,
-    type: "mastercard",
-    last4: "5555",
-    expiry: "08/26",
-    isDefault: false,
-  },
-];
+// Payment methods will be loaded from the API
+const paymentMethods = [];
 
-const earnings = [
-  {
-    id: "PAY-001",
-    description: "Sales Payment - Week 3",
-    amount: 1249.50,
-    date: "2024-01-20",
-    status: "completed",
-  },
-  {
-    id: "PAY-002",
-    description: "Sales Payment - Week 2",
-    amount: 987.30,
-    date: "2024-01-13",
-    status: "completed",
-  },
-  {
-    id: "PAY-003",
-    description: "Sales Payment - Week 1",
-    amount: 1456.80,
-    date: "2024-01-06",
-    status: "completed",
-  },
-];
+// Earnings data will be loaded from the API
+const earnings = [];
 
 const SellerBilling = () => {
   const { toast } = useToast();

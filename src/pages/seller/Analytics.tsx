@@ -23,55 +23,42 @@ import {
   AlertTriangle
 } from "lucide-react";
 
-// Advanced analytics data for Elite users
+// Analytics data will be loaded from the API
 const analyticsData = {
   revenue: {
-    total: 12450,
-    growth: 34.2,
-    monthly: 3200,
-    daily: 107
+    total: 0,
+    growth: 0,
+    monthly: 0,
+    daily: 0
   },
   sales: {
-    total: 156,
-    growth: 18.5,
-    conversion: 12.8,
-    averageOrder: 79.8
+    total: 0,
+    growth: 0,
+    conversion: 0,
+    averageOrder: 0
   },
   customers: {
-    total: 89,
-    new: 23,
-    returning: 66,
-    lifetimeValue: 2847
+    total: 0,
+    new: 0,
+    returning: 0,
+    lifetimeValue: 0
   },
   products: {
-    total: 24,
-    topPerformer: "Steam Account - 500+ Games",
-    views: 1250,
-    conversion: 3.6
+    total: 0,
+    topPerformer: "No products yet",
+    views: 0,
+    conversion: 0
   }
 };
 
-const timeSeriesData = [
-  { period: "Jan", revenue: 2800, sales: 45, customers: 12 },
-  { period: "Feb", revenue: 3200, sales: 52, customers: 18 },
-  { period: "Mar", revenue: 2900, sales: 48, customers: 15 },
-  { period: "Apr", revenue: 3600, sales: 61, customers: 22 },
-  { period: "May", revenue: 4200, sales: 68, customers: 25 },
-  { period: "Jun", revenue: 3800, sales: 59, customers: 21 },
-];
+// Time series data will be loaded from the API
+const timeSeriesData = [];
 
-const topProducts = [
-  { name: "Steam Account - 500+ Games", revenue: 22450, sales: 45, growth: 23 },
-  { name: "Instagram Account - 100K", revenue: 17600, sales: 32, growth: 18 },
-  { name: "Xbox Game Pass Ultimate", revenue: 8400, sales: 28, growth: 15 },
-  { name: "PlayStation Plus Premium", revenue: 5600, sales: 19, growth: 12 },
-];
+// Top products data will be loaded from the API
+const topProducts = [];
 
-const customerSegments = [
-  { segment: "High Value", count: 23, revenue: 8900, percentage: 26 },
-  { segment: "Regular", count: 45, revenue: 12400, percentage: 50 },
-  { segment: "New", count: 21, revenue: 3200, percentage: 24 },
-];
+// Customer segments data will be loaded from the API
+const customerSegments = [];
 
 const SellerAnalytics = () => {
   const { user } = useAuth();

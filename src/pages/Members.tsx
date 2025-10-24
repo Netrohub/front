@@ -9,10 +9,7 @@ import { Users, MapPin, Calendar } from "lucide-react";
 // import { useMembers } from "@/hooks/useApi";
 
 const Members = () => {
-  // Temporarily disabled until backend endpoint is implemented
-  // const { data: members, isLoading: loading, error } = useMembers();
-  
-  // Mock data for now
+  // Members feature is coming soon
   const members = [];
   const loading = false;
   const error = null;
@@ -48,68 +45,26 @@ const Members = () => {
           </p>
         </div>
 
-        {/* Members Grid */}
-        {loading ? (
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-            {[...Array(6)].map((_, i) => (
-              <Card key={i} className="overflow-hidden">
-                <CardContent className="p-6">
-                  <div className="flex items-start gap-4">
-                    <Skeleton className="h-16 w-16 rounded-full" />
-                    <div className="flex-1 space-y-2">
-                      <Skeleton className="h-5 w-32" />
-                      <Skeleton className="h-4 w-24" />
-                      <Skeleton className="h-4 w-28" />
-                    </div>
-                  </div>
-                </CardContent>
-              </Card>
-            ))}
+        {/* Coming Soon Message */}
+        <div className="text-center py-12">
+          <div className="max-w-md mx-auto">
+            <div className="mb-6">
+              <div className="w-24 h-24 mx-auto mb-4 rounded-full bg-primary/10 flex items-center justify-center">
+                <Users className="h-12 w-12 text-primary" />
+              </div>
+              <h3 className="text-2xl font-bold mb-2">Members Feature Coming Soon</h3>
+              <p className="text-muted-foreground">
+                We're working on building a community feature where you can discover and connect with other marketplace members.
+              </p>
+            </div>
+            <div className="space-y-4 text-sm text-muted-foreground">
+              <p>✨ Discover verified sellers and buyers</p>
+              <p>🤝 Connect with like-minded community members</p>
+              <p>📊 View member profiles and activity</p>
+              <p>🏆 Community leaderboards and achievements</p>
+            </div>
           </div>
-        ) : (
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-            {members?.map((member) => (
-              <Card 
-                key={member.id} 
-                className="overflow-hidden hover:shadow-lg transition-all duration-300 hover:scale-[1.02] cursor-pointer"
-              >
-                <CardContent className="p-6">
-                  <div className="flex items-start gap-4">
-                    <Avatar className="h-16 w-16 border-2 border-primary/20">
-                      <AvatarImage src={member.avatar || ""} alt={member.name} />
-                      <AvatarFallback className="bg-primary/10 text-primary font-semibold">
-                        {getInitials(member.name)}
-                      </AvatarFallback>
-                    </Avatar>
-                    
-                    <div className="flex-1 space-y-2">
-                      <div className="flex items-center justify-between">
-                        <h3 className="font-semibold text-lg">{member.name}</h3>
-                        {member.roles && member.roles.length > 0 && (
-                          <Badge variant="secondary" className="text-xs capitalize">
-                            {member.roles.includes('seller') ? 'Seller' : 'Buyer'}
-                          </Badge>
-                        )}
-                      </div>
-                      
-                      {member.phone && (
-                        <div className="flex items-center gap-1.5 text-sm text-muted-foreground">
-                          <MapPin className="h-3.5 w-3.5" />
-                          <span>{member.phone}</span>
-                        </div>
-                      )}
-                      
-                      <div className="flex items-center gap-1.5 text-sm text-muted-foreground">
-                        <Calendar className="h-3.5 w-3.5" />
-                        <span>Joined {formatDate(member.created_at)}</span>
-                      </div>
-                    </div>
-                  </div>
-                </CardContent>
-              </Card>
-            ))}
-          </div>
-        )}
+        </div>
 
         {!loading && (!members || members.length === 0) && (
           <div className="text-center py-12">
