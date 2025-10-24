@@ -1,0 +1,3 @@
+#!/bin/bash
+# Vite wrapper script for Cloudflare Pages
+exec npx vite "$@"
