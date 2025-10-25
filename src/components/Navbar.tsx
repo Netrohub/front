@@ -35,12 +35,20 @@ const Navbar = () => {
       }
     };
 
+    const handleEscape = (event: KeyboardEvent) => {
+      if (event.key === 'Escape' && mobileMenuOpen) {
+        setMobileMenuOpen(false);
+      }
+    };
+
     if (mobileMenuOpen) {
       document.addEventListener('mousedown', handleClickOutside);
+      document.addEventListener('keydown', handleEscape);
     }
 
     return () => {
       document.removeEventListener('mousedown', handleClickOutside);
+      document.removeEventListener('keydown', handleEscape);
     };
   }, [mobileMenuOpen]);
 
@@ -145,7 +153,7 @@ const Navbar = () => {
 
           {/* Mobile Dropdown Menu */}
           {mobileMenuOpen && (
-            <div className="absolute top-16 left-0 right-0 bg-background/95 backdrop-blur-xl border-b border-border/50 glass-card shadow-lg z-50">
+            <div className="absolute top-16 left-0 right-0 bg-background/95 backdrop-blur-xl border-b border-border/50 glass-card shadow-lg z-50 max-h-[80vh] overflow-y-auto">
               <div className="container mx-auto px-4 py-4">
                 {/* Search Bar */}
                 <div className="mb-4">
@@ -220,20 +228,34 @@ const Navbar = () => {
                         
                         <DropdownMenu>
                           <DropdownMenuTrigger asChild>
-                            <Button variant="ghost" className="relative h-10 w-10 rounded-full">
-                              <Avatar className="h-10 w-10">
-                                <AvatarImage src={avatar || user?.avatar || ""} alt={user?.name || ""} />
-                                <AvatarFallback className="bg-primary/10 text-primary text-sm">
+                            <Button variant="ghost" className="relative h-12 w-12 rounded-full p-0">
+                              <Avatar className="h-12 w-12 border-2 border-primary/20">
+                                <AvatarImage 
+                                  src={avatar || user?.avatar || ""} 
+                                  alt={user?.name || ""} 
+                                  className="object-cover"
+                                />
+                                <AvatarFallback className="bg-primary/10 text-primary text-lg font-semibold">
                                   {user?.name?.charAt(0).toUpperCase() || "U"}
                                 </AvatarFallback>
                               </Avatar>
                             </Button>
                           </DropdownMenuTrigger>
-                          <DropdownMenuContent className="w-56 glass-card border-border/50" align="end" forceMount>
-                            <div className="flex items-center justify-start gap-2 p-2">
+                          <DropdownMenuContent className="w-64 glass-card border-border/50" align="end" forceMount>
+                            <div className="flex items-center justify-start gap-3 p-3">
+                              <Avatar className="h-10 w-10 border border-primary/20">
+                                <AvatarImage 
+                                  src={avatar || user?.avatar || ""} 
+                                  alt={user?.name || ""} 
+                                  className="object-cover"
+                                />
+                                <AvatarFallback className="bg-primary/10 text-primary text-sm font-semibold">
+                                  {user?.name?.charAt(0).toUpperCase() || "U"}
+                                </AvatarFallback>
+                              </Avatar>
                               <div className="flex flex-col space-y-1 leading-none">
-                                <p className="font-medium">{user?.name}</p>
-                                <p className="w-[200px] truncate text-sm text-muted-foreground">
+                                <p className="font-medium text-sm">{user?.name}</p>
+                                <p className="w-[200px] truncate text-xs text-muted-foreground">
                                   {user?.email}
                                 </p>
                               </div>
