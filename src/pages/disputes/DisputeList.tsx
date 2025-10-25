@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { Link } from "react-router-dom";
 import AccountLayout from "@/components/AccountLayout";
 import { Card } from "@/components/ui/card";
@@ -8,42 +8,30 @@ import { DisputeCard, Dispute } from "@/components/disputes/DisputeCard";
 import { Plus, AlertCircle, Clock, CheckCircle } from "lucide-react";
 
 const DisputeList = () => {
-  // Mock disputes data
-  const [disputes] = useState<Dispute[]>([
-    {
-      id: "DIS-001",
-      orderId: "ORD-001",
-      productName: "Premium Instagram Account",
-      productImage: "https://images.unsplash.com/photo-1611162617474-5b21e879e113?w=200&q=80",
-      reason: "Product not as described",
-      description: "The account followers are not real as advertised. Engagement rate is very low.",
-      status: "open",
-      messageCount: 3,
-      createdAt: "2 days ago",
-    },
-    {
-      id: "DIS-002",
-      orderId: "ORD-002",
-      productName: "Gaming Account - Level 80",
-      productImage: "https://images.unsplash.com/photo-1552820728-8b83bb6b773f?w=200&q=80",
-      reason: "Account not working",
-      description: "Cannot login to the account. Credentials provided are incorrect.",
-      status: "in_review",
-      messageCount: 7,
-      createdAt: "5 days ago",
-    },
-    {
-      id: "DIS-003",
-      orderId: "ORD-003",
-      productName: "TikTok Account - 100K",
-      productImage: "https://images.unsplash.com/photo-1611162618479-ee3d24aaef0b?w=200&q=80",
-      reason: "Missing account details",
-      description: "Original email access was not provided as promised.",
-      status: "resolved_refund",
-      messageCount: 12,
-      createdAt: "2 weeks ago",
-    },
-  ]);
+  // TODO: Replace with actual API call
+  const [disputes, setDisputes] = useState<Dispute[]>([]);
+  const [loading, setLoading] = useState(true);
+
+  // Fetch disputes from API
+  useEffect(() => {
+    const fetchDisputes = async () => {
+      try {
+        setLoading(true);
+        // TODO: Implement actual API call
+        // const response = await fetch('/api/disputes');
+        // const data = await response.json();
+        // setDisputes(data);
+        setDisputes([]); // Empty array for now
+      } catch (error) {
+        console.error('Failed to fetch disputes:', error);
+        setDisputes([]);
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    fetchDisputes();
+  }, []);
 
   const getStatusCounts = () => {
     return {

@@ -124,7 +124,7 @@ const SellerProfile = () => {
                 <Input
                   id="email"
                   type="email"
-                  defaultValue="seller@example.com"
+                  defaultValue=""
                   className="pl-10 glass-card border-border/50 focus:border-primary/50"
                 />
               </div>

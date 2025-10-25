@@ -23,27 +23,11 @@ const OrderConfirmation = () => {
     if (orderData) {
       setOrderDetails(JSON.parse(orderData));
     } else if (orderId) {
-      // Mock order details for demo
-      setOrderDetails({
-        id: orderId,
-        status: 'completed',
-        total: 749.98,
-        items: [
-          {
-            name: "Steam Account - 200+ Games",
-            price: 449.99,
-            quantity: 1
-          },
-          {
-            name: "Instagram Account - 50K Followers", 
-            price: 299.99,
-            quantity: 1
-          }
-        ],
-        paymentMethod: 'Credit Card',
-        orderDate: new Date().toISOString(),
-        estimatedDelivery: new Date(Date.now() + 24 * 60 * 60 * 1000).toISOString()
-      });
+      // TODO: Fetch actual order details from API
+      // const response = await fetch(`/api/orders/${orderId}`);
+      // const orderData = await response.json();
+      // setOrderDetails(orderData);
+      setOrderDetails(null); // No data for now
     }
   }, [searchParams]);
 

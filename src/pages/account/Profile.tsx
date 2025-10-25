@@ -273,7 +273,7 @@ const Profile = () => {
                 <Input
                   id="email"
                   type="email"
-                  defaultValue="john.doe@example.com"
+                  defaultValue=""
                   className="pl-10 glass-card border-border/50 focus:border-primary/50 bg-muted/50"
                   readOnly
                 />

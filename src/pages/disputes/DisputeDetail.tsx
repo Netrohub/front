@@ -47,21 +47,38 @@ const DisputeDetail = () => {
     }
   }, [id]);
 
-  // Mock dispute data
-  const dispute = {
-    id: id || "DIS-001",
-    orderId: "ORD-001",
-    productName: "Premium Instagram Account",
-    productImage: "https://images.unsplash.com/photo-1611162617474-5b21e879e113?w=200&q=80",
-    reason: "Product not as described",
-    description: "The account followers are not real as advertised. Engagement rate is very low compared to what was promised in the listing.",
-    status: "open" as const,
-    createdAt: "2 days ago",
-    evidence: [
-      { id: "1", name: "screenshot1.png", url: "https://images.unsplash.com/photo-1611162617474-5b21e879e113?w=400&q=80" },
-      { id: "2", name: "screenshot2.png", url: "https://images.unsplash.com/photo-1611162616305-c69b3fa7fbe0?w=400&q=80" },
-    ],
-  };
+  // TODO: Replace with actual API call
+  const [dispute, setDispute] = useState<{
+    id: string;
+    orderId: string;
+    productName: string;
+    productImage: string;
+    reason: string;
+    description: string;
+    status: string;
+    createdAt: string;
+    evidence: Array<{ id: string; name: string; url: string }>;
+  } | null>(null);
+
+  // Fetch dispute data from API
+  useEffect(() => {
+    const fetchDispute = async () => {
+      if (!id) return;
+      
+      try {
+        // TODO: Implement actual API call
+        // const response = await fetch(`/api/disputes/${id}`);
+        // const data = await response.json();
+        // setDispute(data);
+        setDispute(null); // No data for now
+      } catch (error) {
+        console.error('Failed to fetch dispute:', error);
+        setDispute(null);
+      }
+    };
+
+    fetchDispute();
+  }, [id]);
 
   const handleSendMessage = () => {
     if (!newMessage.trim()) {
@@ -100,6 +117,22 @@ const DisputeDetail = () => {
       description: "This dispute has been escalated for admin review.",
     });
   };
+
+  if (!dispute) {
+    return (
+      <AccountLayout>
+        <div className="flex items-center justify-center py-12">
+          <div className="text-center">
+            <h2 className="text-2xl font-bold text-foreground mb-2">Dispute not found</h2>
+            <p className="text-foreground/60 mb-4">The dispute you're looking for doesn't exist or has been removed.</p>
+            <Button asChild>
+              <Link to="/disputes">Back to Disputes</Link>
+            </Button>
+          </div>
+        </div>
+      </AccountLayout>
+    );
+  }
 
   return (
     <AccountLayout>

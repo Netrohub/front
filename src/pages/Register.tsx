@@ -68,9 +68,8 @@ const Register = () => {
   const onSubmit = async (data: RegisterFormData) => {
     console.log('📝 Register form submitted', { name: data.name, email: data.email });
     
-    // Check Turnstile validation if enabled (skip in mock mode)
-    const isMockMode = import.meta.env.VITE_MOCK_API === 'true';
-    if (isTurnstileEnabled && !turnstileToken && !isMockMode) {
+    // Check Turnstile validation if enabled
+    if (isTurnstileEnabled && !turnstileToken) {
       console.warn('⚠️ Turnstile validation required but token missing');
       toast.error('⚠️ Please complete the security verification');
       return;

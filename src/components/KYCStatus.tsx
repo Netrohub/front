@@ -25,17 +25,17 @@ const KYCStatusComponent: React.FC = () => {
   const { t } = useLanguage();
   const { user } = useAuth();
 
-  // Mock KYC status - in real app, this would come from API
+  // KYC status from user data
   const kycStatus: KYCStatus = {
-    id: 'kyc-001',
+    id: user?.id || '',
     status: user?.emailVerified && user?.phoneVerified && user?.kycStatus === 'verified' ? 'approved' : 'incomplete',
     steps: {
       email: user?.emailVerified || false,
       phone: user?.phoneVerified || false,
       identity: user?.kycStatus === 'verified' || false,
     },
-    submittedAt: undefined,
-    reviewedAt: undefined,
+    submittedAt: user?.kycSubmittedAt,
+    reviewedAt: user?.kycReviewedAt,
   };
 
   const completedSteps = Object.values(kycStatus.steps).filter(Boolean).length;

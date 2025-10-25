@@ -88,9 +88,8 @@ const Login = () => {
   const onSubmitEmail = async (data: EmailUsernameFormData) => {
     console.log('🔐 Email/Username login form submitted', { identifier: data.identifier });
     
-    // Check Turnstile validation if enabled (skip in mock mode)
-    const isMockMode = import.meta.env.VITE_MOCK_API === 'true';
-    if (isTurnstileEnabled && !turnstileToken && !isMockMode) {
+    // Check Turnstile validation if enabled
+    if (isTurnstileEnabled && !turnstileToken) {
       console.warn('⚠️ Turnstile validation required but token missing');
       toast.error('⚠️ Please complete the security verification');
       return;
@@ -185,7 +184,7 @@ const Login = () => {
       const loadingToast = toast.loading('🔐 Verifying code...');
       
       // TODO: Implement actual phone code verification
-      // For now, we'll simulate it with a mock code
+      // TODO: Implement actual verification code validation
       if (data.code !== '123456') {
         throw new Error('Invalid verification code');
       }

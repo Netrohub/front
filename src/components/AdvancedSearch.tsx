@@ -14,32 +14,7 @@ interface SearchResult {
   type: "product" | "category" | "seller";
 }
 
-const mockResults: SearchResult[] = [
-  {
-    id: "1",
-    title: "Premium Instagram Account - 50K",
-    category: "Social Media",
-    price: 299.99,
-    image: "https://images.unsplash.com/photo-1611162617474-5b21e879e113?w=800&q=80",
-    type: "product",
-  },
-  {
-    id: "2",
-    title: "Steam Account - 200+ Games",
-    category: "Gaming",
-    price: 449.99,
-    image: "https://images.unsplash.com/photo-1550745165-9bc0b252726f?w=800&q=80",
-    type: "product",
-  },
-  {
-    id: "3",
-    title: "TikTok Creator Account",
-    category: "Social Media",
-    price: 599.99,
-    image: "https://images.unsplash.com/photo-1611162616305-c69b3fa7fbe0?w=800&q=80",
-    type: "product",
-  },
-];
+// TODO: Replace with actual API call
 
 const trendingSearches = [
   "Instagram accounts",
@@ -81,12 +56,11 @@ const AdvancedSearch = ({ onClose }: AdvancedSearchProps) => {
   useEffect(() => {
     if (query.length > 0) {
       setIsOpen(true);
-      // Simulate search
-      const filtered = mockResults.filter((result) =>
-        result.title.toLowerCase().includes(query.toLowerCase()) ||
-        result.category.toLowerCase().includes(query.toLowerCase())
-      );
-      setResults(filtered);
+      // TODO: Implement actual search API call
+      // const searchResults = await fetch(`/api/search?q=${encodeURIComponent(query)}`);
+      // const data = await searchResults.json();
+      // setResults(data);
+      setResults([]); // No results for now
     } else {
       setResults([]);
     }

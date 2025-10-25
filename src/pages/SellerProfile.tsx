@@ -1,4 +1,5 @@
 import { useParams, Link } from "react-router-dom";
+import { useState, useEffect } from "react";
 import Navbar from "@/components/Navbar";
 import Footer from "@/components/Footer";
 import Starfield from "@/components/Starfield";
@@ -24,26 +25,31 @@ import {
 const SellerProfile = () => {
   const { seller } = useParams();
 
-  // Mock seller data
-  const sellerData = {
-    name: seller || "Digital Elite",
-    avatar: "https://api.dicebear.com/7.x/avataaars/svg?seed=seller1",
-    banner: "https://images.unsplash.com/photo-1579546929518-9e396f3cc809?w=1200&q=80",
-    verified: true,
-    rating: 4.9,
-    totalSales: 1250,
-    totalReviews: 876,
-    memberSince: "January 2023",
-    location: "United States",
-    responseTime: "< 1 hour",
-    description: "Premium digital marketplace seller specializing in verified social media accounts and gaming assets. Trusted by thousands of satisfied customers worldwide.",
-    stats: [
-      { label: "Total Sales", value: "1,250", icon: ShoppingBag },
-      { label: "Positive Reviews", value: "98%", icon: ThumbsUp },
-      { label: "Response Rate", value: "99%", icon: MessageCircle },
-      { label: "Average Rating", value: "4.9", icon: Star },
-    ],
-  };
+  // TODO: Replace with actual API call
+  const [sellerData, setSellerData] = useState(null);
+  const [loading, setLoading] = useState(true);
+
+  useEffect(() => {
+    const fetchSellerData = async () => {
+      if (!seller) return;
+      
+      try {
+        setLoading(true);
+        // TODO: Implement actual API call
+        // const response = await fetch(`/api/sellers/${seller}`);
+        // const data = await response.json();
+        // setSellerData(data);
+        setSellerData(null); // No data for now
+      } catch (error) {
+        console.error('Failed to fetch seller data:', error);
+        setSellerData(null);
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    fetchSellerData();
+  }, [seller]);
 
   const products = [
     {
@@ -107,6 +113,31 @@ const SellerProfile = () => {
       comment: "Good experience overall. Product as described.",
     },
   ];
+
+  if (loading) {
+    return (
+      <div className="min-h-screen flex items-center justify-center">
+        <div className="text-center">
+          <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-primary mx-auto mb-4"></div>
+          <p className="text-foreground/60">Loading seller profile...</p>
+        </div>
+      </div>
+    );
+  }
+
+  if (!sellerData) {
+    return (
+      <div className="min-h-screen flex items-center justify-center">
+        <div className="text-center">
+          <h2 className="text-2xl font-bold text-foreground mb-2">Seller not found</h2>
+          <p className="text-foreground/60 mb-4">The seller you're looking for doesn't exist or has been removed.</p>
+          <Button asChild>
+            <Link to="/products">Browse Products</Link>
+          </Button>
+        </div>
+      </div>
+    );
+  }
 
   return (
     <div className="min-h-screen flex flex-col relative">

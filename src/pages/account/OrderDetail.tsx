@@ -1,4 +1,5 @@
 import { useParams, Link, useNavigate } from "react-router-dom";
+import { useState, useEffect } from "react";
 import AccountLayout from "@/components/AccountLayout";
 import { Card } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
@@ -18,96 +19,59 @@ import {
   ArrowLeft
 } from "lucide-react";
 
-// Mock orders database - same as Orders.tsx
-const ordersDatabase = [
-  {
-    id: "ORD-001",
-    product: "Steam Account - 200+ Games Library",
-    image: "https://images.unsplash.com/photo-1550745165-9bc0b252726f?w=400&q=80",
-    seller: "ProGamer_Elite",
-    price: 449.99,
-    status: "completed",
-    date: "2024-01-20",
-    deliveryDate: "2024-01-20",
-  },
-  {
-    id: "ORD-002",
-    product: "Instagram Account - 50K Followers",
-    image: "https://images.unsplash.com/photo-1611162617474-5b21e879e113?w=400&q=80",
-    seller: "SocialKing",
-    price: 299.99,
-    status: "pending",
-    date: "2024-01-19",
-    deliveryDate: null,
-  },
-  {
-    id: "ORD-003",
-    product: "PlayStation Plus Premium - 2 Years",
-    image: "https://images.unsplash.com/photo-1606813907291-d86efa9b94db?w=400&q=80",
-    seller: "GameMaster_X",
-    price: 349.99,
-    status: "completed",
-    date: "2024-01-18",
-    deliveryDate: "2024-01-18",
-  },
-  {
-    id: "ORD-004",
-    product: "Epic Games - Fortnite Rare Skins",
-    image: "https://images.unsplash.com/photo-1542751371-adc38448a05e?w=400&q=80",
-    seller: "AccountKing",
-    price: 799.99,
-    status: "cancelled",
-    date: "2024-01-15",
-    deliveryDate: null,
-  },
-];
+// TODO: Replace with actual API call
 
 const OrderDetail = () => {
   const { id } = useParams();
   const navigate = useNavigate();
+  const [order, setOrder] = useState(null);
+  const [loading, setLoading] = useState(true);
 
-  // Find the specific order by ID
-  const orderData = ordersDatabase.find(o => o.id === id);
+  // Fetch order data from API
+  useEffect(() => {
+    const fetchOrder = async () => {
+      if (!id) {
+        navigate('/account/orders');
+        return;
+      }
 
-  // If order not found, redirect to orders page
-  if (!orderData) {
+      try {
+        setLoading(true);
+        // TODO: Implement actual API call
+        // const response = await fetch(`/api/orders/${id}`);
+        // const data = await response.json();
+        // setOrder(data);
+        setOrder(null); // No data for now
+      } catch (error) {
+        console.error('Failed to fetch order:', error);
+        setOrder(null);
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    fetchOrder();
+  }, [id, navigate]);
+
+  if (loading) {
+    return (
+      <AccountLayout>
+        <div className="flex items-center justify-center py-12">
+          <div className="text-center">
+            <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-primary mx-auto mb-4"></div>
+            <p className="text-foreground/60">Loading order details...</p>
+          </div>
+        </div>
+      </AccountLayout>
+    );
+  }
+
+  if (!order) {
     navigate('/account/orders');
     return null;
   }
 
-  // Build detailed order object from found data
-  const order = {
-    id: orderData.id,
-    status: orderData.status,
-    date: orderData.date,
-    total: orderData.price,
-    items: [
-      {
-        id: 1,
-        name: orderData.product,
-        price: orderData.price,
-        quantity: 1,
-        image: orderData.image,
-      }
-    ],
-    shipping: {
-      name: "John Doe",
-      address: "123 Main St, Apt 4B",
-      city: "New York",
-      zip: "10001",
-      country: "United States"
-    },
-    payment: {
-      method: "Credit Card",
-      last4: "4242"
-    },
-    tracking: orderData.deliveryDate ? `1Z999AA10${orderData.id.replace('ORD-', '')}` : null,
-    seller: {
-      name: orderData.seller,
-      rating: 4.8,
-      reviews: 1234
-    }
-  };
+  // Order data is now fetched from API
 
   const getStatusIcon = () => {
     switch (order.status) {
@@ -238,7 +202,7 @@ const OrderDetail = () => {
                         <div className="flex items-center gap-2">
                           <input 
                             type="text" 
-                            value={`account${item.id}@example.com`}
+                            value=""
                             readOnly
                             className="flex-1 px-3 py-2 rounded-lg glass-card border-border/50 bg-muted/50 text-sm"
                           />
