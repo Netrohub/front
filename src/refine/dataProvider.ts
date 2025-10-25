@@ -34,6 +34,9 @@ export const dataProvider: DataProvider = {
       };
     } catch (error) {
       console.error('Admin API Error:', error);
+      console.log('🔄 API endpoint not available, returning empty data for:', resource);
+      
+      // Return empty data when API fails
       return {
         data: [],
         total: 0,
@@ -49,6 +52,9 @@ export const dataProvider: DataProvider = {
       return { data: response.data };
     } catch (error) {
       console.error('Admin API Error:', error);
+      console.log('🔄 API endpoint not available, returning null for:', resource, id);
+      
+      // Return null when API fails
       return { data: null };
     }
   },
@@ -64,6 +70,7 @@ export const dataProvider: DataProvider = {
       return { data: response.data };
     } catch (error) {
       console.error('Admin API Error:', error);
+      console.log('🔄 API endpoint not available for create:', resource);
       throw error;
     }
   },
@@ -79,6 +86,7 @@ export const dataProvider: DataProvider = {
       return { data: response.data };
     } catch (error) {
       console.error('Admin API Error:', error);
+      console.log('🔄 API endpoint not available for update:', resource, id);
       throw error;
     }
   },
@@ -93,6 +101,7 @@ export const dataProvider: DataProvider = {
       return { data: { id } };
     } catch (error) {
       console.error('Admin API Error:', error);
+      console.log('🔄 API endpoint not available for delete:', resource, id);
       throw error;
     }
   },
