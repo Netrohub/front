@@ -34,19 +34,19 @@ const RequireAuth: React.FC<RequireAuthProps> = ({
     return <Navigate to={fallbackPath} state={{ from: location }} replace />;
   }
 
-  // Check role-based access if required roles are specified
-  if (requiredRoles.length > 0 && user) {
-    const hasRequiredRole = requiredRoles.some(role => user.roles.includes(role));
-    
-    if (!hasRequiredRole) {
-      // Redirect to unauthorized page with context
-      return <Navigate to="/unauthorized" state={{ 
-        from: location.pathname,
-        requiredRoles: requiredRoles,
-        userRoles: user.roles 
-      }} replace />;
-    }
-  }
+  // Role-based access removed - all authenticated users can access all routes
+  // if (requiredRoles.length > 0 && user) {
+  //   const hasRequiredRole = requiredRoles.some(role => user.roles.includes(role));
+  //   
+  //   if (!hasRequiredRole) {
+  //     // Redirect to unauthorized page with context
+  //     return <Navigate to="/unauthorized" state={{ 
+  //       from: location.pathname,
+  //       requiredRoles: requiredRoles,
+  //       userRoles: user.roles 
+  //     }} replace />;
+  //   }
+  // }
 
   return <>{children}</>;
 };

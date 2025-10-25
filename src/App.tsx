@@ -177,17 +177,17 @@ const App = () => {
           <Route path="/account/billing" element={<RequireAuth><Billing /></RequireAuth>} />
           <Route path="/account/kyc" element={<RequireAuth><KYC /></RequireAuth>} />
           <Route path="/account/kyc/:step" element={<RequireAuth><KYC /></RequireAuth>} />
-          <Route path="/seller/dashboard" element={<RequireAuth requiredRoles={['seller', 'admin']}><RequireKYC><SellerDashboard /></RequireKYC></RequireAuth>} />
-          <Route path="/seller/analytics" element={<RequireAuth requiredRoles={['seller', 'admin']}><RequireKYC><SellerAnalytics /></RequireKYC></RequireAuth>} />
+          <Route path="/seller/dashboard" element={<RequireAuth><RequireKYC><SellerDashboard /></RequireKYC></RequireAuth>} />
+          <Route path="/seller/analytics" element={<RequireAuth><RequireKYC><SellerAnalytics /></RequireKYC></RequireAuth>} />
           <Route path="/seller/onboarding" element={<RequireAuth><SellerOnboarding /></RequireAuth>} />
-          <Route path="/seller/profile" element={<RequireAuth requiredRoles={['seller', 'admin']}><RequireKYC><SellerProfilePage /></RequireKYC></RequireAuth>} />
-          <Route path="/seller/products" element={<RequireAuth requiredRoles={['seller', 'admin']}><RequireKYC><SellerProducts /></RequireKYC></RequireAuth>} />
-          <Route path="/seller/products/create" element={<RequireAuth requiredRoles={['seller', 'admin']}><RequireKYC><CreateProduct /></RequireKYC></RequireAuth>} />
-          <Route path="/seller/list/social" element={<RequireAuth requiredRoles={['seller', 'admin']}><RequireKYC><ListSocialAccount /></RequireKYC></RequireAuth>} />
-          <Route path="/seller/list/gaming" element={<RequireAuth requiredRoles={['seller', 'admin']}><ListGamingAccount /></RequireAuth>} />
-          <Route path="/seller/orders" element={<RequireAuth requiredRoles={['seller', 'admin']}><SellerOrders /></RequireAuth>} />
-          <Route path="/seller/billing" element={<RequireAuth requiredRoles={['seller', 'admin']}><SellerBilling /></RequireAuth>} />
-          <Route path="/seller/notifications" element={<RequireAuth requiredRoles={['seller', 'admin']}><SellerNotifications /></RequireAuth>} />
+          <Route path="/seller/profile" element={<RequireAuth><SellerProfilePage /></RequireAuth>} />
+          <Route path="/seller/products" element={<RequireAuth><SellerProducts /></RequireAuth>} />
+          <Route path="/seller/products/create" element={<RequireAuth><CreateProduct /></RequireAuth>} />
+          <Route path="/seller/list/social" element={<RequireAuth><ListSocialAccount /></RequireAuth>} />
+          <Route path="/seller/list/gaming" element={<RequireAuth><ListGamingAccount /></RequireAuth>} />
+          <Route path="/seller/orders" element={<RequireAuth><SellerOrders /></RequireAuth>} />
+          <Route path="/seller/billing" element={<RequireAuth><SellerBilling /></RequireAuth>} />
+          <Route path="/seller/notifications" element={<RequireAuth><SellerNotifications /></RequireAuth>} />
           <Route path="/disputes" element={<RequireAuth><DisputeList /></RequireAuth>} />
           <Route path="/disputes/create" element={<RequireAuth><CreateDispute /></RequireAuth>} />
           <Route path="/disputes/:id" element={<RequireAuth><DisputeDetail /></RequireAuth>} />
@@ -196,7 +196,7 @@ const App = () => {
           <Route path="/admin/login" element={<AdminLogin />} />
           
           {/* Admin Panel Routes */}
-          <Route path="/admin" element={<RequireAuth requiredRoles={['admin']}><AdminPanel /></RequireAuth>}>
+          <Route path="/admin" element={<RequireAuth><AdminPanel /></RequireAuth>}>
             <Route index element={<AdminDashboard />} />
             <Route path="dashboard" element={<AdminDashboard />} />
             <Route path="users" element={<AdminUsers />} />
