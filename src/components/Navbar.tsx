@@ -27,6 +27,23 @@ const Navbar = () => {
   const [avatar, setAvatar] = useState<string>("");
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
 
+  // Close mobile menu when clicking outside
+  useEffect(() => {
+    const handleClickOutside = (event: MouseEvent) => {
+      if (mobileMenuOpen && !(event.target as Element).closest('nav')) {
+        setMobileMenuOpen(false);
+      }
+    };
+
+    if (mobileMenuOpen) {
+      document.addEventListener('mousedown', handleClickOutside);
+    }
+
+    return () => {
+      document.removeEventListener('mousedown', handleClickOutside);
+    };
+  }, [mobileMenuOpen]);
+
   // Get accurate cart count
   const cartCount = cart?.items?.length || 0;
 
@@ -94,10 +111,11 @@ const Navbar = () => {
   
   return (
     <>
-      {/* Mobile Header - Simple logo only */}
+      {/* Mobile Header - Dropdown Navigation */}
       <nav className="md:hidden sticky top-0 z-50 w-full border-b border-border/50 glass-card">
         <div className="container mx-auto px-4">
-          <div className="flex h-16 items-center justify-center">
+          <div className="flex h-16 items-center justify-between">
+            {/* Logo */}
             <Link to="/" className="flex items-center gap-3 group">
               <div className="relative flex h-10 w-10 items-center justify-center">
                 <div className="absolute inset-0 rounded-lg gradient-primary blur-md opacity-75 group-hover:opacity-100 transition-opacity"></div>
@@ -113,7 +131,174 @@ const Navbar = () => {
                 Nexo
               </span>
             </Link>
+
+            {/* Mobile Menu Button */}
+            <div className="flex items-center gap-2">
+              {/* Search Icon */}
+              <Button
+                variant="ghost"
+                size="icon"
+                className="h-10 w-10 hover:bg-primary/10 hover:text-primary transition-colors"
+                onClick={() => setMobileMenuOpen(!mobileMenuOpen)}
+              >
+                <Search className="h-5 w-5" />
+              </Button>
+
+              {/* Menu Button */}
+              <Button
+                variant="ghost"
+                size="icon"
+                className="h-10 w-10 hover:bg-primary/10 hover:text-primary transition-colors"
+                onClick={() => setMobileMenuOpen(!mobileMenuOpen)}
+              >
+                {mobileMenuOpen ? <X className="h-5 w-5" /> : <Menu className="h-5 w-5" />}
+              </Button>
+            </div>
           </div>
+
+          {/* Mobile Dropdown Menu */}
+          {mobileMenuOpen && (
+            <div className="absolute top-16 left-0 right-0 bg-background/95 backdrop-blur-xl border-b border-border/50 glass-card shadow-lg">
+              <div className="container mx-auto px-4 py-4">
+                {/* Navigation Links */}
+                <div className="space-y-2 mb-4">
+                  <Link
+                    to="/"
+                    className="flex items-center gap-3 p-3 rounded-lg hover:bg-primary/10 transition-colors"
+                    onClick={() => setMobileMenuOpen(false)}
+                  >
+                    <span className="text-sm font-medium text-foreground/70">{t('home')}</span>
+                  </Link>
+                  <Link
+                    to="/products"
+                    className="flex items-center gap-3 p-3 rounded-lg hover:bg-primary/10 transition-colors"
+                    onClick={() => setMobileMenuOpen(false)}
+                  >
+                    <span className="text-sm font-medium text-foreground/70">{t('products')}</span>
+                  </Link>
+                  <Link
+                    to="/members"
+                    className="flex items-center gap-3 p-3 rounded-lg hover:bg-primary/10 transition-colors"
+                    onClick={() => setMobileMenuOpen(false)}
+                  >
+                    <span className="text-sm font-medium text-foreground/70">{t('members')}</span>
+                  </Link>
+                  <Link
+                    to="/leaderboard"
+                    className="flex items-center gap-3 p-3 rounded-lg hover:bg-primary/10 transition-colors"
+                    onClick={() => setMobileMenuOpen(false)}
+                  >
+                    <span className="text-sm font-medium text-foreground/70">{t('leaderboard')}</span>
+                  </Link>
+                </div>
+
+                {/* Search Bar */}
+                <div className="mb-4">
+                  <form onSubmit={handleSearch} className="relative">
+                    <Search className="absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-primary/70" />
+                    <Input
+                      type="search"
+                      placeholder={t('searchPlaceholder') || "Search..."}
+                      className="w-full pl-10 bg-muted/50 border-border/50 focus:border-primary/50 focus:bg-muted/70 transition-all"
+                      value={searchQuery}
+                      onChange={(e) => setSearchQuery(e.target.value)}
+                    />
+                  </form>
+                </div>
+
+                {/* User Actions */}
+                <div className="flex items-center justify-between pt-4 border-t border-border/30">
+                  <div className="flex items-center gap-2">
+                    <LanguageSwitcher />
+                    
+                    {isAuthenticated ? (
+                      <>
+                        <Button asChild variant="ghost" size="icon" className="relative hover:bg-primary/10 hover:text-primary transition-colors h-10 w-10">
+                          <Link to="/cart" onClick={() => setMobileMenuOpen(false)}>
+                            <ShoppingCart className="h-4 w-4" />
+                            {cartCount > 0 && (
+                              <span className="absolute -right-1 -top-1 flex h-5 w-5 items-center justify-center rounded-full gradient-primary text-[10px] font-bold text-primary-foreground shadow-lg">
+                                {cartCount}
+                              </span>
+                            )}
+                          </Link>
+                        </Button>
+                        
+                        <DropdownMenu>
+                          <DropdownMenuTrigger asChild>
+                            <Button variant="ghost" className="relative h-10 w-10 rounded-full">
+                              <Avatar className="h-10 w-10">
+                                <AvatarImage src={avatar || user?.avatar || ""} alt={user?.name || ""} />
+                                <AvatarFallback className="bg-primary/10 text-primary text-sm">
+                                  {user?.name?.charAt(0).toUpperCase() || "U"}
+                                </AvatarFallback>
+                              </Avatar>
+                            </Button>
+                          </DropdownMenuTrigger>
+                          <DropdownMenuContent className="w-56 glass-card border-border/50" align="end" forceMount>
+                            <div className="flex items-center justify-start gap-2 p-2">
+                              <div className="flex flex-col space-y-1 leading-none">
+                                <p className="font-medium">{user?.name}</p>
+                                <p className="w-[200px] truncate text-sm text-muted-foreground">
+                                  {user?.email}
+                                </p>
+                              </div>
+                            </div>
+                            <DropdownMenuSeparator />
+                            <DropdownMenuItem asChild>
+                              <Link to="/account/dashboard" className="cursor-pointer" onClick={() => setMobileMenuOpen(false)}>
+                                <User className="mr-2 h-4 w-4" />
+                                <span>{t('myAccount')}</span>
+                              </Link>
+                            </DropdownMenuItem>
+                            <DropdownMenuItem asChild>
+                              <Link to="/account/wishlist" className="cursor-pointer" onClick={() => setMobileMenuOpen(false)}>
+                                <Heart className="mr-2 h-4 w-4" />
+                                <span>My Wishlist</span>
+                              </Link>
+                            </DropdownMenuItem>
+                            {user?.roles?.includes('seller') && (
+                              <DropdownMenuItem asChild>
+                                <Link to="/seller/dashboard" className="cursor-pointer" onClick={() => setMobileMenuOpen(false)}>
+                                  <User className="mr-2 h-4 w-4" />
+                                  <span>{t('sellerDashboard')}</span>
+                                </Link>
+                              </DropdownMenuItem>
+                            )}
+                            {user?.roles?.includes('admin') && (
+                              <DropdownMenuItem asChild>
+                                <Link to="/admin/disputes" className="cursor-pointer" onClick={() => setMobileMenuOpen(false)}>
+                                  <User className="mr-2 h-4 w-4" />
+                                  <span>Admin Panel</span>
+                                </Link>
+                              </DropdownMenuItem>
+                            )}
+                            <DropdownMenuSeparator />
+                            <DropdownMenuItem 
+                              className="cursor-pointer text-destructive focus:text-destructive"
+                              onClick={handleLogout}
+                            >
+                              <LogOut className="mr-2 h-4 w-4" />
+                              <span>{t('logout')}</span>
+                            </DropdownMenuItem>
+                          </DropdownMenuContent>
+                        </DropdownMenu>
+                      </>
+                    ) : (
+                      <div className="flex gap-2">
+                        <Button asChild variant="ghost" size="sm" className="text-sm px-3 h-10" onClick={() => setMobileMenuOpen(false)}>
+                          <Link to="/login">{t('login')}</Link>
+                        </Button>
+                        <Button asChild size="sm" className="text-sm px-3 h-10" onClick={() => setMobileMenuOpen(false)}>
+                          <Link to="/register">{t('register')}</Link>
+                        </Button>
+                      </div>
+                    )}
+                  </div>
+                </div>
+              </div>
+            </div>
+          )}
         </div>
       </nav>
 
