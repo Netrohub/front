@@ -39,8 +39,12 @@ const RequireAuth: React.FC<RequireAuthProps> = ({
     const hasRequiredRole = requiredRoles.some(role => user.roles.includes(role));
     
     if (!hasRequiredRole) {
-      // Redirect to unauthorized page or home
-      return <Navigate to="/unauthorized" replace />;
+      // Redirect to unauthorized page with context
+      return <Navigate to="/unauthorized" state={{ 
+        from: location.pathname,
+        requiredRoles: requiredRoles,
+        userRoles: user.roles 
+      }} replace />;
     }
   }
 

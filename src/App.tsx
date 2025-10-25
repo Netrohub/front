@@ -18,6 +18,7 @@ import Register from "./pages/Register";
 import ForgotPassword from "./pages/ForgotPassword";
 import Products from "./pages/Products";
 import NotFound from "./pages/NotFound";
+import Unauthorized from "./pages/Unauthorized";
 
 // Lazy loaded pages
 const Leaderboard = lazy(() => import("./pages/Leaderboard"));
@@ -164,6 +165,7 @@ const App = () => {
           <Route path="/order-confirmation" element={<OrderConfirmation />} />
           <Route path="/terms" element={<Terms />} />
           <Route path="/privacy" element={<Privacy />} />
+          <Route path="/unauthorized" element={<Unauthorized />} />
           <Route path="/account" element={<RequireAuth><Dashboard /></RequireAuth>} />
           <Route path="/account/dashboard" element={<RequireAuth><Dashboard /></RequireAuth>} />
           <Route path="/account/profile" element={<RequireAuth><Profile /></RequireAuth>} />
