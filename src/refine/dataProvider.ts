@@ -3,7 +3,7 @@ import { apiClient } from '@/lib/api';
 
 // Helper function to get admin token
 const getAdminToken = (): string | null => {
-  return localStorage.getItem('admin_token');
+  return localStorage.getItem('auth_token');
 };
 
 // Real API-based data provider for admin panel

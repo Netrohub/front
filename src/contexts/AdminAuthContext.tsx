@@ -62,7 +62,7 @@ export const AdminAuthProvider: React.FC<AdminAuthProviderProps> = ({ children }
         
         // Store token for API calls
         if (response.access_token) {
-          localStorage.setItem('admin_token', response.access_token);
+          localStorage.setItem('auth_token', response.access_token);
           console.log('💾 AdminAuth: Token stored');
         }
       } else {
@@ -80,7 +80,7 @@ export const AdminAuthProvider: React.FC<AdminAuthProviderProps> = ({ children }
         
         // Store token for API calls
         if (response.access_token) {
-          localStorage.setItem('admin_token', response.access_token);
+          localStorage.setItem('auth_token', response.access_token);
           console.log('💾 AdminAuth: Token stored');
         }
         
@@ -98,14 +98,14 @@ export const AdminAuthProvider: React.FC<AdminAuthProviderProps> = ({ children }
   const logout = () => {
     console.log('🚪 AdminAuth: Logging out');
     setAdminUser(null);
-    localStorage.removeItem('admin_token');
+    localStorage.removeItem('auth_token');
   };
 
   // Check for existing token on mount
   useEffect(() => {
     const checkAuth = async () => {
       try {
-        const token = getAuthToken();
+        const token = localStorage.getItem('auth_token');
         if (token) {
           console.log('🔍 AdminAuth: Checking existing token');
           // Verify token by calling /auth/me endpoint
