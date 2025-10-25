@@ -1,6 +1,11 @@
 import { DataProvider } from '@refinedev/core';
 import { apiClient } from '@/lib/api';
 
+// Helper function to get admin token
+const getAdminToken = (): string | null => {
+  return localStorage.getItem('admin_token');
+};
+
 // Real API-based data provider for admin panel
 export const dataProvider: DataProvider = {
   getList: async ({ resource, pagination, sorters, filters, meta }) => {
@@ -27,7 +32,10 @@ export const dataProvider: DataProvider = {
         endpoint += `?${params.toString()}`;
       }
       
-      const response = await apiClient.request(endpoint);
+      const token = getAdminToken();
+      const headers = token ? { 'Authorization': `Bearer ${token}` } : {};
+      
+      const response = await apiClient.request(endpoint, { headers });
       return {
         data: response.data || [],
         total: response.meta?.total || 0,
@@ -48,7 +56,10 @@ export const dataProvider: DataProvider = {
     console.log('📊 Admin API: Get One', { resource, id });
     
     try {
-      const response = await apiClient.request(`/${resource}/${id}`);
+      const token = getAdminToken();
+      const headers = token ? { 'Authorization': `Bearer ${token}` } : {};
+      
+      const response = await apiClient.request(`/${resource}/${id}`, { headers });
       return { data: response.data };
     } catch (error) {
       console.error('Admin API Error:', error);
@@ -63,8 +74,12 @@ export const dataProvider: DataProvider = {
     console.log('📊 Admin API: Create', { resource, variables });
     
     try {
+      const token = getAdminToken();
+      const headers = token ? { 'Authorization': `Bearer ${token}` } : {};
+      
       const response = await apiClient.request(`/${resource}`, {
         method: 'POST',
+        headers: { ...headers, 'Content-Type': 'application/json' },
         body: JSON.stringify(variables),
       });
       return { data: response.data };
@@ -79,8 +94,12 @@ export const dataProvider: DataProvider = {
     console.log('📊 Admin API: Update', { resource, id, variables });
     
     try {
+      const token = getAdminToken();
+      const headers = token ? { 'Authorization': `Bearer ${token}` } : {};
+      
       const response = await apiClient.request(`/${resource}/${id}`, {
         method: 'PUT',
+        headers: { ...headers, 'Content-Type': 'application/json' },
         body: JSON.stringify(variables),
       });
       return { data: response.data };
@@ -95,8 +114,12 @@ export const dataProvider: DataProvider = {
     console.log('📊 Admin API: Delete', { resource, id });
     
     try {
+      const token = getAdminToken();
+      const headers = token ? { 'Authorization': `Bearer ${token}` } : {};
+      
       await apiClient.request(`/${resource}/${id}`, {
         method: 'DELETE',
+        headers,
       });
       return { data: { id } };
     } catch (error) {
