@@ -481,546 +481,260 @@ const translations = {
     sellOnNexo: "Sell on Nexo",
     legalAndSupport: "Legal & Support",
 
-    // Additional missing translations
-    // Category Landing
-    socialMediaAccounts: "Social Media Accounts",
-    premiumVerifiedAccounts: "Premium verified social media accounts with real followers and engagement",
-    topSeller: "Top Seller",
-    gameMasters: "Game Masters",
-    gamingAccounts: "Gaming Accounts",
-    highLevelAccounts: "High-level gaming accounts, rare items, and exclusive content",
-    instagram: "Instagram",
-    tiktok: "TikTok",
-    youtube: "YouTube",
-    twitter: "Twitter/X",
-    facebook: "Facebook",
-    steam: "Steam",
-    playstation: "PlayStation",
-    xbox: "Xbox",
-    epicGames: "Epic Games",
-    nintendo: "Nintendo",
-    phone: "Phone",
-    activeListings: "Active Listings",
-    averagePrice: "Average Price",
-    avgRating: "Avg Rating",
-    browseByType: "Browse by Type",
-    priceRange: "Price Range",
-    followers: "Followers",
-    sortBy: "Sort by",
-    allPrices: "All Prices",
-    allFollowers: "All Followers",
-    featured: "Featured",
-    highestRated: "Highest Rated",
-    newestFirst: "Newest First",
 
-    // Product Detail
-    securePayment: "Secure Payment",
-    instantDelivery: "Instant Delivery",
-    description: "Description",
-    specifications: "Specifications",
-    productDescription: "Product Description",
-    keyFeatures: "Key Features",
-    importantInformation: "Important Information",
-    technicalSpecifications: "Technical Specifications",
-    verifiedEmailAccess: "Verified Email Access",
-    originalEmailIncluded: "Original Email Included",
-    noBotFollowers: "No Bot Followers",
-    instantAccountTransfer: "Instant Account Transfer",
-    secureTransaction: "Secure Transaction",
-    accountAge: "Account Age",
-    following: "Following",
-    posts: "Posts",
-    engagementRate: "Engagement Rate",
-    verification: "Verification",
-    adding: "Adding...",
-    replyFeature: "Reply Feature",
-    replyFunctionality: "Reply functionality will be available soon!",
-
-    // Cart
-    yourCartIsEmpty: "Your cart is empty",
-    itemRemoved: "Item removed",
-    itemHasBeenRemoved: "Item has been removed from your cart.",
-    error: "Error",
-    pleaseEnterCoupon: "Please enter a coupon code.",
-    invalidCoupon: "Invalid Coupon",
-    pleaseCheckWithAdmin: "Please check with admin for valid coupons.",
-
-    // Products
-    allProducts: "All Products",
-    socialAccounts: "Social Accounts",
-    gamingAccounts: "Gaming Accounts",
-    under100: "Under $100",
-    advancedFilters: "Advanced Filters",
-    rating: "Rating",
-    sellerType: "Seller Type",
-    verifiedSellers: "Verified Sellers",
-    premiumSellers: "Premium Sellers",
-    newSellers: "New Sellers",
-    availability: "Availability",
-    inStock: "In Stock",
-    lowStock: "Low Stock",
-    outOfStock: "Out of Stock",
-    noProductsFound: "No products found",
-    failedToLoadProducts: "Failed to load products",
-    pleaseTryAgainLater: "Please try again later",
-
-    // Orders
-    viewAndManage: "View and manage your purchase history",
-    browseProducts: "Browse Products",
-
-    // Disputes
-    disputeNotFound: "Dispute not found",
-    backToDisputes: "Back to Disputes",
-    messages: "Messages",
-    addMessage: "Add Message",
-    typeYourMessage: "Type your message here...",
-
-    // Admin Disputes
-    totalDisputes: "Total Disputes",
-    escalated: "Escalated",
-    inReview: "In Review",
-    resolved: "Resolved",
-    noEscalatedDisputes: "No escalated disputes",
-    noDisputesInReview: "No disputes in review",
-
-    // Dashboard
-    dashboard: "Dashboard",
-    welcomeToAdmin: "Welcome to the admin dashboard",
-    gmvOverTime: "GMV Over Time",
-    topCategories: "Top Categories",
-    recentActivity: "Recent Activity",
-
-    // Account Dashboard
-    welcomeBack: "Welcome back! Here's your account overview",
-    quickActions: "Quick Actions",
-    recentOrders: "Recent Orders",
-    identityVerificationRequired: "Identity Verification Required",
-    sellerOverview: "Seller Overview",
-    recentSales: "Recent Sales",
-    accountStatus: "Account Status",
-
-    // Help Center
-    discordSupport: "Discord Support",
-
-    // Profile
-    manageAccountInfo: "Manage your account information",
-    profilePicture: "Profile Picture",
-    personalInformation: "Personal Information",
-    security: "Security",
-    password: "Password",
-    addExtraSecurity: "Add an extra layer of security",
-    changePassword: "Change Password",
-    currentPassword: "Current Password",
-    newPassword: "New Password",
-    confirmNewPassword: "Confirm New Password",
-
-    // Pricing
-    features: "Features",
-    free: "Free",
-    pro: "Pro",
-    productListings: "Product Listings",
-    transactionFee: "Transaction Fee",
-    support: "Support",
-    community: "Community",
-    priority: "Priority",
-    analytics: "Analytics",
-    basic: "Basic",
-    advanced: "Advanced",
-
-    // Categories
-    active: "Active",
-    inactive: "Inactive",
-    categories: "Categories",
-    manageCategories: "Manage product categories",
-    name: "Name",
-    description: "Description",
-    products: "Products",
-    status: "Status",
-    created: "Created",
-    actions: "Actions",
-
-    // Coupons
-    expired: "Expired",
-    coupons: "Coupons",
-    manageCoupons: "Manage discount coupons and promotions",
-    code: "Code",
-    value: "Value",
-    usage: "Usage",
-    expires: "Expires",
-
-    // Listings
-    pending: "Pending",
-    rejected: "Rejected",
-    draft: "Draft",
-    listings: "Listings",
-    manageListings: "Manage product listings and approvals",
-    listing: "Listing",
-
-    // Payouts
-    payouts: "Payouts",
-    managePayouts: "Manage seller payouts and transactions",
-    amount: "Amount",
-    method: "Method",
-    date: "Date",
-
-    // Audit Logs
-    auditLogs: "Audit Logs",
-    manageAuditLogs: "View system audit logs and activities",
-    action: "Action",
-    user: "User",
-    timestamp: "Timestamp",
-
-    // Tickets
-    tickets: "Tickets",
-    manageTickets: "Manage support tickets and inquiries",
-    subject: "Subject",
-    priority: "Priority",
-    assigned: "Assigned",
-
-    // Users
-    users: "Users",
-    manageUsers: "Manage user accounts and permissions",
-    email: "Email",
-    role: "Role",
-    lastLogin: "Last Login",
-
-    // Vendors
-    vendors: "Vendors",
-    manageVendors: "Manage vendor accounts and verification",
-    company: "Company",
-    contact: "Contact",
-
-    // Orders Admin
-    orders: "Orders",
-    manageOrders: "Manage orders and transactions",
-    orderId: "Order ID",
-    customer: "Customer",
-    total: "Total",
-    status: "Status",
-
-    // Disputes Admin
-    disputes: "Disputes",
-    manageDisputes: "Manage disputes and resolutions",
-    disputeId: "Dispute ID",
-    parties: "Parties",
-    reason: "Reason",
-    resolution: "Resolution",
-
-    // Common Actions
-    delete: "Delete",
-    edit: "Edit",
-    view: "View",
-    approve: "Approve",
-    reject: "Reject",
-    assign: "Assign",
-    resolve: "Resolve",
-    releaseEscrow: "Release Escrow",
-    processRefund: "Process Refund",
-    assignModerator: "Assign Moderator",
-    resolveDispute: "Resolve Dispute",
-    deleteUser: "Delete User",
-    toggleSidebar: "Toggle Sidebar",
-
-    // Form Placeholders
-    yourEmailOrUsername: "your@email.com or username",
-    enterPassword: "••••••••",
-    phoneNumber: "+1234567890",
-    verificationCode: "123456",
-    yourEmail: "your@email.com",
-    searchOrders: "Search orders...",
-    searchHelpArticles: "Search for help articles, FAQs, or topics...",
-    searchCountry: "Search country...",
-    phoneNumberPlaceholder: "123456789",
-    tellUsAboutYourself: "Tell us about yourself...",
-    enterCurrentPassword: "Enter current password",
-    enterNewPassword: "Enter new password",
-    confirmNewPassword: "Confirm new password",
-    searchCategories: "Search categories...",
-    searchCoupons: "Search coupons...",
-    searchListings: "Search listings...",
-    searchPayouts: "Search payouts...",
-    searchAuditLogs: "Search audit logs...",
-    searchVendors: "Search vendors...",
-    searchTickets: "Search tickets...",
-    searchProducts: "Search products, accounts, or categories...",
-    tellBuyersAboutStore: "Tell buyers about your store...",
-    phoneNumberField: "Phone number",
-    adminEmail: "admin@nxoland.com",
-    enterPassword: "Enter password",
-    productTitle: "e.g., Steam Account - 500+ Games",
-    selectCategory: "Select category",
-    selectPlatform: "Select platform",
-    describeProduct: "Describe your product in detail...",
-    enterPrice: "0.00",
-    enterQuantity: "0",
-    selectDeliveryMethod: "Select delivery method",
-    describeDelivery: "Describe how you will deliver the account...",
-    selectTimeframe: "Select timeframe",
-    steamAccountExample: "e.g., Steam Account with 500+ Games",
-    enterAccountEmail: "Enter account email or username",
-    enterAccountPassword: "Enter account password",
-    enterInstructions: "Enter instructions (or accounting or banking details)",
-    enterExpectedPrice: "Enter your expected price",
-    searchOrders: "Search orders...",
-    searchProducts: "Search products...",
-    enterAmount: "100.00",
-    phoneNumberFormat: "555 123 4567",
-    fullName: "John Doe",
-    cardNumber: "4111 1111 1111 1111",
-    expiryDate: "12/25",
-    cvc: "123",
-    emailPlaceholder: "your@email.com",
-    resetCode: "123456",
-    newPasswordPlaceholder: "••••••••",
-    confirmPasswordPlaceholder: "••••••••",
-    searchPlaceholder: "Search...",
-    enterFullName: "Enter full name",
-    enterEmailAddress: "Enter email address",
-    selectRole: "Select role",
-    selectStatus: "Select status",
-    selectOrder: "Select an order",
-    selectReason: "Select a reason",
-    describeIssue: "Please describe your issue in detail (minimum 20 characters)",
-    shareExperience: "Share your experience with this product...",
   },
   ar: {
     // Navigation
-    home: "الرئيسية",
-    products: "المنتجات",
-    members: "الأعضاء",
-    leaderboard: "قائمة المتصدرين",
-    becomeASeller: "كن بائعًا",
-    login: "تسجيل الدخول",
-    register: "إنشاء حساب",
-    about: "حول المنصة",
-    help: "مركز المساعدة ",
+    home: "الرئيسية 🏠",
+products: "المنتجات 🎮",
+members: "الأعضاء 👥",
+leaderboard: "الترتيب 🏆",
+becomeASeller: "كن بائعًا 💼",
+login: "تسجيل الدخول 🔐",
+register: "إنشاء حساب ✨",
+about: "من نحن ℹ️",
+    help: "مركز المساعدة 💬",
 
     // Hero
-    welcomeMessage: "مرحبًا بك في منصة Nexo 🛍️",
-    heroTitle: "سوقك الرقمي لعالم الألعاب 🎮",
-    heroDescription:
-      "اشترِ وبِع حسابات الألعاب، وحسابات التواصل الاجتماعي، والمنتجات الرقمية بكل أمان وموثوقية ضمن سوق يعتمد أحدث التقنيات 🔒⚙️",
-    exploreProducts: "استكشف المنتجات 🔍",
+welcomeMessage: "مرحبًا بك في منصة نيكسو 👋",
+heroTitle: "سوقك الرقمي للألعاب والمنتجات الرقمية 🎮💻",
+heroDescription: "اشترِ وبِع حسابات الألعاب والسوشيال ميديا والمنتجات الرقمية بكل أمان وثقة، في منصة حديثة وسريعة.",
+exploreProducts: "استكشف المنتجات 🔎",
 
     // Common
-    addToCart: "أضف إلى السلة 🛒",
-    price: "السعر 💰",
-    category: "الفئة 📂",
-    rating: "التقييم ⭐",
-    search: "بحث",
-    filter: "تصفية ⚙️",
-    filters: "عوامل التصفية",
-    sortBy: "ترتيب حسب",
-    allCategories: "جميع الفئات",
-    loadMore: "عرض المزيد ⬇️",
-    submit: "إرسال ✅",
-    cancel: "إلغاء ❌",
-    save: "حفظ 💾",
-    edit: "تعديل ✏️",
-    delete: "حذف 🗑️",
-    back: "رجوع ↩️",
-    next: "التالي ▶️",
-    previous: "السابق ◀️",
-    required: "إلزامي ❗",
-    optional: "اختياري",
-    Cart: "السلة",
+addToCart: "أضف إلى السلة 🛒",
+price: "السعر 💰",
+category: "الفئة 🗂️",
+rating: "التقييم ⭐",
+search: "بحث 🔍",
+filter: "فلتر 🔧",
+filters: "الفلاتر ⚙️",
+sortBy: "ترتيب حسب 📊",
+allCategories: "كل الفئات 🗂️",
+loadMore: "عرض المزيد ⏬",
+submit: "إرسال 📤",
+cancel: "إلغاء ❌",
+save: "حفظ 💾",
+edit: "تعديل ✏️",
+delete: "حذف 🗑️",
+back: "رجوع ⬅️",
+next: "التالي ➡️",
+previous: "السابق ⏮️",
+required: "إلزامي ⚠️",
+optional: "اختياري 🪶",
+
+
     // KYC Verification
     kyc: {
-      verification: "التحقق من الهوية",
-      verificationStatus: "حالة التحقق",
-      verificationOverview: "نظرة عامة على التحقق",
-      verificationOverviewDescription: "لبدء البيع على منصتنا، يجب عليك إكمال عملية التحقق من الهوية لضمان الأمان والموثوقية",
-      verificationSteps: "خطوات التحقق",
-      verificationRequired: "التحقق مطلوب",
-      verificationRequiredDescription: "يجب إكمال التحقق من الهوية للوصول إلى لوحة البائع",
-      verificationIncomplete: "التحقق غير مكتمل",
-      fullyVerified: "تم التحقق بالكامل",
-      verificationRejected: "تم رفض التحقق",
-      underReview: "قيد المراجعة",
-      sellerAccessRestricted: "الوصول إلى البائع مقيد",
-      sellerAccessRestrictedDescription: "يجب إكمال التحقق من الهوية للوصول إلى ميزات البائع",
-      requiredSteps: "الخطوات المطلوبة",
-      completeVerification: "إكمال التحقق",
-      backToAccount: "العودة إلى الحساب",
-      verificationBenefits: "فوائد التحقق",
-      benefit1: "الوصول إلى لوحة البائع",
-      benefit2: "إمكانية إدراج المنتجات",
-      benefit3: "معالجة المدفوعات الآمنة",
-      benefit4: "حماية المشتري والبائع",
-      startVerification: "بدء التحقق",
-      resubmitDocuments: "إعادة تقديم المستندات",
-      goToSellerDashboard: "الذهاب إلى لوحة البائع",
-      complete: "إكمال",
-      back: "رجوع",
-      continue: "متابعة",
-      overview: "نظرة عامة",
+verification: "التحقق من الهوية 🪪",
+verificationStatus: "حالة التحقق 📋",
+verificationOverview: "نظرة عامة على التحقق 👀",
+verificationOverviewDescription: "عشان تبدأ البيع في المنصة، لازم تكمل التحقق من الهوية لضمان الأمان والثقة بين الجميع.",
+verificationSteps: "خطوات التحقق 🧭",
+verificationRequired: "التحقق مطلوب ⚠️",
+verificationRequiredDescription: "لازم تكمل التحقق من الهوية قبل ما تدخل لوحة البائع.",
+verificationIncomplete: "التحقق غير مكتمل ⏳",
+fullyVerified: "تم التحقق بالكامل ✅",
+verificationRejected: "تم رفض التحقق ❌",
+underReview: "قيد المراجعة 🔎",
+sellerAccessRestricted: "وصول البائع محدود 🚫",
+sellerAccessRestrictedDescription: "لازم تكمل التحقق من الهوية عشان تقدر تستخدم أدوات البيع.",
+requiredSteps: "الخطوات المطلوبة 📑",
+completeVerification: "أكمل التحقق الآن 🧾",
+backToAccount: "رجوع للحساب 🔙",
+verificationBenefits: "مزايا التحقق 🎁",
+benefit1: "الوصول إلى لوحة البائع 🧮",
+benefit2: "إمكانية عرض المنتجات 💼",
+benefit3: "مدفوعات آمنة 🔒",
+benefit4: "حماية للبائع والمشتري 🛡️",
+startVerification: "ابدأ التحقق 🚀",
+resubmitDocuments: "إعادة إرسال المستندات 📤",
+goToSellerDashboard: "الذهاب إلى لوحة البائع 📊",
+complete: "إكمال ✅",
+back: "رجوع ⬅️",
+continue: "استمرار ➡️",
+overview: "نظرة عامة 👁️",
+
       
       // Email Verification
-      emailVerification: "التحقق من البريد الإلكتروني",
-      emailDescription: "تحقق من عنوان بريدك الإلكتروني برابط التأكيد",
+emailVerification: "التحقق من البريد الإلكتروني ✉️",
+emailDescription: "تحقق من بريدك الإلكتروني عبر رابط التأكيد.",
+
       
       // Identity Verification
-      identityVerification: "التحقق من الهوية",
-      identityDescription: "تحقق من هويتك باستخدام هوية حكومية صالحة",
-      firstName: "الاسم الأول",
-      lastName: "اسم العائلة",
-      dateOfBirth: "تاريخ الميلاد",
-      nationality: "الجنسية",
-      idNumber: "رقم الهوية",
+identityVerification: "التحقق من الهوية الشخصية 🧾",
+identityDescription: "تحقق من هويتك باستخدام بطاقة هوية رسمية.",
+firstName: "الاسم الأول",
+lastName: "اسم العائلة",
+dateOfBirth: "تاريخ الميلاد 🎂",
+nationality: "الجنسية 🌍",
+idNumber: "رقم الهوية 🆔",
+
       
       // Address Verification
-      addressVerification: "التحقق من العنوان",
-      addressDescription: "تأكيد عنوان إقامتك الحالي",
-      streetAddress: "عنوان الشارع",
-      city: "المدينة",
-      state: "الولاية/المحافظة",
-      postalCode: "الرمز البريدي",
-      country: "البلد",
+addressVerification: "التحقق من العنوان 🏠",
+addressDescription: "أكد عنوان سكنك الحالي.",
+streetAddress: "اسم الشارع",
+city: "المدينة 🏙️",
+state: "المنطقة / المحافظة",
+postalCode: "الرمز البريدي 📮",
+country: "الدولة 🌍",
+
       
       // Phone Verification
-      phoneVerification: "التحقق من الهاتف",
-      phoneDescription: "تأكيد رقم هاتفك للتواصل",
-      phoneNumber: "رقم الهاتف",
-      phoneVerificationNote: "ملاحظة التحقق",
-      phoneVerificationNoteDescription: "سيتم إرسال رمز التحقق إلى رقم هاتفك",
-      sendVerificationCode: "إرسال رمز التحقق",
+phoneVerification: "التحقق من رقم الجوال 📱",
+phoneDescription: "أكد رقم جوالك للتواصل.",
+phoneNumber: "رقم الجوال 📞",
+phoneVerificationNote: "ملاحظة التحقق 🔔",
+phoneVerificationNoteDescription: "راح يوصلك كود تحقق على رقم جوالك.",
+sendVerificationCode: "إرسال كود التحقق 📤",
+
       
       // Document Upload
-      documentUpload: "رفع المستندات",
-      documentDescription: "رفع المستندات المطلوبة للتحقق",
-      idFront: "الوجه الأمامي للهوية",
-      idFrontDescription: "صورة واضحة للوجه الأمامي لبطاقة الهوية",
-      idBack: "الوجه الخلفي للهوية",
-      idBackDescription: "صورة واضحة للوجه الخلفي لبطاقة الهوية",
-      selfie: "صورة شخصية",
-      selfieDescription: "صورة شخصية واضحة مع بطاقة الهوية",
-      proofOfAddress: "إثبات العنوان",
-      proofOfAddressDescription: "فاتورة أو كشف حساب يثبت العنوان",
+documentUpload: "رفع المستندات 📁",
+documentDescription: "ارفع الملفات المطلوبة للتحقق.",
+idFront: "الوجه الأمامي للهوية 🪪",
+idFrontDescription: "صورة واضحة للوجه الأمامي من البطاقة.",
+idBack: "الوجه الخلفي للهوية 🪪",
+idBackDescription: "صورة واضحة للوجه الخلفي من البطاقة.",
+selfie: "صورة سيلفي 🤳",
+selfieDescription: "صورة سيلفي وأنت تمسك الهوية بيدك.",
+proofOfAddress: "إثبات العنوان 🧾",
+proofOfAddressDescription: "فاتورة أو مستند يثبت عنوانك.",
+
       
       // Bank Account Verification
-      bankAccountVerification: "التحقق من الحساب البنكي",
-      bankAccountDescription: "تأكيد معلومات حسابك البنكي للمدفوعات",
-      accountHolderName: "اسم صاحب الحساب",
-      bankName: "اسم البنك",
-      accountNumber: "رقم الحساب",
-      routingNumber: "رقم التوجيه",
-      accountType: "نوع الحساب",
-      bankAccountSecurity: "أمان الحساب البنكي",
-      bankAccountSecurityDescription: "معلوماتك البنكية محمية بأعلى معايير الأمان",
+bankAccountVerification: "التحقق من الحساب البنكي 🏦",
+bankAccountDescription: "أكد بيانات حسابك البنكي لاستلام الأرباح.",
+accountHolderName: "اسم صاحب الحساب 💳",
+bankName: "اسم البنك 🏛️",
+accountNumber: "رقم الحساب 🔢",
+routingNumber: "رمز التحويل البنكي 🧾",
+accountType: "نوع الحساب 🏷️",
+bankAccountSecurity: "أمان الحساب البنكي 🔒",
+bankAccountSecurityDescription: "معلوماتك البنكية محفوظة ومشفّرة بأعلى معايير الأمان.",
+
     },
 
     // Products
-    allProducts: "جميع المنتجات 📦",
-    browseProducts: "تصفح آلاف المنتجات الرقمية والحسابات الموثقة ✅",
-    searchPlaceholder: "ابحث عن منتجات، حسابات، أو خدمات...",
-    showing: "عرض",
-    of: "من",
-    productsText: "منتجات",
-    noProductsFound: "لم يتم العثور على أي منتجات مطابقة لخيارات البحث 🔍",
-    featured: "مميز ⭐",
-    priceLowToHigh: "السعر: من الأرخص إلى الأعلى",
-    priceHighToLow: "السعر: من الأعلى إلى الأرخص",
-    highestRated: "الأعلى تقييمًا 🌟",
-    newestFirst: "الأحدث أولًا 🆕",
+allProducts: "كل المنتجات 🛒",
+browseProducts: "تصفح آلاف المنتجات الرقمية والحسابات الموثقة 🔎",
+searchPlaceholder: "ابحث عن المنتجات أو الحسابات أو الخدمات...",
+showing: "عرض",
+of: "من",
+productsText: "منتجات",
+noProductsFound: "ما فيه منتجات تطابق الفلاتر 🔍",
+featured: "مميز ⭐",
+priceLowToHigh: "السعر: من الأقل إلى الأعلى ⬆️",
+priceHighToLow: "السعر: من الأعلى إلى الأقل ⬇️",
+highestRated: "الأعلى تقييمًا 🌟",
+newestFirst: "الأحدث أولاً 🆕",
+
 
     // Price Ranges
-    allPrices: "جميع الأسعار 💰",
-    under100: "أقل من 100 دولار",
-    range100to300: "100 - 300 دولار",
-    range300to500: "300 - 500 دولار",
-    over500: "أكثر من 500 دولار 💸",
+allPrices: "كل الأسعار 💰",
+under100: "أقل من 100$ 💵",
+range100to300: "من 100$ إلى 300$ 💸",
+range300to500: "من 300$ إلى 500$ 💳",
+over500: "أكثر من 500$ 💎",
+
 
     // Categories
-    socialMedia: "وسائل التواصل الاجتماعي 📱",
-    gaming: "الألعاب 🎮",
-    digitalServices: "الخدمات الرقمية 💻",
-    software: "البرامج 🧰",
-    entertainment: "الترفيه 🍿",
+socialMedia: "سوشال ميديا 📱",
+gaming: "ألعاب 🎮",
+digitalServices: "خدمات رقمية 💼",
+software: "برامج 💻",
+entertainment: "ترفيه 🎬",
+
 
     // Games Page
-    gamingMarketplace: "سوق الألعاب 🎮",
-    gameAccounts: "حسابات الألعاب 🎮",
-    gameAccountsDesc: "اشترِ حسابات ألعاب مميزة في جميع المنصات الكبرى ✅ آمنة، موثّقة، وجاهزة للعب مباشرة.",
-    searchGames: "ابحث عن حسابات ألعاب، منصّات، أو عناوين...",
-    activeListings: "العروض النشطة 📢",
-    successRate: "نسبة النجاح 📈",
-    support247: "دعم 24/7 🤝",
-    browseByPlatform: "تصفح حسب المنصة 🖥️",
-    choosePlatform: "اختر منصّة الألعاب الخاصة بك 🎮",
-    featuredAccounts: "حسابات مميزة 🌟",
-    premiumVerified: "حسابات مميزة وموثقة ✅",
-    viewAll: "عرض الكل 👀",
-    verifiedAccounts: "حسابات موثقة 🔐",
-    verifiedAccountsDesc: "جميع الحسابات يتم التحقق منها وفحصها قبل نشرها 🛡️",
-    instantAccess: "وصول فوري ⚡",
-    instantAccessDesc: "احصل على تفاصيل حسابك فور إتمام عملية الشراء 📬",
-    moneyBack: "ضمان استرجاع 💵",
-    moneyBackDesc: "ضمان استرجاع الأموال خلال 7 أيام لجميع المشتريات 📆",
-    accounts: "الحسابات",
+gamingMarketplace: "سوق الألعاب 🎯",
+gameAccounts: "حسابات الألعاب 🎮",
+gameAccountsDesc: "اشترِ حسابات ألعاب جاهزة من كل المنصات الكبيرة، مضمونة ومتحققة وآمنة.",
+searchGames: "ابحث عن الحسابات أو الألعاب أو المنصات...",
+activeListings: "العروض النشطة 📦",
+successRate: "نسبة النجاح ✅",
+support247: "دعم 24/7 💬",
+browseByPlatform: "تصفح حسب المنصة 🕹️",
+choosePlatform: "اختر منصة اللعب الخاصة بك",
+featuredAccounts: "حسابات مميزة ⭐",
+premiumVerified: "حسابات مميزة ومتحققة 🔒",
+viewAll: "عرض الكل 👀",
+verifiedAccounts: "حسابات موثقة ✅",
+verifiedAccountsDesc: "كل الحسابات يتم التحقق منها قبل النشر",
+instantAccess: "وصول فوري ⚡",
+instantAccessDesc: "تحصل على تفاصيل الحساب فور الشراء",
+moneyBack: "استرجاع المبلغ 💰",
+moneyBackDesc: "ضمان استرجاع خلال 7 أيام من الشراء",
+accounts: "حسابات",
+
 
     // Seller
-    listProduct: "أضف منتجًا 📤",
-    sellOn: "بع على Nexo 💼",
-    sellerDashboard: "لوحة تحكم البائع 📊",
-    startSellingOn: "ابدأ البيع على",
-    chooseWhatToSell: "ما الذي تريد بيعه؟ 🤔",
-    sellerOnboardingDesc: "اختر ما تريد بيعه وابدأ خلال دقائق ⏱️ لا توجد رسوم مسبقة – فقط أدرج واربح 💰",
-    trustedBy: "موثوق من أكثر من 10,000 بائع 🤝",
-    quickSetup: "إعداد سريع ⚙️",
-    securePayments: "مدفوعات آمنة 🔐",
-    lowFees: "رسوم منخفضة 💸",
-    socialMediaAccounts: "حسابات التواصل الاجتماعي 📱",
-    gamingAccounts: "حسابات الألعاب 🎮",
-    sellSocialDesc: "بع حسابات Instagram و TikTok و YouTube و Twitter وغيرها 📲",
-    sellGamingDesc: "بع حسابات Steam و PlayStation و Xbox و Epic Games وغيرها 🎮",
-    listSocialAccount: "أضف حساب تواصل اجتماعي 📤",
-    listGamingAccount: "أضف حساب ألعاب 🎮",
-    whySellOnNexo: "لماذا تبيع على Nexo؟ 🤔",
-    fastPayouts: "مدفوعات سريعة 💳",
-    fastPayoutsDesc: "احصل على أموالك بسرعة مع خيارات سحب متعددة 💼",
-    buyerProtection: "حماية المشتري 🛡️",
-    buyerProtectionDesc: "معاملات آمنة مع نظام حل نزاعات مدمج ⚖️",
-    largeAudience: "جمهور ضخم 🌍",
-    largeAudienceDesc: "الوصول إلى آلاف المشترين النشطين يوميًا 📈",
+listProduct: "أضف منتجك للبيع 🛒",
+sellOn: "بع على نكسو 💼",
+sellerDashboard: "لوحة البائع 📊",
+startSellingOn: "ابدأ البيع على",
+chooseWhatToSell: "وش ودك تبيع؟ 🤔",
+sellerOnboardingDesc: "اختر وش تبي تبيع وابدأ خلال دقايق، بدون رسوم مسبقة — بس اعرض وربحك يجيك 💸",
+trustedBy: "موثوق من أكثر من 10,000 بائع 🔒",
+quickSetup: "إعداد سريع ⚡",
+securePayments: "دفعات آمنة 💳",
+lowFees: "رسوم منخفضة 💰",
+socialMediaAccounts: "حسابات سوشيال ميديا 📱",
+gamingAccounts: "حسابات ألعاب 🎮",
+sellSocialDesc: "بع حساباتك على إنستقرام، تيك توك، يوتيوب، تويتر وغيرها 📲",
+sellGamingDesc: "بع حسابات Steam، PlayStation، Xbox، Epic Games وغيرها 🎮",
+listSocialAccount: "اعرض حساب سوشيال ميديا 🌐",
+listGamingAccount: "اعرض حساب ألعاب 🎮",
+whySellOnNexo: "ليش تبيع على نكسو؟ 🤝",
+fastPayouts: "تحويلات سريعة ⚡",
+fastPayoutsDesc: "استلم أرباحك بسرعة بعد البيع مع خيارات سحب متعددة",
+buyerProtection: "حماية المشتري 🛡️",
+buyerProtectionDesc: "نظام حماية وضمان شامل ضد الاحتيال أو المشاكل",
+largeAudience: "جمهور كبير 👥",
+largeAudienceDesc: "وصّل منتجاتك لآلاف المشترين النشطين يوميًا",
+
 
     // Seller Forms
-    accountInformation: "معلومات الحساب 📋",
-    title: "العنوان 🏷️",
-    username: "اسم المستخدم 👤",
-    platform: "المنصّة 🖥️",
-    game: "اللعبة 🎮",
-    accountDescription: "وصف الحساب 📜",
-    selectPlatform: "اختر المنصّة",
-    selectGame: "اختر اللعبة",
-    configurationSetup: "إعداد التكوين ⚙️",
-    setupInstructions: "إرشادات الإعداد 📑",
-    phoneNumber: "رقم الهاتف 📞",
-    ifApplicable: "إذا كان ذلك مناسبًا",
-    sellerType: "نوع البائع 🧑‍💼",
-    individual: "فردي 👤",
-    business: "شركة 🏢",
-    verifiedSeller: "بائع موثّق ✅",
-    pricingInformation: "معلومات التسعير 💰",
-    discountPrice: "سعر الخصم 💵",
-    discountDescription: "وصف الخصم ✏️",
-    accountScreenshots: "صور الحساب 📸",
-    uploadImage: "رفع صورة 📤",
-    termsAndConditions: "الشروط والأحكام ⚖️",
-    submitAccount: "إرسال الحساب 📤",
-    accountListedSuccess: "تم إدراج الحساب بنجاح ✅",
-    accountSubmittedReview: "تم إرسال حسابك للمراجعة 🕵️‍♂️",
-    termsRequired: "الموافقة على الشروط إلزامية ⚠️",
-    agreeToTerms: "يرجى الموافقة على جميع الشروط والأحكام ✔️",
+accountInformation: "معلومات الحساب 🔐",
+title: "العنوان ✏️",
+username: "اسم المستخدم 👤",
+platform: "المنصة 🎮",
+game: "اللعبة 🕹️",
+accountDescription: "وصف الحساب 📝",
+selectPlatform: "اختر المنصة",
+selectGame: "اختر اللعبة",
+configurationSetup: "إعداد التكوين ⚙️",
+setupInstructions: "تعليمات الإعداد 📄",
+phoneNumber: "رقم الجوال 📞",
+ifApplicable: "إذا كان ينطبق",
+sellerType: "نوع البائع 🧾",
+individual: "فردي 👤",
+business: "شركة 🏢",
+verifiedSeller: "بائع موثق ✅",
+pricingInformation: "معلومات السعر 💰",
+discountPrice: "السعر بعد الخصم 💸",
+discountDescription: "وصف الخصم 🎯",
+accountScreenshots: "صور الحساب 📸",
+uploadImage: "رفع صورة 📤",
+termsAndConditions: "الشروط والأحكام ⚖️",
+submitAccount: "إرسال الحساب 📬",
+accountListedSuccess: "تم عرض الحساب بنجاح ✅",
+accountSubmittedReview: "تم إرسال حسابك للمراجعة 🔎",
+termsRequired: "يجب الموافقة على الشروط ⚠️",
+agreeToTerms: "الرجاء الموافقة على كل الشروط والأحكام",
+
 
     // Form Placeholders
-    enterUsername: "أدخل اسم المستخدم فقط ✍️",
-    provideDescription: "أضف وصفًا تفصيليًا لحسابك 📜",
-    enterInstructions: "أدخل الإرشادات (أو تفاصيل الحساب أو البيانات البنكية) 📝",
-    enterPhoneNumber: "أدخل رقم الهاتف (مثال: ‎+1234567890) 📞",
-    enterPrice: "أدخل السعر 💰",
-    enterDiscountPrice: "أدخل سعر الخصم (اختياري) 💵",
-    selectSellerType: "اختر نوع البائع 👤",
-    uploadScreenshots: "حمِّل صور الحساب (بحد أقصى 6 صور) 📸",
+enterUsername: "اكتب اسم المستخدم فقط",
+provideDescription: "اكتب وصف واضح ومفصل للحساب",
+enterInstructions: "اكتب التعليمات (أو بيانات الحساب أو البنك)",
+enterPhoneNumber: "اكتب رقم الجوال (مثلاً +966...)",
+enterPrice: "اكتب السعر المطلوب 💰",
+enterDiscountPrice: "اكتب السعر بعد الخصم (اختياري)",
+selectSellerType: "اختر نوع البائع",
+uploadScreenshots: "ارفع صور أو لقطات للحساب (بحد أقصى 6 صور)",
+
 
     // Instructions
     socialDescriptionHelp:
@@ -1041,14 +755,15 @@ const translations = {
       "🔐 نحن ملتزمون بتوفير منصة آمنة لشراء وبيع الحسابات. يجب عليك إكمال هذه الخطوات لإضافة حسابك بنجاح.",
 
     // Account
-    myAccount: "حسابي 👤",
-    dashboard: "لوحة التحكم 📊",
-    profile: "الملف الشخصي 🪪",
-    orders: "الطلبات 📦",
-    wallet: "المحفظة 💳",
-    notifications: "الإشعارات 🔔",
-    billing: "الفواتير 🧾",
-    logout: "تسجيل الخروج 🚪",
+myAccount: "حسابي 👤",
+dashboard: "لوحة التحكم 📊",
+profile: "الملف الشخصي 🪪",
+orders: "طلباتي 🧾",
+wallet: "المحفظة 💰",
+notifications: "الإشعارات 🔔",
+billing: "الفواتير 💳",
+logout: "تسجيل الخروج 🚪",
+
 
     // About Page
     aboutUs: "من نحن ℹ️",
@@ -1121,12 +836,12 @@ const translations = {
     premiumSupport24_7: "دعم مميز (24/7) 📞",
     promotedInLeaderboard: "ترقية في قائمة المتصدرين 🏆",
     faqTitle: "الأسئلة الشائعة ❓",
-    faqQuestion1: "📅 هل يمكنني تغيير الخطة في أي وقت؟",
-    faqAnswer1: "✅ نعم! يمكنك الترقية أو التخفيض في أي وقت وتُطبق التغييرات فورًا.",
-    faqQuestion2: "💳 ما طرق الدفع التي تقبلونها؟",
-    faqAnswer2: "نقبل جميع البطاقات الائتمانية الكبرى، PayPal، والمدفوعات بالعملات الرقمية.",
-    faqQuestion3: "🔁 هل توجد سياسة استرجاع؟",
-    faqAnswer3: "نعم، نقدم ضمان استرجاع الأموال خلال 30 يومًا إذا لم تكن راضيًا عن خطتك.",
+    faqQuestion1: "هل أقدر أغيّر الخطة في أي وقت؟",
+    faqAnswer1: "أكيد! تقدر ترقي أو تنزل الخطة وقت ما تبغى، والتغييرات تطبق فورًا.",
+    faqQuestion2: "وش طرق الدفع اللي تقبلوها؟ 💳",
+    faqAnswer2: "نقبل كل بطاقات الائتمان الرئيسية، باي بال، والعملات الرقمية. 💰",
+    faqQuestion3: "هل فيه سياسة استرجاع؟ 🔄",
+    faqAnswer3: "نعم، تقدر تسترجع خلال 30 يوم إذا ما كنت راضي عن الخطة.",
 
     // Login Page
     welcomeBack: "مرحبًا بعودتك 👋",
@@ -1155,77 +870,89 @@ const translations = {
     wishlist: "قائمة الرغبات ❤️",
 
     // Cart Page
-    shoppingCart: "السلة",
-    itemsInCart: "عناصر في سلتك",
-    quantity: "الكمية 🔢",
-    remove: "إزالة 🗑️",
-    enterCouponCode: "أدخل كود الخصم 🎟️",
-    apply: "تطبيق ✅",
-    orderSummary: "ملخص الطلب 📄",
-    subtotal: "الإجمالي الفرعي 💵",
-    serviceFee: "رسوم الخدمة 💼",
-    total: "الإجمالي 💰",
-    proceedToCheckout: "المتابعة للدفع 💳",
-    continueShopping: "متابعة التسوق 🛍️",
-    secureCheckout: "دفع آمن 🔐",
-    instantDelivery: "تسليم فوري ⚡",
-    moneyBackGuarantee: "ضمان استرجاع الأموال 💸",
+shoppingCart: "سلة المشتريات 🛒",
+itemsInCart: "العناصر في سلتك 🧾",
+quantity: "الكمية 🔢",
+remove: "إزالة 🗑️",
+enterCouponCode: "أدخل كود الخصم 🎟️",
+apply: "تطبيق ✅",
+orderSummary: "ملخص الطلب 📋",
+subtotal: "الإجمالي الفرعي 💵",
+serviceFee: "رسوم الخدمة 💼",
+total: "الإجمالي الكلي 💰",
+proceedToCheckout: "المتابعة للدفع 💳",
+continueShopping: "الرجوع للتسوق 🛍️",
+secureCheckout: "دفع آمن 🔒",
+instantDelivery: "تسليم فوري ⚡",
+moneyBackGuarantee: "ضمان استرجاع المبلغ 💰",
+yourCartIsEmpty: "سلتك فاضية 😅",
+itemRemoved: "تمت الإزالة ✅",
+itemHasBeenRemoved: "تمت إزالة المنتج من السلة.",
+error: "خطأ ❌",
+pleaseEnterCoupon: "رجاءً أدخل كود الخصم.",
+invalidCoupon: "كود الخصم غير صالح ⚠️",
+pleaseCheckWithAdmin: "تحقق من الإدارة للتأكد من صحة الكود.",
+
 
     // Wishlist Page
-    myWishlist: "قائمة رغباتي ❤️",
-    itemsSavedForLater: "عناصر محفوظة لاحقًا ⏱️",
-    addAllToCart: "أضف الكل إلى السلة 🛒",
-    clearWishlist: "مسح القائمة 🗑️",
-    yourWishlistIsEmpty: "قائمة رغباتك فارغة 😔",
-    startAddingProducts: "ابدأ بإضافة المنتجات التي تعجبك لتتبعها 📦",
+myWishlist: "المفضلة 💖",
+itemsSavedForLater: "منتجات محفوظة للرجوع لاحقًا 🕒",
+addAllToCart: "إضافة الكل للسلة 🛒",
+clearWishlist: "مسح المفضلة 🧹",
+yourWishlistIsEmpty: "قائمة المفضلة فاضية 😅",
+startAddingProducts: "ابدأ بإضافة المنتجات اللي تعجبك ❤️",
+
 
     // Checkout Page
-    checkout: "الدفع 💳",
-    completePurchaseSecurely: "أكمل عملية الشراء بأمان 🔐",
-    contactInformation: "معلومات التواصل 📞",
-    paymentMethod: "طريقة الدفع 💳",
-    creditDebitCard: "بطاقة ائتمان / خصم 💳",
-    payWithCard: "ادفع باستخدام بطاقتك 💸",
-    walletBalance: "رصيد المحفظة 💼",
-    useYourWallet: "استخدم محفظتك 🏦",
-    cardNumber: "رقم البطاقة 💳",
-    expiryDate: "تاريخ الانتهاء 📅",
-    cvc: "CVC 🔐",
-    iAgreeToTerms: "أوافق على",
-    refundPolicyLink: "سياسة الاسترجاع 📜",
-    allSalesFinal: "وأفهم أن جميع المبيعات نهائية بمجرد تسليم المنتج ✅",
-    completePurchase: "إتمام الشراء 🛍️",
-    secureEncryptedPayment: "دفع آمن ومشفر 🔒",
-    sevenDayGuarantee: "ضمان استرجاع خلال 7 أيام 📆",
+checkout: "الدفع 💳",
+completePurchaseSecurely: "أكمل عملية الشراء بأمان 🔒",
+contactInformation: "معلومات التواصل 📞",
+paymentMethod: "طريقة الدفع 💰",
+creditDebitCard: "بطاقة ائتمان / خصم 💳",
+payWithCard: "ادفع باستخدام البطاقة 💳",
+walletBalance: "رصيد المحفظة 💼",
+useYourWallet: "استخدم محفظتك",
+cardNumber: "رقم البطاقة 💳",
+expiryDate: "تاريخ الانتهاء 📅",
+cvc: "رمز CVC 🔢",
+iAgreeToTerms: "أوافق على",
+refundPolicyLink: "سياسة الاسترجاع",
+allSalesFinal: "وأفهم أن جميع المبيعات نهائية بعد تسليم المنتج.",
+completePurchase: "إكمال الشراء ✅",
+secureEncryptedPayment: "دفع آمن ومشفّر 🔒",
+sevenDayGuarantee: "ضمان استرجاع خلال 7 أيام 💰",
+
 
     // Help Center Page
-    howCanWeHelp: "كيف يمكننا مساعدتك؟ 🤝",
-    searchKnowledgeBase: "ابحث في قاعدة المعرفة أو تصفح الفئات أدناه 🔎",
-    searchHelpArticles: "ابحث عن مقالات المساعدة، الأسئلة الشائعة أو المواضيع...",
-    browseByCategory: "تصفح حسب الفئة 📂",
-    articlesCount: "مقالات 📚",
-    gettingStarted: "البدء 🚀",
-    ordersDelivery: "الطلبات والتسليم 📦",
-    paymentsRefunds: "المدفوعات والاسترجاع 💳",
-    accountManagement: "إدارة الحساب 👤",
-    securityPrivacy: "الأمان والخصوصية 🔐",
-    sellerTools: "أدوات البائع 🛠️",
-    frequentlyAskedQuestions: "الأسئلة الشائعة ❓",
-    quickAnswers: "إجابات سريعة ⚡",
-    stillNeedHelp: "ما زلت بحاجة للمساعدة؟ 🤔",
-    supportTeamAssist: "فريق الدعم هنا لمساعدتك 👨‍💻",
-    liveChat: "دردشة مباشرة 💬",
-    liveChatDesc: "تحدث مع فريق الدعم في الوقت الفعلي 🕐",
-    startChat: "ابدأ الدردشة 💬",
-    emailSupport: "الدعم عبر البريد 📧",
-    emailSupportDesc: "أرسل لنا بريدًا وسنرد خلال 24 ساعة ⏱️",
-    sendEmail: "إرسال البريد ✉️",
+howCanWeHelp: "وش نقدر نساعدك فيه؟ 🤔",
+searchKnowledgeBase: "ابحث في مركز المعرفة أو تصفّح الأقسام 👇",
+searchHelpArticles: "ابحث عن مقالات المساعدة أو الأسئلة الشائعة...",
+browseByCategory: "تصفّح حسب الفئة 📚",
+articlesCount: "مقالات 📄",
+gettingStarted: "البدء 👣",
+ordersDelivery: "الطلبات والتسليم 🚚",
+paymentsRefunds: "المدفوعات والاسترجاع 💳",
+accountManagement: "إدارة الحساب 👤",
+securityPrivacy: "الأمان والخصوصية 🔒",
+sellerTools: "أدوات البائع ⚙️",
+frequentlyAskedQuestions: "الأسئلة الشائعة ❓",
+quickAnswers: "إجابات سريعة على أكثر الأسئلة تكرارًا ⚡",
+stillNeedHelp: "لسه تحتاج مساعدة؟ 💬",
+supportTeamAssist: "فريق الدعم موجود عشان يساعدك 🙌",
+liveChat: "الدردشة المباشرة 💭",
+liveChatDesc: "تواصل مع فريق الدعم في الوقت الفعلي.",
+startChat: "ابدأ الدردشة 💬",
+emailSupport: "الدعم عبر الإيميل 📧",
+emailSupportDesc: "أرسل لنا رسالة، ونرد عليك خلال 24 ساعة ⏱️",
+sendEmail: "إرسال الإيميل 📤",
+discordSupport: "دعم ديسكورد 🎧",
+
 
     // Footer
     marketplace: "السوق 🏪",
     allRightsReserved: "جميع الحقوق محفوظة ©",
     company: "الشركة 🏢",
-    support: "الدعم 🤝",
+    support: "الدعم 💬",
     legal: "قانوني ⚖️",
     termsOfService: "شروط الخدمة 📜",
     privacyPolicy: "سياسة الخصوصية 🔐",
@@ -1249,307 +976,6 @@ const translations = {
     sellOnNexo: "بع على Nexo 💼",
     legalAndSupport: "القانوني والدعم ⚖️🤝",
 
-    // Additional missing translations
-    // Category Landing
-    socialMediaAccounts: "حسابات وسائل التواصل الاجتماعي 📱",
-    premiumVerifiedAccounts: "حسابات وسائل التواصل الاجتماعي المميزة والموثقة مع متابعين حقيقيين ومشاركة",
-    topSeller: "أفضل بائع 🏆",
-    gameMasters: "أساتذة الألعاب 🎮",
-    gamingAccounts: "حسابات الألعاب 🎮",
-    highLevelAccounts: "حسابات ألعاب عالية المستوى، عناصر نادرة، ومحتوى حصري",
-    instagram: "إنستغرام 📸",
-    tiktok: "تيك توك 🎵",
-    youtube: "يوتيوب ▶️",
-    twitter: "تويتر/إكس 🐦",
-    facebook: "فيسبوك 👥",
-    steam: "ستيم 🎮",
-    playstation: "بلايستيشن 🎯",
-    xbox: "إكس بوكس 🎪",
-    epicGames: "إبك جيمز ⚡",
-    nintendo: "نينتندو 🎮",
-    phone: "هاتف 📱",
-    activeListings: "العروض النشطة 📢",
-    averagePrice: "متوسط السعر 💰",
-    avgRating: "متوسط التقييم ⭐",
-    browseByType: "تصفح حسب النوع 📂",
-    priceRange: "نطاق السعر 💰",
-    followers: "المتابعون 👥",
-    sortBy: "ترتيب حسب",
-    allPrices: "جميع الأسعار 💰",
-    allFollowers: "جميع المتابعين 👥",
-    featured: "مميز ⭐",
-    highestRated: "الأعلى تقييمًا 🌟",
-    newestFirst: "الأحدث أولًا 🆕",
-
-    // Product Detail
-    securePayment: "دفع آمن 🔐",
-    instantDelivery: "تسليم فوري ⚡",
-    description: "الوصف 📝",
-    specifications: "المواصفات ⚙️",
-    productDescription: "وصف المنتج 📋",
-    keyFeatures: "الميزات الرئيسية ✨",
-    importantInformation: "معلومات مهمة ⚠️",
-    technicalSpecifications: "المواصفات التقنية 🔧",
-    verifiedEmailAccess: "وصول البريد الإلكتروني الموثق ✅",
-    originalEmailIncluded: "البريد الأصلي مشمول 📧",
-    noBotFollowers: "لا يوجد متابعون آليون 🤖",
-    instantAccountTransfer: "نقل فوري للحساب ⚡",
-    secureTransaction: "معاملة آمنة 🔒",
-    accountAge: "عمر الحساب 📅",
-    following: "المتابعة 👥",
-    posts: "المنشورات 📝",
-    engagementRate: "معدل المشاركة 📊",
-    verification: "التحقق ✅",
-    adding: "جاري الإضافة... ⏳",
-    replyFeature: "ميزة الرد 💬",
-    replyFunctionality: "ستكون وظيفة الرد متاحة قريبًا! 🚀",
-
-    // Cart
-    yourCartIsEmpty: "سلتك فارغة 🛒",
-    itemRemoved: "تم إزالة العنصر 🗑️",
-    itemHasBeenRemoved: "تم إزالة العنصر من سلتك.",
-    error: "خطأ ❌",
-    pleaseEnterCoupon: "يرجى إدخال كود الخصم.",
-    invalidCoupon: "كود خصم غير صالح ❌",
-    pleaseCheckWithAdmin: "يرجى التحقق مع الإدارة للحصول على أكواد خصم صالحة.",
-
-    // Products
-    allProducts: "جميع المنتجات 📦",
-    socialAccounts: "حسابات التواصل 📱",
-    gamingAccounts: "حسابات الألعاب 🎮",
-    under100: "أقل من 100 دولار 💰",
-    advancedFilters: "مرشحات متقدمة 🔍",
-    rating: "التقييم ⭐",
-    sellerType: "نوع البائع 👤",
-    verifiedSellers: "البائعون الموثقون ✅",
-    premiumSellers: "البائعون المميزون 💎",
-    newSellers: "البائعون الجدد 🆕",
-    availability: "التوفر 📦",
-    inStock: "متوفر ✅",
-    lowStock: "مخزون منخفض ⚠️",
-    outOfStock: "نفد المخزون ❌",
-    noProductsFound: "لم يتم العثور على منتجات 🔍",
-    failedToLoadProducts: "فشل في تحميل المنتجات ❌",
-    pleaseTryAgainLater: "يرجى المحاولة مرة أخرى لاحقًا ⏰",
-
-    // Orders
-    viewAndManage: "عرض وإدارة تاريخ مشترياتك 📋",
-    browseProducts: "تصفح المنتجات 🛍️",
-
-    // Disputes
-    disputeNotFound: "النزاع غير موجود ❌",
-    backToDisputes: "العودة إلى النزاعات ↩️",
-    messages: "الرسائل 💬",
-    addMessage: "إضافة رسالة ➕",
-    typeYourMessage: "اكتب رسالتك هنا... ✍️",
-
-    // Admin Disputes
-    totalDisputes: "إجمالي النزاعات 📊",
-    escalated: "متصاعد ⬆️",
-    inReview: "قيد المراجعة 🔍",
-    resolved: "محلول ✅",
-    noEscalatedDisputes: "لا توجد نزاعات متصاعدة",
-    noDisputesInReview: "لا توجد نزاعات قيد المراجعة",
-
-    // Dashboard
-    dashboard: "لوحة التحكم 📊",
-    welcomeToAdmin: "مرحبًا بك في لوحة تحكم الإدارة 👨‍💼",
-    gmvOverTime: "إجمالي قيمة السوق مع الوقت 📈",
-    topCategories: "أفضل الفئات 🏆",
-    recentActivity: "النشاط الأخير ⏰",
-
-    // Account Dashboard
-    welcomeBack: "مرحبًا بعودتك! إليك نظرة عامة على حسابك 👋",
-    quickActions: "إجراءات سريعة ⚡",
-    recentOrders: "الطلبات الأخيرة 📦",
-    identityVerificationRequired: "التحقق من الهوية مطلوب 🆔",
-    sellerOverview: "نظرة عامة على البائع 💼",
-    recentSales: "المبيعات الأخيرة 💰",
-    accountStatus: "حالة الحساب 📊",
-
-    // Help Center
-    discordSupport: "دعم ديسكورد 💬",
-
-    // Profile
-    manageAccountInfo: "إدارة معلومات حسابك 👤",
-    profilePicture: "صورة الملف الشخصي 🖼️",
-    personalInformation: "المعلومات الشخصية 👤",
-    security: "الأمان 🔐",
-    password: "كلمة المرور 🔑",
-    addExtraSecurity: "أضف طبقة أمان إضافية 🛡️",
-    changePassword: "تغيير كلمة المرور 🔄",
-    currentPassword: "كلمة المرور الحالية 🔑",
-    newPassword: "كلمة المرور الجديدة 🔐",
-    confirmNewPassword: "تأكيد كلمة المرور الجديدة ✅",
-
-    // Pricing
-    features: "الميزات ✨",
-    free: "مجاني 💸",
-    pro: "احترافي 💼",
-    productListings: "قوائم المنتجات 📦",
-    transactionFee: "رسوم المعاملة 💳",
-    support: "الدعم 🤝",
-    community: "المجتمع 👥",
-    priority: "أولوية 🚀",
-    analytics: "التحليلات 📊",
-    basic: "أساسي 📊",
-    advanced: "متقدم 🚀",
-
-    // Categories
-    active: "نشط ✅",
-    inactive: "غير نشط ❌",
-    categories: "الفئات 📂",
-    manageCategories: "إدارة فئات المنتجات 📦",
-    name: "الاسم 📝",
-    description: "الوصف 📄",
-    products: "المنتجات 📦",
-    status: "الحالة 📊",
-    created: "تاريخ الإنشاء 📅",
-    actions: "الإجراءات ⚙️",
-
-    // Coupons
-    expired: "منتهي الصلاحية ⏰",
-    coupons: "كوبونات الخصم 🎟️",
-    manageCoupons: "إدارة كوبونات الخصم والعروض الترويجية 💰",
-    code: "الكود 🔢",
-    value: "القيمة 💰",
-    usage: "الاستخدام 📊",
-    expires: "ينتهي ⏰",
-
-    // Listings
-    pending: "في الانتظار ⏳",
-    rejected: "مرفوض ❌",
-    draft: "مسودة 📝",
-    listings: "القوائم 📋",
-    manageListings: "إدارة قوائم المنتجات والموافقات 📦",
-    listing: "القائمة 📋",
-
-    // Payouts
-    payouts: "المدفوعات 💰",
-    managePayouts: "إدارة مدفوعات البائعين والمعاملات 💳",
-    amount: "المبلغ 💰",
-    method: "الطريقة 💳",
-    date: "التاريخ 📅",
-
-    // Audit Logs
-    auditLogs: "سجلات التدقيق 📋",
-    manageAuditLogs: "عرض سجلات تدقيق النظام والأنشطة 🔍",
-    action: "الإجراء ⚙️",
-    user: "المستخدم 👤",
-    timestamp: "الطابع الزمني ⏰",
-
-    // Tickets
-    tickets: "التذاكر 🎫",
-    manageTickets: "إدارة تذاكر الدعم والاستفسارات 🎧",
-    subject: "الموضوع 📝",
-    priority: "الأولوية 🚀",
-    assigned: "مُعيّن 👤",
-
-    // Users
-    users: "المستخدمون 👥",
-    manageUsers: "إدارة حسابات المستخدمين والأذونات 👤",
-    email: "البريد الإلكتروني 📧",
-    role: "الدور 👤",
-    lastLogin: "آخر تسجيل دخول 🔐",
-
-    // Vendors
-    vendors: "الموردون 🏢",
-    manageVendors: "إدارة حسابات الموردين والتحقق 🏪",
-    company: "الشركة 🏢",
-    contact: "التواصل 📞",
-
-    // Orders Admin
-    orders: "الطلبات 📦",
-    manageOrders: "إدارة الطلبات والمعاملات 💳",
-    orderId: "رقم الطلب 🔢",
-    customer: "العميل 👤",
-    total: "الإجمالي 💰",
-    status: "الحالة 📊",
-
-    // Disputes Admin
-    disputes: "النزاعات ⚖️",
-    manageDisputes: "إدارة النزاعات والحلول 🤝",
-    disputeId: "رقم النزاع 🔢",
-    parties: "الأطراف 👥",
-    reason: "السبب 📝",
-    resolution: "الحل ✅",
-
-    // Common Actions
-    delete: "حذف 🗑️",
-    edit: "تعديل ✏️",
-    view: "عرض 👁️",
-    approve: "موافقة ✅",
-    reject: "رفض ❌",
-    assign: "تعيين 👤",
-    resolve: "حل ✅",
-    releaseEscrow: "إطلاق الضمان 💰",
-    processRefund: "معالجة الاسترداد 💳",
-    assignModerator: "تعيين مشرف 👨‍💼",
-    resolveDispute: "حل النزاع ⚖️",
-    deleteUser: "حذف المستخدم 🗑️",
-    toggleSidebar: "تبديل الشريط الجانبي 📱",
-
-    // Form Placeholders
-    yourEmailOrUsername: "بريدك الإلكتروني أو اسم المستخدم 📧",
-    enterPassword: "•••••••• 🔐",
-    phoneNumber: "+1234567890 📞",
-    verificationCode: "123456 🔢",
-    yourEmail: "بريدك الإلكتروني 📧",
-    searchOrders: "البحث في الطلبات... 🔍",
-    searchHelpArticles: "البحث في مقالات المساعدة، الأسئلة الشائعة أو المواضيع... 🔍",
-    searchCountry: "البحث في البلد... 🌍",
-    phoneNumberPlaceholder: "123456789 📞",
-    tellUsAboutYourself: "أخبرنا عن نفسك... 👤",
-    enterCurrentPassword: "أدخل كلمة المرور الحالية 🔑",
-    enterNewPassword: "أدخل كلمة المرور الجديدة 🔐",
-    confirmNewPassword: "أكد كلمة المرور الجديدة ✅",
-    searchCategories: "البحث في الفئات... 📂",
-    searchCoupons: "البحث في الكوبونات... 🎟️",
-    searchListings: "البحث في القوائم... 📋",
-    searchPayouts: "البحث في المدفوعات... 💰",
-    searchAuditLogs: "البحث في سجلات التدقيق... 📋",
-    searchVendors: "البحث في الموردين... 🏢",
-    searchTickets: "البحث في التذاكر... 🎫",
-    searchProducts: "البحث في المنتجات، الحسابات أو الفئات... 🔍",
-    tellBuyersAboutStore: "أخبر المشترين عن متجرك... 🏪",
-    phoneNumberField: "رقم الهاتف 📞",
-    adminEmail: "admin@nxoland.com 📧",
-    enterPassword: "أدخل كلمة المرور 🔐",
-    productTitle: "مثال: حساب ستيم - 500+ لعبة 🎮",
-    selectCategory: "اختر الفئة 📂",
-    selectPlatform: "اختر المنصة 🖥️",
-    describeProduct: "اوصف منتجك بالتفصيل... 📝",
-    enterPrice: "0.00 💰",
-    enterQuantity: "0 🔢",
-    selectDeliveryMethod: "اختر طريقة التسليم 📦",
-    describeDelivery: "اوصف كيف ستسلم الحساب... 📝",
-    selectTimeframe: "اختر الإطار الزمني ⏰",
-    steamAccountExample: "مثال: حساب ستيم مع 500+ لعبة 🎮",
-    enterAccountEmail: "أدخل بريد الحساب أو اسم المستخدم 📧",
-    enterAccountPassword: "أدخل كلمة مرور الحساب 🔐",
-    enterInstructions: "أدخل التعليمات (أو تفاصيل الحساب أو البيانات البنكية) 📝",
-    enterExpectedPrice: "أدخل السعر المتوقع 💰",
-    searchOrders: "البحث في الطلبات... 📦",
-    searchProducts: "البحث في المنتجات... 🔍",
-    enterAmount: "100.00 💰",
-    phoneNumberFormat: "555 123 4567 📞",
-    fullName: "أحمد محمد 👤",
-    cardNumber: "4111 1111 1111 1111 💳",
-    expiryDate: "12/25 📅",
-    cvc: "123 🔐",
-    emailPlaceholder: "بريدك الإلكتروني 📧",
-    resetCode: "123456 🔢",
-    newPasswordPlaceholder: "•••••••• 🔐",
-    confirmPasswordPlaceholder: "•••••••• 🔐",
-    searchPlaceholder: "البحث... 🔍",
-    enterFullName: "أدخل الاسم الكامل 👤",
-    enterEmailAddress: "أدخل عنوان البريد الإلكتروني 📧",
-    selectRole: "اختر الدور 👤",
-    selectStatus: "اختر الحالة 📊",
-    selectOrder: "اختر طلبًا 📦",
-    selectReason: "اختر السبب 📝",
-    describeIssue: "اوصف مشكلتك بالتفصيل (20 حرف على الأقل) 📝",
-    shareExperience: "شارك تجربتك مع هذا المنتج... 💬",
   },
 };
 
@@ -1575,7 +1001,11 @@ export const LanguageProvider: React.FC<{ children: React.ReactNode }> = ({ chil
   };
 
   const t = (key: string): string => {
-    return translations[language][key as keyof (typeof translations)["en"]] || key;
+    const translation = translations[language][key as keyof (typeof translations)["en"]];
+    if (typeof translation === 'string') {
+      return translation;
+    }
+    return key;
   };
 
   return <LanguageContext.Provider value={{ language, setLanguage, t }}>{children}</LanguageContext.Provider>;
