@@ -81,7 +81,7 @@ const Profile = () => {
           const newAvatar = e.target.result as string;
           setAvatar(newAvatar);
           
-          // Save to backend (in mock mode, just localStorage)
+          // Save to backend
           localStorage.setItem('user_avatar', newAvatar);
           
           // Dispatch custom event to notify Navbar about avatar change

@@ -65,28 +65,6 @@ const plans = [
     color: "from-primary to-accent",
     popular: true,
   },
-  {
-    name: "Elite",
-    price: "$99",
-    period: "per month",
-    description: "For top-tier sellers",
-    features: [
-      "Everything in Pro",
-      "1.5% transaction fee",
-      "Verified badge",
-      "Dedicated account manager",
-      "Unlimited featured listings",
-      "API access",
-      "Custom branding",
-      "Early access to features",
-      "Premium support (24/7)",
-      "Promoted in leaderboard",
-    ],
-    notIncluded: [],
-    icon: Crown,
-    color: "from-yellow-500 to-orange-600",
-    popular: false,
-  },
 ];
 
 const Pricing = () => {
@@ -101,7 +79,7 @@ const Pricing = () => {
 
   // Calculate prorated upgrade cost
   const calculateUpgradeCost = (newPlan: string) => {
-    const planPrices: Record<string, number> = { Free: 0, Pro: 29, Elite: 99 };
+    const planPrices: Record<string, number> = { Free: 0, Pro: 29 };
     const currentPrice = planPrices[currentPlan] || 0;
     const newPrice = planPrices[newPlan] || 0;
     
@@ -319,7 +297,6 @@ const Pricing = () => {
                       <th className="text-left p-4 font-semibold text-foreground">Features</th>
                       <th className="text-center p-4 font-semibold text-foreground">Free</th>
                       <th className="text-center p-4 font-semibold text-foreground">Pro</th>
-                      <th className="text-center p-4 font-semibold text-foreground">Elite</th>
                     </tr>
                   </thead>
                   <tbody>
@@ -327,25 +304,21 @@ const Pricing = () => {
                       <td className="p-4 text-foreground/70">Product Listings</td>
                       <td className="p-4 text-center">3</td>
                       <td className="p-4 text-center">Unlimited</td>
-                      <td className="p-4 text-center">Unlimited</td>
                     </tr>
                     <tr className="border-b border-border/20">
                       <td className="p-4 text-foreground/70">Transaction Fee</td>
                       <td className="p-4 text-center">5%</td>
                       <td className="p-4 text-center">3%</td>
-                      <td className="p-4 text-center">1.5%</td>
                     </tr>
                     <tr className="border-b border-border/20">
                       <td className="p-4 text-foreground/70">Support</td>
                       <td className="p-4 text-center">Community</td>
                       <td className="p-4 text-center">Priority</td>
-                      <td className="p-4 text-center">24/7 Premium</td>
                     </tr>
                     <tr className="border-b border-border/20">
                       <td className="p-4 text-foreground/70">Analytics</td>
                       <td className="p-4 text-center">Basic</td>
                       <td className="p-4 text-center">Advanced</td>
-                      <td className="p-4 text-center">Advanced + API</td>
                     </tr>
                   </tbody>
                 </table>

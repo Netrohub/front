@@ -121,7 +121,7 @@ const faqs = [
       },
       {
         q: "What are the seller fees?",
-        a: "Free accounts have a 5% transaction fee, Pro accounts 3%, and Elite accounts 1.5%. View our Pricing page for full details.",
+        a: "Free accounts have a 5% transaction fee, Pro accounts 3%. View our Pricing page for full details.",
       },
       {
         q: "When do I receive payment for my sales?",

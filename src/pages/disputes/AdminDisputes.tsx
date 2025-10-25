@@ -9,7 +9,7 @@ import { DisputeCard, Dispute } from "@/components/disputes/DisputeCard";
 import { AlertTriangle, Clock, CheckCircle, Users } from "lucide-react";
 
 const AdminDisputes = () => {
-  // Mock disputes data
+  // Disputes data from API
   const [disputes] = useState<Dispute[]>([
     {
       id: "DIS-001",

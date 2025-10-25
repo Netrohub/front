@@ -60,7 +60,7 @@ const KPICard = ({
 );
 
 function DashboardPage() {
-  // Mock data - replace with actual API calls
+  // Fetch data from API
   const { data: ordersData, isLoading: ordersLoading } = useList({
     resource: 'orders',
     pagination: { current: 1, pageSize: 1 },

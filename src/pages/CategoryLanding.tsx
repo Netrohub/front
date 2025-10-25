@@ -35,7 +35,7 @@ const categoryData = {
     stats: {
       listings: "2,450",
       avgPrice: "$399",
-      topSeller: "Digital Elite",
+      topSeller: "Top Seller",
     },
     subcategories: [
       { name: "Instagram", icon: "📸", count: 850 },

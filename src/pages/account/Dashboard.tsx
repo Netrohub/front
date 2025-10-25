@@ -132,8 +132,7 @@ const Dashboard = () => {
   // Check if user has completed KYC
   const isKYCVerified = user?.emailVerified && user?.phoneVerified && user?.kycStatus === 'verified';
   
-  // Check if user is Elite plan
-  const isElitePlan = user?.subscription?.plan === 'Elite';
+  // All users have access to all features
   
   return (
     <AccountLayout>

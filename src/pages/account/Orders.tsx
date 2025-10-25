@@ -24,7 +24,7 @@ const orders = [
     id: "ORD-001",
     product: "Steam Account - 200+ Games Library",
     image: "https://images.unsplash.com/photo-1550745165-9bc0b252726f?w=400&q=80",
-    seller: "ProGamer_Elite",
+    seller: "Seller",
     price: 449.99,
     status: "completed",
     date: "2024-01-20",

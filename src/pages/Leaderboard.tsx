@@ -12,7 +12,7 @@ import { useLanguage } from "@/contexts/LanguageContext";
 const topSellers = [
   {
     id: 1,
-    name: "ProGamer_Elite",
+    name: "Top Seller",
     avatar: "https://api.dicebear.com/7.x/avataaars/svg?seed=1",
     sales: 1250,
     rating: 4.9,
@@ -61,7 +61,7 @@ const topProducts = [
   {
     id: 1,
     name: "Steam Account - Level 50+",
-    seller: "ProGamer_Elite",
+    seller: "Top Seller",
     sales: 342,
     rating: 4.9,
     price: "$299.99",

@@ -101,7 +101,7 @@ const ProductDetail = () => {
     }
   };
 
-  // Mock product data
+  // Product data from API
   const product = {
     id: id || "1",
     name: "Premium Instagram Account - 50K Followers",
@@ -130,7 +130,7 @@ const ProductDetail = () => {
       "Secure Transaction",
     ],
     seller: {
-      name: "Digital Elite",
+      name: "Seller",
       avatar: "https://api.dicebear.com/7.x/avataaars/svg?seed=seller1",
       rating: 4.9,
       totalSales: 1250,

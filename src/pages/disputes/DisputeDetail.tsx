@@ -31,7 +31,7 @@ const DisputeDetail = () => {
         },
         {
           id: "2",
-          sender: { name: "Digital Elite", role: "seller" },
+          sender: { name: "Seller", role: "seller" },
           content: "Hello, thank you for reaching out. Can you please provide more details about the engagement issues you're experiencing?",
           timestamp: "1 day ago",
         },

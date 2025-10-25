@@ -93,17 +93,10 @@ const Footer = () => {
                 </Link>
               </li>
               <li>
-                {user?.subscription?.plan === 'Elite' ? (
-                  <Link to="/seller/dashboard" className="text-sm text-foreground/60 hover:text-primary transition-colors flex items-center gap-2 group">
-                    <span className="w-1 h-1 rounded-full bg-primary opacity-0 group-hover:opacity-100 transition-opacity" />
-                    {t('sellOnNexo')}
-                  </Link>
-                ) : (
-                  <span className="text-sm text-foreground/30 cursor-not-allowed flex items-center gap-2 group" title="Elite plan required">
-                    <span className="w-1 h-1 rounded-full bg-foreground/30" />
-                    {t('sellOnNexo')} (Elite Only)
-                  </span>
-                )}
+                <Link to="/seller/dashboard" className="text-sm text-foreground/60 hover:text-primary transition-colors flex items-center gap-2 group">
+                  <span className="w-1 h-1 rounded-full bg-primary opacity-0 group-hover:opacity-100 transition-opacity" />
+                  {t('sellOnNexo')}
+                </Link>
               </li>
               <li>
                 <Link to="/account/orders" className="text-sm text-foreground/60 hover:text-primary transition-colors flex items-center gap-2 group">
