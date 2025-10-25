@@ -1,4 +1,5 @@
 import AccountLayout from "@/components/AccountLayout";
+import MobileNav from "@/components/MobileNav";
 import KYCStatusComponent from "@/components/KYCStatus";
 import { Card } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
@@ -364,6 +365,7 @@ const Dashboard = () => {
           </div>
         </Card>
       </div>
+      <MobileNav />
     </AccountLayout>
   );
 };

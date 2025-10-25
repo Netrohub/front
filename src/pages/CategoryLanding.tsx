@@ -1,5 +1,6 @@
 import { useParams } from "react-router-dom";
 import Navbar from "@/components/Navbar";
+import MobileNav from "@/components/MobileNav";
 import Footer from "@/components/Footer";
 import Starfield from "@/components/Starfield";
 import ProductCard from "@/components/ProductCard";
@@ -132,7 +133,7 @@ const CategoryLanding = () => {
   const CategoryIcon = categoryInfo.icon;
 
   return (
-    <div className="min-h-screen flex flex-col relative">
+    <div className="min-h-screen flex flex-col relative pb-20">
       <Starfield />
       <Navbar />
       
@@ -298,6 +299,7 @@ const CategoryLanding = () => {
       </main>
       
       <Footer />
+      <MobileNav />
     </div>
   );
 };

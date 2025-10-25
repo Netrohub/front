@@ -1,4 +1,5 @@
 import Navbar from "@/components/Navbar";
+import MobileNav from "@/components/MobileNav";
 import Footer from "@/components/Footer";
 import Starfield from "@/components/Starfield";
 import TurnstileWidget, { TurnstileWidgetRef } from "@/components/TurnstileWidget";
@@ -124,7 +125,7 @@ const Register = () => {
   };
   
   return (
-    <div className="min-h-screen flex flex-col relative">
+    <div className="min-h-screen flex flex-col relative pb-20">
       <Starfield />
       <Navbar />
       
@@ -304,6 +305,7 @@ const Register = () => {
       </main>
       
       <Footer />
+      <MobileNav />
     </div>
   );
 };

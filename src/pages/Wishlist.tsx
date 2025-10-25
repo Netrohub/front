@@ -115,6 +115,7 @@ const Wishlist = () => {
       </main>
       
       <Footer />
+      <MobileNav />
     </div>
   );
 };
