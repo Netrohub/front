@@ -14,16 +14,10 @@ import {
   ArrowDownRight,
 } from 'lucide-react';
 
-// Mock chart component - replace with actual chart library
+// TODO: Replace with actual chart library (e.g., Chart.js, Recharts, etc.)
 const SimpleChart = ({ data, type = 'line' }: { data: any[], type?: 'line' | 'bar' }) => (
-  <div className="h-64 flex items-end justify-between gap-2 p-4">
-    {data.map((value, index) => (
-      <div
-        key={index}
-        className="bg-primary rounded-t"
-        style={{ height: `${(value / Math.max(...data)) * 100}%`, minHeight: '4px' }}
-      />
-    ))}
+  <div className="h-64 flex items-center justify-center text-foreground/60">
+    <p>Chart component - integrate with chart library</p>
   </div>
 );
 
@@ -82,19 +76,19 @@ function DashboardPage() {
     pagination: { current: 1, pageSize: 1 },
   });
 
-  // Mock KPI data
+  // TODO: Replace with actual KPI data from API
   const kpis = [
     {
       title: 'GMV (7 days)',
-      value: '$45,231',
-      change: '+12.5%',
+      value: ordersData?.total ? `$${ordersData.total.toLocaleString()}` : '$0',
+      change: '+0%',
       changeType: 'positive' as const,
       icon: DollarSign,
     },
     {
       title: 'GMV (30 days)',
-      value: '$234,567',
-      change: '+8.2%',
+      value: ordersData?.total ? `$${ordersData.total.toLocaleString()}` : '$0',
+      change: '+0%',
       changeType: 'positive' as const,
       icon: TrendingUp,
     },
@@ -114,21 +108,21 @@ function DashboardPage() {
     },
     {
       title: 'Pending Verifications',
-      value: '23',
-      change: '+3.2%',
+      value: usersData?.total?.toString() || '0',
+      change: '+0%',
       changeType: 'positive' as const,
       icon: Users,
     },
   ];
 
-  // Mock chart data
-  const gmvData = [12000, 15000, 18000, 22000, 19000, 25000, 28000, 32000, 29000, 35000, 38000, 42000];
+  // TODO: Replace with actual chart data from API
+  const gmvData = [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0]; // Empty data for now
   const categoryData = [
-    { name: 'Gaming', value: 35, color: '#3B82F6' },
-    { name: 'Social Media', value: 28, color: '#10B981' },
-    { name: 'Digital Services', value: 20, color: '#F59E0B' },
-    { name: 'Software', value: 12, color: '#EF4444' },
-    { name: 'Entertainment', value: 5, color: '#8B5CF6' },
+    { name: 'Gaming', value: 0, color: '#3B82F6' },
+    { name: 'Social Media', value: 0, color: '#10B981' },
+    { name: 'Digital Services', value: 0, color: '#F59E0B' },
+    { name: 'Software', value: 0, color: '#EF4444' },
+    { name: 'Entertainment', value: 0, color: '#8B5CF6' },
   ];
 
   return (
@@ -206,12 +200,8 @@ function DashboardPage() {
           </Button>
         </div>
         <div className="space-y-4">
-          {[
-            { action: 'New order #1234', user: 'john@example.com', time: '2 minutes ago', type: 'order' },
-            { action: 'Dispute opened #567', user: 'jane@example.com', time: '15 minutes ago', type: 'dispute' },
-            { action: 'User verified', user: 'admin', time: '1 hour ago', type: 'verification' },
-            { action: 'Payout processed', user: 'system', time: '2 hours ago', type: 'payout' },
-          ].map((activity, index) => (
+          {/* TODO: Replace with actual activity data from API */}
+          {[].map((activity, index) => (
             <div key={index} className="flex items-center justify-between p-3 rounded-lg bg-muted/50">
               <div className="flex items-center gap-3">
                 <div className={`w-2 h-2 rounded-full ${

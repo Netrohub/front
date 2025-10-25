@@ -28,39 +28,8 @@ function VendorsList() {
     pagination: { current: 1, pageSize: 10 },
   });
 
-  // Mock vendors data
-  const vendors = [
-    {
-      id: 1,
-      user_id: 2,
-      display_name: 'Sarah Johnson',
-      email: 'sarah@nxoland.com',
-      kyc_status: 'verified',
-      business_type: 'Individual',
-      created_at: '2024-02-20T14:15:00Z',
-      notes: 'Premium seller with excellent ratings',
-    },
-    {
-      id: 2,
-      user_id: 3,
-      display_name: 'Mike Wilson',
-      email: 'mike@nxoland.com',
-      kyc_status: 'pending',
-      business_type: 'Business',
-      created_at: '2024-03-10T09:45:00Z',
-      notes: 'New vendor awaiting verification',
-    },
-    {
-      id: 3,
-      user_id: 4,
-      display_name: 'Tech Solutions Ltd',
-      email: 'contact@techsolutions.com',
-      kyc_status: 'rejected',
-      business_type: 'Corporation',
-      created_at: '2024-01-15T11:30:00Z',
-      notes: 'KYC documents incomplete',
-    },
-  ];
+  // TODO: Replace with actual vendors data from API
+  const vendors = data?.data || [];
 
   const getStatusBadge = (status: string) => {
     switch (status) {

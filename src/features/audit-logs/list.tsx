@@ -26,57 +26,8 @@ import {
 } from 'lucide-react';
 
 function AuditLogsList() {
-  // Mock audit logs data
-  const auditLogs = [
-    {
-      id: 1,
-      user: 'admin@nxoland.com',
-      action: 'User created',
-      resource: 'users',
-      resource_id: 123,
-      details: 'Created new user account for john@example.com',
-      ip_address: '192.168.1.100',
-      user_agent: 'Mozilla/5.0 (Windows NT 10.0; Win64; x64)',
-      level: 'info',
-      created_at: '2024-02-20T14:15:00Z',
-    },
-    {
-      id: 2,
-      user: 'admin@nxoland.com',
-      action: 'Order updated',
-      resource: 'orders',
-      resource_id: 456,
-      details: 'Updated order status from pending to shipped',
-      ip_address: '192.168.1.100',
-      user_agent: 'Mozilla/5.0 (Windows NT 10.0; Win64; x64)',
-      level: 'info',
-      created_at: '2024-02-20T13:30:00Z',
-    },
-    {
-      id: 3,
-      user: 'admin@nxoland.com',
-      action: 'Failed login attempt',
-      resource: 'auth',
-      resource_id: null,
-      details: 'Multiple failed login attempts from 192.168.1.200',
-      ip_address: '192.168.1.200',
-      user_agent: 'Mozilla/5.0 (Linux; Android 10)',
-      level: 'warning',
-      created_at: '2024-02-20T12:45:00Z',
-    },
-    {
-      id: 4,
-      user: 'admin@nxoland.com',
-      action: 'Dispute resolved',
-      resource: 'disputes',
-      resource_id: 789,
-      details: 'Resolved dispute #789 in favor of buyer',
-      ip_address: '192.168.1.100',
-      user_agent: 'Mozilla/5.0 (Windows NT 10.0; Win64; x64)',
-      level: 'success',
-      created_at: '2024-02-20T11:20:00Z',
-    },
-  ];
+  // TODO: Replace with actual audit logs data from API
+  const auditLogs = [];
 
   const getLevelBadge = (level: string) => {
     switch (level) {

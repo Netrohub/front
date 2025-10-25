@@ -25,42 +25,8 @@ import {
 } from 'lucide-react';
 
 function TicketsList() {
-  // Mock tickets data
-  const tickets = [
-    {
-      id: 1,
-      subject: 'Account verification issue',
-      user: 'john@example.com',
-      priority: 'high',
-      status: 'open',
-      category: 'Account',
-      assigned_to: 'Admin User',
-      created_at: '2024-02-20T14:15:00Z',
-      updated_at: '2024-02-20T16:30:00Z',
-    },
-    {
-      id: 2,
-      subject: 'Payment not received',
-      user: 'sarah@example.com',
-      priority: 'medium',
-      status: 'in_progress',
-      category: 'Payment',
-      assigned_to: 'Support Team',
-      created_at: '2024-02-18T10:30:00Z',
-      updated_at: '2024-02-19T09:15:00Z',
-    },
-    {
-      id: 3,
-      subject: 'Product listing rejected',
-      user: 'mike@example.com',
-      priority: 'low',
-      status: 'resolved',
-      category: 'Product',
-      assigned_to: 'Admin User',
-      created_at: '2024-02-15T11:45:00Z',
-      updated_at: '2024-02-16T14:20:00Z',
-    },
-  ];
+  // TODO: Replace with actual tickets data from API
+  const tickets = [];
 
   const getStatusBadge = (status: string) => {
     switch (status) {

@@ -28,48 +28,8 @@ function ListingsList() {
     pagination: { current: 1, pageSize: 10 },
   });
 
-  // Mock listings data
-  const listings = [
-    {
-      id: 1,
-      title: 'Premium Instagram Account',
-      slug: 'premium-instagram-account',
-      seller: 'Sarah Johnson',
-      price: 150.00,
-      stock: 1,
-      status: 'active',
-      category: 'Social Media',
-      rating: 4.8,
-      sales_count: 23,
-      created_at: '2024-02-20T14:15:00Z',
-    },
-    {
-      id: 2,
-      title: 'Gaming Account - Level 100',
-      slug: 'gaming-account-level-100',
-      seller: 'Mike Wilson',
-      price: 75.50,
-      stock: 3,
-      status: 'pending',
-      category: 'Gaming',
-      rating: 4.5,
-      sales_count: 12,
-      created_at: '2024-03-10T09:45:00Z',
-    },
-    {
-      id: 3,
-      title: 'Digital Marketing Course',
-      slug: 'digital-marketing-course',
-      seller: 'Tech Solutions Ltd',
-      price: 299.99,
-      stock: 0,
-      status: 'rejected',
-      category: 'Education',
-      rating: 0,
-      sales_count: 0,
-      created_at: '2024-01-15T11:30:00Z',
-    },
-  ];
+  // TODO: Replace with actual listings data from API
+  const listings = [];
 
   const getStatusBadge = (status: string) => {
     switch (status) {

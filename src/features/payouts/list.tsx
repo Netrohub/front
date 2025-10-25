@@ -30,39 +30,8 @@ function PayoutsList() {
     pagination: { current: 1, pageSize: 10 },
   });
 
-  // Mock payouts data
-  const payouts = [
-    {
-      id: 1,
-      seller: 'Sarah Johnson',
-      amount: 1250.00,
-      method: 'Bank Transfer',
-      status: 'paid',
-      transaction_id: 'TXN-001234',
-      processed_at: '2024-02-20T14:15:00Z',
-      created_at: '2024-02-18T10:30:00Z',
-    },
-    {
-      id: 2,
-      seller: 'Mike Wilson',
-      amount: 450.75,
-      method: 'PayPal',
-      status: 'pending',
-      transaction_id: null,
-      processed_at: null,
-      created_at: '2024-03-10T09:45:00Z',
-    },
-    {
-      id: 3,
-      seller: 'Tech Solutions Ltd',
-      amount: 2200.50,
-      method: 'Bank Transfer',
-      status: 'failed',
-      transaction_id: null,
-      processed_at: null,
-      created_at: '2024-01-15T11:30:00Z',
-    },
-  ];
+  // TODO: Replace with actual payouts data from API
+  const payouts = [];
 
   const getStatusBadge = (status: string) => {
     switch (status) {

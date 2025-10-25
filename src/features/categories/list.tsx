@@ -23,45 +23,8 @@ import {
 } from 'lucide-react';
 
 function CategoriesList() {
-  // Mock categories data
-  const categories = [
-    {
-      id: 1,
-      name: 'Gaming',
-      slug: 'gaming',
-      description: 'Gaming accounts and digital items',
-      product_count: 45,
-      status: 'active',
-      created_at: '2024-01-15T10:30:00Z',
-    },
-    {
-      id: 2,
-      name: 'Social Media',
-      slug: 'social-media',
-      description: 'Social media accounts and services',
-      product_count: 32,
-      status: 'active',
-      created_at: '2024-01-20T14:15:00Z',
-    },
-    {
-      id: 3,
-      name: 'Digital Services',
-      slug: 'digital-services',
-      description: 'Digital marketing and design services',
-      product_count: 18,
-      status: 'active',
-      created_at: '2024-02-01T09:45:00Z',
-    },
-    {
-      id: 4,
-      name: 'Software',
-      slug: 'software',
-      description: 'Software licenses and tools',
-      product_count: 12,
-      status: 'inactive',
-      created_at: '2024-02-10T11:30:00Z',
-    },
-  ];
+  // TODO: Replace with actual categories data from API
+  const categories = [];
 
   const getStatusBadge = (status: string) => {
     switch (status) {

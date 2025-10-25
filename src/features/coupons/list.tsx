@@ -25,51 +25,8 @@ import {
 } from 'lucide-react';
 
 function CouponsList() {
-  // Mock coupons data
-  const coupons = [
-    {
-      id: 1,
-      code: 'WELCOME10',
-      description: 'Welcome discount for new users',
-      type: 'percentage',
-      value: 10,
-      min_amount: 50,
-      max_discount: 25,
-      usage_limit: 100,
-      used_count: 23,
-      status: 'active',
-      expires_at: '2024-12-31T23:59:59Z',
-      created_at: '2024-01-15T10:30:00Z',
-    },
-    {
-      id: 2,
-      code: 'SAVE20',
-      description: 'Flat discount for orders over $100',
-      type: 'fixed',
-      value: 20,
-      min_amount: 100,
-      max_discount: null,
-      usage_limit: 50,
-      used_count: 12,
-      status: 'active',
-      expires_at: '2024-06-30T23:59:59Z',
-      created_at: '2024-02-01T14:15:00Z',
-    },
-    {
-      id: 3,
-      code: 'EXPIRED5',
-      description: 'Expired coupon',
-      type: 'percentage',
-      value: 5,
-      min_amount: 25,
-      max_discount: 10,
-      usage_limit: 200,
-      used_count: 45,
-      status: 'expired',
-      expires_at: '2024-01-31T23:59:59Z',
-      created_at: '2023-12-01T09:45:00Z',
-    },
-  ];
+  // TODO: Replace with actual coupons data from API
+  const coupons = [];
 
   const getStatusBadge = (status: string) => {
     switch (status) {
