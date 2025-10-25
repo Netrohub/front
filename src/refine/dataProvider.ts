@@ -35,10 +35,17 @@ export const dataProvider: DataProvider = {
       const token = getAdminToken();
       const headers = token ? { 'Authorization': `Bearer ${token}` } : {};
       
-      const response = await apiClient.request(endpoint, { headers });
+      const response = await fetch(`https://api.nxoland.com/api${endpoint}`, {
+        headers: {
+          'Content-Type': 'application/json',
+          'Accept': 'application/json',
+          ...headers,
+        },
+      });
+      const data = await response.json();
       return {
-        data: response.data || [],
-        total: response.meta?.total || 0,
+        data: Array.isArray(data.data) ? data.data : [],
+        total: data.meta?.total || 0,
       };
     } catch (error) {
       console.error('Admin API Error:', error);
@@ -59,8 +66,15 @@ export const dataProvider: DataProvider = {
       const token = getAdminToken();
       const headers = token ? { 'Authorization': `Bearer ${token}` } : {};
       
-      const response = await apiClient.request(`/${resource}/${id}`, { headers });
-      return { data: response.data };
+      const response = await fetch(`https://api.nxoland.com/api/${resource}/${id}`, {
+        headers: {
+          'Content-Type': 'application/json',
+          'Accept': 'application/json',
+          ...headers,
+        },
+      });
+      const data = await response.json();
+      return { data: data.data || null };
     } catch (error) {
       console.error('Admin API Error:', error);
       console.log('🔄 API endpoint not available, returning null for:', resource, id);
@@ -77,12 +91,17 @@ export const dataProvider: DataProvider = {
       const token = getAdminToken();
       const headers = token ? { 'Authorization': `Bearer ${token}` } : {};
       
-      const response = await apiClient.request(`/${resource}`, {
+      const response = await fetch(`https://api.nxoland.com/api/${resource}`, {
         method: 'POST',
-        headers: { ...headers, 'Content-Type': 'application/json' },
+        headers: {
+          'Content-Type': 'application/json',
+          'Accept': 'application/json',
+          ...headers,
+        },
         body: JSON.stringify(variables),
       });
-      return { data: response.data };
+      const data = await response.json();
+      return { data: data.data || null };
     } catch (error) {
       console.error('Admin API Error:', error);
       console.log('🔄 API endpoint not available for create:', resource);
@@ -97,12 +116,17 @@ export const dataProvider: DataProvider = {
       const token = getAdminToken();
       const headers = token ? { 'Authorization': `Bearer ${token}` } : {};
       
-      const response = await apiClient.request(`/${resource}/${id}`, {
+      const response = await fetch(`https://api.nxoland.com/api/${resource}/${id}`, {
         method: 'PUT',
-        headers: { ...headers, 'Content-Type': 'application/json' },
+        headers: {
+          'Content-Type': 'application/json',
+          'Accept': 'application/json',
+          ...headers,
+        },
         body: JSON.stringify(variables),
       });
-      return { data: response.data };
+      const data = await response.json();
+      return { data: data.data || null };
     } catch (error) {
       console.error('Admin API Error:', error);
       console.log('🔄 API endpoint not available for update:', resource, id);
@@ -117,11 +141,15 @@ export const dataProvider: DataProvider = {
       const token = getAdminToken();
       const headers = token ? { 'Authorization': `Bearer ${token}` } : {};
       
-      await apiClient.request(`/${resource}/${id}`, {
+      await fetch(`https://api.nxoland.com/api/${resource}/${id}`, {
         method: 'DELETE',
-        headers,
+        headers: {
+          'Content-Type': 'application/json',
+          'Accept': 'application/json',
+          ...headers,
+        },
       });
-      return { data: { id } };
+      return { data: { id } as any };
     } catch (error) {
       console.error('Admin API Error:', error);
       console.log('🔄 API endpoint not available for delete:', resource, id);
@@ -137,11 +165,16 @@ export const dataProvider: DataProvider = {
     console.log('📊 Admin API: Custom', { url, method, payload });
     
     try {
-      const response = await apiClient.request(url, {
+      const response = await fetch(url, {
         method: method || 'GET',
+        headers: {
+          'Content-Type': 'application/json',
+          'Accept': 'application/json',
+        },
         body: payload ? JSON.stringify(payload) : undefined,
       });
-      return { data: response.data };
+      const data = await response.json();
+      return { data: data.data || null };
     } catch (error) {
       console.error('Admin API Error:', error);
       throw error;
