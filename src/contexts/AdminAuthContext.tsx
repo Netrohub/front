@@ -66,25 +66,9 @@ export const AdminAuthProvider: React.FC<AdminAuthProviderProps> = ({ children }
           console.log('💾 AdminAuth: Token stored');
         }
       } else {
-        // TEMPORARY: Allow any authenticated user for testing
-        console.log('⚠️ AdminAuth: User is not an admin, but allowing for testing');
+        console.log('❌ AdminAuth: User is not an admin');
         console.log('🔧 Current user roles:', response.user?.roles);
-        
-        // Create a temporary admin user object
-        const tempAdminUser = {
-          ...response.user,
-          roles: [...(response.user?.roles || []), 'admin'] // Add admin role temporarily
-        };
-        
-        setAdminUser(tempAdminUser);
-        
-        // Store token for API calls
-        if (response.access_token) {
-          localStorage.setItem('auth_token', response.access_token);
-          console.log('💾 AdminAuth: Token stored');
-        }
-        
-        console.log('🔓 AdminAuth: Temporary admin access granted for testing');
+        throw new Error('Access denied. Admin privileges required.');
       }
     } catch (error) {
       console.error('❌ AdminAuth: Login failed:', error);
@@ -119,18 +103,8 @@ export const AdminAuthProvider: React.FC<AdminAuthProviderProps> = ({ children }
             console.log('✅ AdminAuth: Valid admin token found');
             setAdminUser(response);
           } else {
-            // TEMPORARY: Allow any authenticated user for testing
-            console.log('⚠️ AdminAuth: User is not an admin, but allowing for testing');
-            console.log('🔧 Current user roles:', response?.roles);
-            
-            // Create a temporary admin user object
-            const tempAdminUser = {
-              ...response,
-              roles: [...(response?.roles || []), 'admin'] // Add admin role temporarily
-            };
-            
-            setAdminUser(tempAdminUser);
-            console.log('🔓 AdminAuth: Temporary admin access granted for testing');
+            console.log('❌ AdminAuth: Invalid or non-admin token');
+            logout();
           }
         }
       } catch (error) {
