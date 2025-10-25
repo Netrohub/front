@@ -277,13 +277,12 @@ class ApiClient {
     });
     
     console.log('🔍 API Client: Full backend response:', response);
-    console.log('🔍 API Client: response.data:', response.data);
     
-    if (response && response.data && response.data.access_token) {
-      this.setToken(response.data.access_token);
+    if (response && response.access_token) {
+      this.setToken(response.access_token);
     }
     
-    return response.data;
+    return response;
   }
 
   async register(userData: RegisterRequest): Promise<AuthResponse> {
@@ -292,11 +291,11 @@ class ApiClient {
       body: JSON.stringify(userData),
     });
     
-    if (response && response.data && response.data.access_token) {
-      this.setToken(response.data.access_token);
+    if (response && response.access_token) {
+      this.setToken(response.access_token);
     }
     
-    return response.data;
+    return response;
   }
 
   async logout(): Promise<void> {
