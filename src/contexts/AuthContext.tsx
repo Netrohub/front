@@ -58,6 +58,7 @@ function AuthProvider({ children }: AuthProviderProps) {
       
       const response = await apiClient.login({ email, password, remember });
       
+      console.log('🔍 AuthContext: Full response:', response);
       console.log('👤 AuthContext: Setting user', response.user);
       setUser(response.user);
       

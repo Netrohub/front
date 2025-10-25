@@ -276,6 +276,9 @@ class ApiClient {
       body: JSON.stringify(credentials),
     });
     
+    console.log('🔍 API Client: Full backend response:', response);
+    console.log('🔍 API Client: response.data:', response.data);
+    
     if (response && response.data && response.data.access_token) {
       this.setToken(response.data.access_token);
     }
