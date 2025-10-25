@@ -133,35 +133,36 @@ const Navbar = () => {
             </Link>
 
             {/* Mobile Menu Button */}
-            <div className="flex items-center gap-2">
-              {/* Search Icon */}
-              <Button
-                variant="ghost"
-                size="icon"
-                className="h-10 w-10 hover:bg-primary/10 hover:text-primary transition-colors"
-                onClick={() => setMobileMenuOpen(!mobileMenuOpen)}
-              >
-                <Search className="h-5 w-5" />
-              </Button>
-
-              {/* Menu Button */}
-              <Button
-                variant="ghost"
-                size="icon"
-                className="h-10 w-10 hover:bg-primary/10 hover:text-primary transition-colors"
-                onClick={() => setMobileMenuOpen(!mobileMenuOpen)}
-              >
-                {mobileMenuOpen ? <X className="h-5 w-5" /> : <Menu className="h-5 w-5" />}
-              </Button>
-            </div>
+            <Button
+              variant="ghost"
+              size="icon"
+              className="h-10 w-10 hover:bg-primary/10 hover:text-primary transition-colors"
+              onClick={() => setMobileMenuOpen(!mobileMenuOpen)}
+            >
+              {mobileMenuOpen ? <X className="h-5 w-5" /> : <Menu className="h-5 w-5" />}
+            </Button>
           </div>
 
           {/* Mobile Dropdown Menu */}
           {mobileMenuOpen && (
-            <div className="absolute top-16 left-0 right-0 bg-background/95 backdrop-blur-xl border-b border-border/50 glass-card shadow-lg">
+            <div className="absolute top-16 left-0 right-0 bg-background/95 backdrop-blur-xl border-b border-border/50 glass-card shadow-lg z-50">
               <div className="container mx-auto px-4 py-4">
+                {/* Search Bar */}
+                <div className="mb-4">
+                  <form onSubmit={handleSearch} className="relative">
+                    <Search className="absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-primary/70" />
+                    <Input
+                      type="search"
+                      placeholder={t('searchPlaceholder') || "Search..."}
+                      className="w-full pl-10 bg-muted/50 border-border/50 focus:border-primary/50 focus:bg-muted/70 transition-all"
+                      value={searchQuery}
+                      onChange={(e) => setSearchQuery(e.target.value)}
+                    />
+                  </form>
+                </div>
+
                 {/* Navigation Links */}
-                <div className="space-y-2 mb-4">
+                <div className="space-y-1 mb-4">
                   <Link
                     to="/"
                     className="flex items-center gap-3 p-3 rounded-lg hover:bg-primary/10 transition-colors"
@@ -190,20 +191,6 @@ const Navbar = () => {
                   >
                     <span className="text-sm font-medium text-foreground/70">{t('leaderboard')}</span>
                   </Link>
-                </div>
-
-                {/* Search Bar */}
-                <div className="mb-4">
-                  <form onSubmit={handleSearch} className="relative">
-                    <Search className="absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-primary/70" />
-                    <Input
-                      type="search"
-                      placeholder={t('searchPlaceholder') || "Search..."}
-                      className="w-full pl-10 bg-muted/50 border-border/50 focus:border-primary/50 focus:bg-muted/70 transition-all"
-                      value={searchQuery}
-                      onChange={(e) => setSearchQuery(e.target.value)}
-                    />
-                  </form>
                 </div>
 
                 {/* User Actions */}

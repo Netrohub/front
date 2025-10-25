@@ -853,7 +853,7 @@ const translations = {
     wishlist: "قائمة الرغبات ❤️",
 
     // Cart Page
-    shoppingCart: "سلة التسوق 🛒",
+    shoppingCart: "السلة",
     itemsInCart: "عناصر في سلتك",
     quantity: "الكمية 🔢",
     remove: "إزالة 🗑️",
