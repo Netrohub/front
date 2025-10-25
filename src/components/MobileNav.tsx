@@ -29,33 +29,6 @@ const MobileNav = () => {
 
   return (
     <>
-      {/* Secondary Navigation (Top) */}
-      <nav className="md:hidden fixed top-16 left-0 right-0 z-40 glass-card border-b border-border/30 backdrop-blur-xl">
-        <div className="flex justify-center items-center h-12 px-4">
-          <div className="flex items-center gap-6">
-            {secondaryNavItems.map((item) => {
-              const Icon = item.icon;
-              const isActive = location.pathname === item.path;
-              
-              return (
-                <Link
-                  key={item.path}
-                  to={item.path}
-                  className={`flex items-center gap-2 px-3 py-2 rounded-lg transition-all duration-200 ${
-                    isActive
-                      ? "bg-primary/10 text-primary"
-                      : "text-foreground/60 hover:text-foreground hover:bg-foreground/5"
-                  }`}
-                >
-                  <Icon className="h-4 w-4" />
-                  <span className="text-sm font-medium">{item.label}</span>
-                </Link>
-              );
-            })}
-          </div>
-        </div>
-      </nav>
-
       {/* Primary Navigation (Bottom) */}
       <nav className="md:hidden fixed bottom-0 left-0 right-0 z-50 glass-card border-t border-border/30 backdrop-blur-xl">
         <div className="grid grid-cols-4 h-16">

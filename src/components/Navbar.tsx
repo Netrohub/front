@@ -191,6 +191,13 @@ const Navbar = () => {
                   >
                     <span className="text-sm font-medium text-foreground/70">{t('leaderboard')}</span>
                   </Link>
+                  <Link
+                    to="/wishlist"
+                    className="flex items-center gap-3 p-3 rounded-lg hover:bg-primary/10 transition-colors"
+                    onClick={() => setMobileMenuOpen(false)}
+                  >
+                    <span className="text-sm font-medium text-foreground/70">{t('wishlist')}</span>
+                  </Link>
                 </div>
 
                 {/* User Actions */}

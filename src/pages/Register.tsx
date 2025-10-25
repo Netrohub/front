@@ -124,7 +124,7 @@ const Register = () => {
   };
   
   return (
-    <div className="min-h-screen flex flex-col relative pt-16 pb-20">
+    <div className="min-h-screen flex flex-col relative pb-20">
       <Starfield />
       <Navbar />
       
