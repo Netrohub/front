@@ -4,6 +4,7 @@ import MobileNav from "@/components/MobileNav";
 import Footer from "@/components/Footer";
 import Starfield from "@/components/Starfield";
 import ProductCard from "@/components/ProductCard";
+import { useLanguage } from "@/contexts/LanguageContext";
 import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
@@ -26,43 +27,6 @@ import {
   MessageCircle
 } from "lucide-react";
 
-const categoryData = {
-  "social-media": {
-    name: "Social Media Accounts",
-    description: "Premium verified social media accounts with real followers and engagement",
-    icon: Instagram,
-    color: "from-pink-500 to-purple-600",
-    stats: {
-      listings: "2,450",
-      avgPrice: "$399",
-      topSeller: "Top Seller",
-    },
-    subcategories: [
-      { name: "Instagram", icon: "📸", count: 850 },
-      { name: "TikTok", icon: "🎵", count: 620 },
-      { name: "YouTube", icon: "▶️", count: 480 },
-      { name: "Twitter/X", icon: "🐦", count: 350 },
-      { name: "Facebook", icon: "👥", count: 150 },
-    ],
-  },
-  gaming: {
-    name: "Gaming Accounts",
-    description: "High-level gaming accounts, rare items, and exclusive content",
-    icon: ShoppingBag,
-    color: "from-blue-500 to-cyan-600",
-    stats: {
-      listings: "3,120",
-      avgPrice: "$299",
-      topSeller: "Game Masters",
-    },
-    subcategories: [
-      { name: "Steam", icon: "🎮", count: 1200 },
-      { name: "PlayStation", icon: "🎯", count: 850 },
-      { name: "Xbox", icon: "🎪", count: 680 },
-      { name: "Epic Games", icon: "⚡", count: 390 },
-    ],
-  },
-};
 
 const products = [
   {
@@ -128,7 +92,47 @@ const products = [
 ];
 
 const CategoryLanding = () => {
+  const { t } = useLanguage();
   const { category } = useParams<{ category: string }>();
+  
+  const categoryData = {
+    "social-media": {
+      name: t('socialMediaAccounts'),
+      description: t('premiumVerifiedAccounts'),
+      icon: Instagram,
+      color: "from-pink-500 to-purple-600",
+      stats: {
+        listings: "2,450",
+        avgPrice: "$399",
+        topSeller: t('topSeller'),
+      },
+      subcategories: [
+        { name: t('instagram'), icon: "📸", count: 850 },
+        { name: t('tiktok'), icon: "🎵", count: 620 },
+        { name: t('youtube'), icon: "▶️", count: 480 },
+        { name: t('twitter'), icon: "🐦", count: 350 },
+        { name: t('facebook'), icon: "👥", count: 150 },
+      ],
+    },
+    gaming: {
+      name: t('gamingAccounts'),
+      description: t('highLevelAccounts'),
+      icon: ShoppingBag,
+      color: "from-blue-500 to-cyan-600",
+      stats: {
+        listings: "3,120",
+        avgPrice: "$299",
+        topSeller: t('gameMasters'),
+      },
+      subcategories: [
+        { name: t('steam'), icon: "🎮", count: 1200 },
+        { name: t('playstation'), icon: "🎯", count: 850 },
+        { name: t('xbox'), icon: "🎪", count: 680 },
+        { name: t('epicGames'), icon: "⚡", count: 390 },
+      ],
+    },
+  };
+  
   const categoryInfo = categoryData[category as keyof typeof categoryData] || categoryData["social-media"];
   const CategoryIcon = categoryInfo.icon;
 
@@ -174,13 +178,13 @@ const CategoryLanding = () => {
                   <p className="text-2xl font-black bg-gradient-to-r from-primary to-accent bg-clip-text text-transparent">
                     {categoryInfo.stats.listings}
                   </p>
-                  <p className="text-xs text-foreground/60">Active Listings</p>
+                  <p className="text-xs text-foreground/60">{t('activeListings')}</p>
                 </Card>
                 <Card className="glass-card p-4">
                   <p className="text-2xl font-black bg-gradient-to-r from-primary to-accent bg-clip-text text-transparent">
                     {categoryInfo.stats.avgPrice}
                   </p>
-                  <p className="text-xs text-foreground/60">Average Price</p>
+                  <p className="text-xs text-foreground/60">{t('averagePrice')}</p>
                 </Card>
                 <Card className="glass-card p-4">
                   <div className="flex items-center justify-center gap-1 mb-1">
@@ -189,7 +193,7 @@ const CategoryLanding = () => {
                       4.8
                     </p>
                   </div>
-                  <p className="text-xs text-foreground/60">Avg Rating</p>
+                  <p className="text-xs text-foreground/60">{t('avgRating')}</p>
                 </Card>
               </div>
             </div>
@@ -199,7 +203,7 @@ const CategoryLanding = () => {
         {/* Subcategories */}
         <section className="py-12 border-b border-border/30">
           <div className="container mx-auto px-4">
-            <h2 className="text-2xl font-black text-foreground mb-6">Browse by Type</h2>
+            <h2 className="text-2xl font-black text-foreground mb-6">{t('browseByType')}</h2>
             <div className="grid grid-cols-2 md:grid-cols-5 gap-4">
               {categoryInfo.subcategories.map((sub) => (
                 <Card
@@ -233,10 +237,10 @@ const CategoryLanding = () => {
                   
                   <Select defaultValue="all-prices">
                     <SelectTrigger className="w-[180px] glass-card border-primary/30">
-                      <SelectValue placeholder="Price Range" />
+                      <SelectValue placeholder={t('priceRange')} />
                     </SelectTrigger>
                     <SelectContent className="glass-card">
-                      <SelectItem value="all-prices">All Prices</SelectItem>
+                      <SelectItem value="all-prices">{t('allPrices')}</SelectItem>
                       <SelectItem value="under-100">Under $100</SelectItem>
                       <SelectItem value="100-300">$100 - $300</SelectItem>
                       <SelectItem value="300-500">$300 - $500</SelectItem>
@@ -246,10 +250,10 @@ const CategoryLanding = () => {
 
                   <Select defaultValue="all-followers">
                     <SelectTrigger className="w-[180px] glass-card border-primary/30">
-                      <SelectValue placeholder="Followers" />
+                      <SelectValue placeholder={t('followers')} />
                     </SelectTrigger>
                     <SelectContent className="glass-card">
-                      <SelectItem value="all-followers">All Followers</SelectItem>
+                      <SelectItem value="all-followers">{t('allFollowers')}</SelectItem>
                       <SelectItem value="10k-50k">10K - 50K</SelectItem>
                       <SelectItem value="50k-100k">50K - 100K</SelectItem>
                       <SelectItem value="over-100k">Over 100K</SelectItem>
@@ -259,14 +263,14 @@ const CategoryLanding = () => {
 
                 <Select defaultValue="featured">
                   <SelectTrigger className="w-[180px] glass-card border-primary/30">
-                    <SelectValue placeholder="Sort by" />
+                    <SelectValue placeholder={t('sortBy')} />
                   </SelectTrigger>
                   <SelectContent className="glass-card">
-                    <SelectItem value="featured">Featured</SelectItem>
+                    <SelectItem value="featured">{t('featured')}</SelectItem>
                     <SelectItem value="price-low">Price: Low to High</SelectItem>
                     <SelectItem value="price-high">Price: High to Low</SelectItem>
-                    <SelectItem value="rating">Highest Rated</SelectItem>
-                    <SelectItem value="newest">Newest First</SelectItem>
+                    <SelectItem value="rating">{t('highestRated')}</SelectItem>
+                    <SelectItem value="newest">{t('newestFirst')}</SelectItem>
                   </SelectContent>
                 </Select>
               </div>

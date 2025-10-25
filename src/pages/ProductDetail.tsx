@@ -4,6 +4,7 @@ import Navbar from "@/components/Navbar";
 import MobileNav from "@/components/MobileNav";
 import Footer from "@/components/Footer";
 import Starfield from "@/components/Starfield";
+import { useLanguage } from "@/contexts/LanguageContext";
 import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
@@ -28,6 +29,7 @@ import {
 } from "lucide-react";
 
 const ProductDetail = () => {
+  const { t } = useLanguage();
   const { id } = useParams();
   const navigate = useNavigate();
   const { toast } = useToast();
@@ -190,9 +192,9 @@ const ProductDetail = () => {
         <section className="border-b border-border/30">
           <div className="container mx-auto px-4 py-4">
             <div className="flex items-center gap-2 text-sm text-foreground/60">
-              <Link to="/" className="hover:text-primary transition-colors">Home</Link>
+              <Link to="/" className="hover:text-primary transition-colors">{t('home')}</Link>
               <span>/</span>
-              <Link to="/products" className="hover:text-primary transition-colors">Products</Link>
+              <Link to="/products" className="hover:text-primary transition-colors">{t('products')}</Link>
               <span>/</span>
               <Link to={`/products?category=${product.category}`} className="hover:text-primary transition-colors">
                 {product.category}
@@ -335,11 +337,11 @@ const ProductDetail = () => {
                 <div className="grid grid-cols-3 gap-3">
                   <Card className="glass-card p-4 text-center">
                     <Shield className="h-6 w-6 text-primary mx-auto mb-2" />
-                    <p className="text-xs text-foreground/60">Secure Payment</p>
+                    <p className="text-xs text-foreground/60">{t('securePayment')}</p>
                   </Card>
                   <Card className="glass-card p-4 text-center">
                     <Truck className="h-6 w-6 text-primary mx-auto mb-2" />
-                    <p className="text-xs text-foreground/60">Instant Delivery</p>
+                    <p className="text-xs text-foreground/60">{t('instantDelivery')}</p>
                   </Card>
                   <Card className="glass-card p-4 text-center">
                     <RotateCcw className="h-6 w-6 text-primary mx-auto mb-2" />
@@ -390,19 +392,19 @@ const ProductDetail = () => {
             {/* Tabs Section */}
             <Tabs defaultValue="description" className="space-y-6">
               <TabsList className="glass-card border border-border/30">
-                <TabsTrigger value="description">Description</TabsTrigger>
-                <TabsTrigger value="specifications">Specifications</TabsTrigger>
+                <TabsTrigger value="description">{t('description')}</TabsTrigger>
+                <TabsTrigger value="specifications">{t('specifications')}</TabsTrigger>
                 <TabsTrigger value="reviews">Reviews ({product.reviews})</TabsTrigger>
               </TabsList>
 
               <TabsContent value="description" className="space-y-6">
                 <Card className="glass-card p-6">
-                  <h2 className="text-2xl font-black text-foreground mb-4">Product Description</h2>
+                  <h2 className="text-2xl font-black text-foreground mb-4">{t('productDescription')}</h2>
                   <p className="text-foreground/70 leading-relaxed mb-6">
                     {product.description}
                   </p>
                   
-                  <h3 className="text-xl font-bold text-foreground mb-4">Key Features</h3>
+                  <h3 className="text-xl font-bold text-foreground mb-4">{t('keyFeatures')}</h3>
                   <div className="grid md:grid-cols-2 gap-3">
                     {product.features.map((feature, index) => (
                       <div key={index} className="flex items-start gap-3 p-3 glass-card rounded-lg border border-border/30">
@@ -418,7 +420,7 @@ const ProductDetail = () => {
                     <div className="flex gap-3">
                       <AlertCircle className="h-5 w-5 text-primary flex-shrink-0 mt-0.5" />
                       <div>
-                        <h4 className="font-bold text-foreground mb-1">Important Information</h4>
+                        <h4 className="font-bold text-foreground mb-1">{t('importantInformation')}</h4>
                         <p className="text-sm text-foreground/70">
                           All accounts are verified and come with a 7-day money-back guarantee. 
                           After purchase, you'll receive instant access to account credentials.
