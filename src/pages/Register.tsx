@@ -21,6 +21,7 @@ import { toast } from "sonner";
 
 // Form validation schema
 const registerSchema = z.object({
+  username: z.string().min(3, "Username must be at least 3 characters").max(20, "Username must be less than 20 characters").regex(/^[a-zA-Z0-9_]+$/, "Username can only contain letters, numbers, and underscores"),
   name: z.string().min(2, "Name must be at least 2 characters"),
   email: z.string().email("Invalid email address"),
   password: z.string().min(8, "Password must be at least 8 characters"),
@@ -82,6 +83,7 @@ const Register = () => {
       const loadingToast = toast.loading('✨ Creating your account...');
       
       await registerUser(
+        data.username,
         data.name,
         data.email,
         data.password,
@@ -149,15 +151,35 @@ const Register = () => {
               <form onSubmit={handleSubmit(onSubmit)} className="space-y-5">
                 {/* Username */}
                 <div className="space-y-2">
-                  <Label htmlFor="name" className="text-foreground">
+                  <Label htmlFor="username" className="text-foreground">
                     {t('username')} <span className="text-destructive">*</span>
+                  </Label>
+                  <div className="relative">
+                    <User className="absolute left-3 top-1/2 -translate-y-1/2 h-5 w-5 text-primary/70" />
+                    <Input
+                      id="username"
+                      type="text"
+                      placeholder={t('chooseUsername')}
+                      className="pl-10 glass-card border-border/50 focus:border-primary/50"
+                      {...register("username")}
+                    />
+                  </div>
+                  {errors.username && (
+                    <p className="text-sm text-destructive">{errors.username.message}</p>
+                  )}
+                </div>
+
+                {/* Full Name */}
+                <div className="space-y-2">
+                  <Label htmlFor="name" className="text-foreground">
+                    {t('fullName')} <span className="text-destructive">*</span>
                   </Label>
                   <div className="relative">
                     <User className="absolute left-3 top-1/2 -translate-y-1/2 h-5 w-5 text-primary/70" />
                     <Input
                       id="name"
                       type="text"
-                      placeholder={t('chooseUsername')}
+                      placeholder={t('enterYourName')}
                       className="pl-10 glass-card border-border/50 focus:border-primary/50"
                       {...register("name")}
                     />

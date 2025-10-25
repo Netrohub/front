@@ -40,13 +40,14 @@ export const useRegister = () => {
   const queryClient = useQueryClient();
   
   return useMutation({
-    mutationFn: ({ name, email, password, passwordConfirmation, phone }: {
+    mutationFn: ({ username, name, email, password, passwordConfirmation, phone }: {
+      username: string;
       name: string;
       email: string;
       password: string;
       passwordConfirmation: string;
       phone?: string;
-    }) => apiClient.register({ name, email, password, password_confirmation: passwordConfirmation, phone }),
+    }) => apiClient.register({ username, name, email, password, password_confirmation: passwordConfirmation, phone }),
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: queryKeys.currentUser() });
       toast.success('Registration successful!');

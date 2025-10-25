@@ -31,6 +31,7 @@ export interface PaginatedResponse<T> extends ApiResponse<T[]> {
 // Auth Types
 export interface User {
   id: number;
+  username: string;
   name: string;
   email: string;
   email_verified_at: string | null;
@@ -56,6 +57,7 @@ export interface LoginRequest {
 }
 
 export interface RegisterRequest {
+  username: string;
   name: string;
   email: string;
   password: string;
@@ -252,7 +254,12 @@ class ApiClient {
       const data = await response.json();
 
       if (!response.ok) {
-        throw new Error(data.message || `HTTP error! status: ${response.status}`);
+        // Handle standardized error format
+        const errorMessage = data.message || data.error?.message || `HTTP error! status: ${response.status}`;
+        const error = new Error(errorMessage);
+        (error as any).status = response.status;
+        (error as any).errors = data.errors || {};
+        throw error;
       }
 
       return data;
@@ -269,11 +276,11 @@ class ApiClient {
       body: JSON.stringify(credentials),
     });
     
-    if (response && response.access_token) {
-      this.setToken(response.access_token);
+    if (response && response.data && response.data.access_token) {
+      this.setToken(response.data.access_token);
     }
     
-    return response;
+    return response.data;
   }
 
   async register(userData: RegisterRequest): Promise<AuthResponse> {
@@ -282,11 +289,11 @@ class ApiClient {
       body: JSON.stringify(userData),
     });
     
-    if (response && response.access_token) {
-      this.setToken(response.access_token);
+    if (response && response.data && response.data.access_token) {
+      this.setToken(response.data.access_token);
     }
     
-    return response;
+    return response.data;
   }
 
   async logout(): Promise<void> {

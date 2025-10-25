@@ -20,6 +20,7 @@ export const authProvider: AuthProvider = {
       });
 
       if (data.user) {
+        localStorage.setItem('auth_token', data.access_token);
         localStorage.setItem('auth', JSON.stringify(data.user));
         return {
           success: true,
@@ -52,6 +53,7 @@ export const authProvider: AuthProvider = {
       console.warn('Logout request failed:', error);
     } finally {
       localStorage.removeItem('auth');
+      localStorage.removeItem('auth_token');
       return {
         success: true,
         redirectTo: '/login',

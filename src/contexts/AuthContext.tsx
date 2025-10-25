@@ -71,6 +71,7 @@ function AuthProvider({ children }: AuthProviderProps) {
   };
 
   const register = async (
+    username: string,
     name: string,
     email: string,
     password: string,
@@ -80,6 +81,7 @@ function AuthProvider({ children }: AuthProviderProps) {
     try {
       setIsLoading(true);
       const response = await apiClient.register({
+        username,
         name,
         email,
         password,
