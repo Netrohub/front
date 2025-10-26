@@ -75,7 +75,6 @@ const AdminPanel = lazy(() => import("./pages/admin/AdminPanel"));
 const AdminDashboard = lazy(() => import("./features/dashboard/DashboardPage"));
 const AdminUsers = lazy(() => import("./features/users/list"));
 const AdminUsersCreate = lazy(() => import("./features/users/create"));
-const AdminVendors = lazy(() => import("./features/vendors/list"));
 const AdminListings = lazy(() => import("./features/listings/list"));
 const AdminOrders = lazy(() => import("./features/orders/list"));
 const AdminDisputesNew = lazy(() => import("./features/disputes/list"));
@@ -201,7 +200,6 @@ const App = () => {
             <Route path="dashboard" element={<AdminDashboard />} />
             <Route path="users" element={<AdminUsers />} />
             <Route path="users/create" element={<AdminUsersCreate />} />
-            <Route path="vendors" element={<AdminVendors />} />
             <Route path="listings" element={<AdminListings />} />
             <Route path="orders" element={<AdminOrders />} />
             <Route path="disputes" element={<AdminDisputesNew />} />

@@ -31,16 +31,21 @@ export interface PaginatedResponse<T> extends ApiResponse<T[]> {
 // Auth Types
 export interface User {
   id: number;
-  username: string;
-  name: string;
-  email: string;
-  email_verified_at: string | null;
-  phone: string | null;
-  phone_verified_at: string | null;
-  avatar: string | null;
-  roles: string[];
-  created_at: string;
-  updated_at: string;
+  username?: string;
+  name?: string;
+  email?: string;
+  email_verified_at?: string | null;
+  phone?: string | null;
+  phone_verified_at?: string | null;
+  avatar?: string | null;
+  roles?: string[];
+  created_at?: string;
+  updated_at?: string;
+  // Additional fields that might be returned
+  emailVerified?: boolean;
+  phoneVerified?: boolean;
+  kycStatus?: 'incomplete' | 'pending' | 'verified';
+  kycCompletedAt?: string;
 }
 
 export interface AuthResponse {
@@ -271,15 +276,31 @@ class ApiClient {
 
   // Auth Methods
   async login(credentials: LoginRequest): Promise<AuthResponse> {
-    const response = await this.request<AuthResponse>('/auth/login', {
+    const apiResponse = await this.request<AuthResponse>('/auth/login', {
       method: 'POST',
       body: JSON.stringify(credentials),
     });
     
-    console.log('🔍 API Client: Full backend response:', response);
+    console.log('🔍 API Client: Full backend response:', apiResponse);
+    
+    // Handle wrapped response from backend: { data: { user, access_token }, message, status }
+    let response: AuthResponse;
+    
+    if ('data' in apiResponse && apiResponse.data) {
+      // Response is wrapped in { data: { ... } }
+      response = apiResponse.data as AuthResponse;
+    } else {
+      // Response is direct
+      response = apiResponse as any;
+    }
+    
+    console.log('🔍 API Client: Extracted auth response:', response);
     
     if (response && response.access_token) {
       this.setToken(response.access_token);
+      console.log('✅ API Client: Token saved to localStorage');
+    } else {
+      console.error('❌ API Client: No access_token in response', response);
     }
     
     return response;
@@ -307,8 +328,13 @@ class ApiClient {
   }
 
   async getCurrentUser(): Promise<User> {
-    const response = await this.request<User>('/auth/me');
-    return response;
+    const apiResponse = await this.request<User>('/auth/me');
+    
+    // Handle wrapped response: { data: { ... }, message, status }
+    if ('data' in apiResponse && apiResponse.data) {
+      return apiResponse.data;
+    }
+    return apiResponse as any;
   }
 
   async getMembers(): Promise<User[]> {

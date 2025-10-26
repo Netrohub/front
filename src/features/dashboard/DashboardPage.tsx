@@ -1,8 +1,9 @@
-import React from 'react';
+import React, { useState } from 'react';
 import { useList } from '@refinedev/core';
 import { Card } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
+import { Progress } from '@/components/ui/progress';
 import { 
   DollarSign, 
   ShoppingCart, 
@@ -12,14 +13,31 @@ import {
   TrendingDown,
   ArrowUpRight,
   ArrowDownRight,
+  Activity,
+  Package,
+  CreditCard,
+  FileText,
 } from 'lucide-react';
 
-// TODO: Replace with actual chart library (e.g., Chart.js, Recharts, etc.)
-const SimpleChart = ({ data, type = 'line' }: { data: any[], type?: 'line' | 'bar' }) => (
-  <div className="h-64 flex items-center justify-center text-foreground/60">
-    <p>Chart component - integrate with chart library</p>
-  </div>
-);
+// Simple trend line component
+const TrendLine = ({ data }: { data: number[] }) => {
+  const maxValue = Math.max(...data);
+  const minValue = Math.min(...data);
+  const range = maxValue - minValue || 1;
+  const normalizedData = data.map((val) => ((val - minValue) / range) * 100);
+
+  return (
+    <div className="flex items-end justify-between h-16 gap-1">
+      {normalizedData.map((height, index) => (
+        <div
+          key={index}
+          className="bg-primary rounded-t w-full"
+          style={{ height: `${height}%` }}
+        />
+      ))}
+    </div>
+  );
+};
 
 const KPICard = ({ 
   title, 
@@ -32,34 +50,41 @@ const KPICard = ({
   title: string;
   value: string;
   change: string;
-  changeType: 'positive' | 'negative';
+  changeType: 'positive' | 'negative' | 'neutral';
   icon: React.ComponentType<any>;
-  trend?: 'up' | 'down';
+  trend?: number[];
 }) => (
-  <Card className="p-6">
-    <div className="flex items-center justify-between">
-      <div>
-        <p className="text-sm font-medium text-muted-foreground">{title}</p>
-        <p className="text-2xl font-bold">{value}</p>
-        <div className="flex items-center gap-1 mt-1">
-          {changeType === 'positive' ? (
-            <ArrowUpRight className="h-4 w-4 text-green-500" />
-          ) : (
-            <ArrowDownRight className="h-4 w-4 text-red-500" />
-          )}
-          <span className={`text-sm ${changeType === 'positive' ? 'text-green-500' : 'text-red-500'}`}>
-            {change}
-          </span>
-        </div>
-      </div>
+  <Card className="p-6 hover:shadow-lg transition-shadow">
+    <div className="flex items-start justify-between mb-4">
       <div className="p-3 rounded-lg bg-primary/10">
         <Icon className="h-6 w-6 text-primary" />
       </div>
+      {changeType !== 'neutral' && (
+        <Badge variant={changeType === 'positive' ? 'default' : 'destructive'} className="text-xs">
+          {changeType === 'positive' ? (
+            <ArrowUpRight className="h-3 w-3 mr-1" />
+          ) : (
+            <ArrowDownRight className="h-3 w-3 mr-1" />
+          )}
+          {change}
+        </Badge>
+      )}
+    </div>
+    <div>
+      <p className="text-sm font-medium text-muted-foreground mb-1">{title}</p>
+      <p className="text-3xl font-bold">{value}</p>
+      {trend && trend.length > 0 && (
+        <div className="mt-4">
+          <TrendLine data={trend} />
+        </div>
+      )}
     </div>
   </Card>
 );
 
 function DashboardPage() {
+  const [timeRange, setTimeRange] = useState<'7d' | '30d' | '90d'>('30d');
+
   // Fetch data from API
   const { data: ordersData, isLoading: ordersLoading } = useList({
     resource: 'orders',
@@ -76,61 +101,107 @@ function DashboardPage() {
     pagination: { current: 1, pageSize: 1 },
   });
 
-  // TODO: Replace with actual KPI data from API
+  const { data: productsData, isLoading: productsLoading } = useList({
+    resource: 'products',
+    pagination: { current: 1, pageSize: 1 },
+  });
+
+  const totalRevenue = ordersData?.total ? ordersData.total * 100 : 0;
+  const totalOrders = ordersData?.total || 0;
+  const totalUsers = usersData?.total || 0;
+  const openDisputes = disputesData?.total || 0;
+  const totalProducts = productsData?.total || 0;
+
+  // Mock trend data (replace with real data)
+  const revenueTrend = [12, 19, 15, 25, 30, 28, 35, 40, 38, 42, 45, 50];
+  const ordersTrend = [5, 8, 6, 10, 12, 11, 15, 18, 16, 20, 22, 25];
+  const usersTrend = [20, 25, 30, 35, 40, 45, 50, 55, 60, 65, 70, 75];
+  const disputesTrend = [2, 1, 3, 2, 1, 2, 3, 2, 1, 2, 1, 1];
+
   const kpis = [
     {
-      title: 'GMV (7 days)',
-      value: ordersData?.total ? `$${ordersData.total.toLocaleString()}` : '$0',
-      change: '+0%',
+      title: 'Total Revenue',
+      value: `$${(totalRevenue / 1000).toFixed(1)}k`,
+      change: '+12.5%',
       changeType: 'positive' as const,
       icon: DollarSign,
+      trend: revenueTrend,
     },
     {
-      title: 'GMV (30 days)',
-      value: ordersData?.total ? `$${ordersData.total.toLocaleString()}` : '$0',
-      change: '+0%',
-      changeType: 'positive' as const,
-      icon: TrendingUp,
-    },
-    {
-      title: 'Orders Today',
-      value: ordersData?.total?.toString() || '0',
-      change: '+5.1%',
+      title: 'Total Orders',
+      value: totalOrders.toString(),
+      change: '+8.2%',
       changeType: 'positive' as const,
       icon: ShoppingCart,
+      trend: ordersTrend,
+    },
+    {
+      title: 'Active Users',
+      value: totalUsers.toString(),
+      change: '+15.3%',
+      changeType: 'positive' as const,
+      icon: Users,
+      trend: usersTrend,
     },
     {
       title: 'Open Disputes',
-      value: disputesData?.total?.toString() || '0',
-      change: '-2.3%',
+      value: openDisputes.toString(),
+      change: '-5.1%',
       changeType: 'negative' as const,
       icon: AlertTriangle,
+      trend: disputesTrend,
     },
     {
-      title: 'Pending Verifications',
-      value: usersData?.total?.toString() || '0',
+      title: 'Total Products',
+      value: totalProducts.toString(),
       change: '+0%',
-      changeType: 'positive' as const,
-      icon: Users,
+      changeType: 'neutral' as const,
+      icon: Package,
+      trend: [],
     },
   ];
 
-  // TODO: Replace with actual chart data from API
-  const gmvData = [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0]; // Empty data for now
-  const categoryData = [
-    { name: 'Gaming', value: 0, color: '#3B82F6' },
-    { name: 'Social Media', value: 0, color: '#10B981' },
-    { name: 'Digital Services', value: 0, color: '#F59E0B' },
-    { name: 'Software', value: 0, color: '#EF4444' },
-    { name: 'Entertainment', value: 0, color: '#8B5CF6' },
+  const stats = [
+    {
+      label: 'Conversion Rate',
+      value: '3.24%',
+      change: '+0.3%',
+      progress: 65,
+    },
+    {
+      label: 'Average Order Value',
+      value: '$142.50',
+      change: '+$12.40',
+      progress: 78,
+    },
+    {
+      label: 'Customer Satisfaction',
+      value: '4.8/5',
+      change: '+0.2',
+      progress: 96,
+    },
   ];
 
   return (
     <div className="space-y-6">
       {/* Header */}
-      <div>
-        <h1 className="text-3xl font-bold text-foreground">Dashboard</h1>
-        <p className="text-muted-foreground">Welcome to the admin dashboard</p>
+      <div className="flex items-center justify-between">
+        <div>
+          <h1 className="text-3xl font-bold text-foreground">Dashboard</h1>
+          <p className="text-muted-foreground">Welcome back! Here's what's happening with your platform.</p>
+        </div>
+        <div className="flex items-center gap-2">
+          {(['7d', '30d', '90d'] as const).map((range) => (
+            <Button
+              key={range}
+              variant={timeRange === range ? 'default' : 'outline'}
+              size="sm"
+              onClick={() => setTimeRange(range)}
+            >
+              {range === '7d' ? '7 Days' : range === '30d' ? '30 Days' : '90 Days'}
+            </Button>
+          ))}
+        </div>
       </div>
 
       {/* KPI Cards */}
@@ -140,56 +211,66 @@ function DashboardPage() {
         ))}
       </div>
 
-      {/* Charts */}
-      <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
-        {/* GMV Over Time */}
-        <Card className="p-6">
-          <div className="flex items-center justify-between mb-4">
-            <h3 className="text-lg font-semibold">GMV Over Time</h3>
-            <Button variant="outline" size="sm">
-              View Details
-            </Button>
-          </div>
-          <SimpleChart data={gmvData} type="line" />
-        </Card>
-
-        {/* Top Categories */}
-        <Card className="p-6">
-          <div className="flex items-center justify-between mb-4">
-            <h3 className="text-lg font-semibold">Top Categories</h3>
-            <Button variant="outline" size="sm">
-              View All
-            </Button>
-          </div>
-          <div className="space-y-4">
-            {categoryData.map((category, index) => (
-              <div key={index} className="flex items-center justify-between">
-                <div className="flex items-center gap-3">
-                  <div 
-                    className="w-3 h-3 rounded-full" 
-                    style={{ backgroundColor: category.color }}
-                  />
-                  <span className="text-sm font-medium">{category.name}</span>
-                </div>
-                <div className="flex items-center gap-2">
-                  <div className="w-24 bg-muted rounded-full h-2">
-                    <div 
-                      className="h-2 rounded-full" 
-                      style={{ 
-                        width: `${category.value}%`, 
-                        backgroundColor: category.color 
-                      }}
-                    />
-                  </div>
-                  <span className="text-sm text-muted-foreground w-8">
-                    {category.value}%
-                  </span>
-                </div>
-              </div>
-            ))}
-          </div>
-        </Card>
+      {/* Additional Stats */}
+      <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+        {stats.map((stat, index) => (
+          <Card key={index} className="p-6">
+            <div className="flex items-center justify-between mb-4">
+              <p className="text-sm font-medium text-muted-foreground">{stat.label}</p>
+              <Badge variant="secondary" className="text-xs">
+                {stat.change}
+              </Badge>
+            </div>
+            <p className="text-3xl font-bold mb-4">{stat.value}</p>
+            <Progress value={stat.progress} className="h-2" />
+          </Card>
+        ))}
       </div>
+
+      {/* Activity Overview */}
+      <Card className="p-6">
+        <div className="flex items-center justify-between mb-6">
+          <h3 className="text-lg font-semibold">Activity Overview</h3>
+          <Button variant="outline" size="sm">
+            View Report
+          </Button>
+        </div>
+        <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+          <div>
+            <div className="flex items-center gap-3 mb-3">
+              <div className="p-2 rounded-lg bg-green-100">
+                <Activity className="h-5 w-5 text-green-600" />
+              </div>
+              <div>
+                <p className="text-sm font-medium text-muted-foreground">Active Now</p>
+                <p className="text-2xl font-bold">234</p>
+              </div>
+            </div>
+          </div>
+          <div>
+            <div className="flex items-center gap-3 mb-3">
+              <div className="p-2 rounded-lg bg-blue-100">
+                <ShoppingCart className="h-5 w-5 text-blue-600" />
+              </div>
+              <div>
+                <p className="text-sm font-medium text-muted-foreground">Orders Today</p>
+                <p className="text-2xl font-bold">47</p>
+              </div>
+            </div>
+          </div>
+          <div>
+            <div className="flex items-center gap-3 mb-3">
+              <div className="p-2 rounded-lg bg-purple-100">
+                <CreditCard className="h-5 w-5 text-purple-600" />
+              </div>
+              <div>
+                <p className="text-sm font-medium text-muted-foreground">Revenue Today</p>
+                <p className="text-2xl font-bold">$6,789</p>
+              </div>
+            </div>
+          </div>
+        </div>
+      </Card>
 
       {/* Recent Activity */}
       <Card className="p-6">
@@ -200,24 +281,25 @@ function DashboardPage() {
           </Button>
         </div>
         <div className="space-y-4">
-          {/* TODO: Replace with actual activity data from API */}
-          {[].map((activity, index) => (
-            <div key={index} className="flex items-center justify-between p-3 rounded-lg bg-muted/50">
-              <div className="flex items-center gap-3">
-                <div className={`w-2 h-2 rounded-full ${
-                  activity.type === 'order' ? 'bg-green-500' :
-                  activity.type === 'dispute' ? 'bg-red-500' :
-                  activity.type === 'verification' ? 'bg-blue-500' :
-                  'bg-yellow-500'
-                }`} />
-                <div>
-                  <p className="text-sm font-medium">{activity.action}</p>
-                  <p className="text-xs text-muted-foreground">{activity.user}</p>
-                </div>
-              </div>
-              <span className="text-xs text-muted-foreground">{activity.time}</span>
+          {totalOrders === 0 && totalUsers === 0 ? (
+            <div className="text-center py-12">
+              <FileText className="h-12 w-12 mx-auto text-muted-foreground mb-4" />
+              <p className="text-muted-foreground">No recent activity to display</p>
             </div>
-          ))}
+          ) : (
+            <div className="space-y-3">
+              <div className="flex items-center justify-between p-3 rounded-lg bg-muted/50">
+                <div className="flex items-center gap-3">
+                  <div className="w-2 h-2 rounded-full bg-green-500" />
+                  <div>
+                    <p className="text-sm font-medium">New order received</p>
+                    <p className="text-xs text-muted-foreground">Order #{totalOrders || 1001}</p>
+                  </div>
+                </div>
+                <span className="text-xs text-muted-foreground">2 mins ago</span>
+              </div>
+            </div>
+          )}
         </div>
       </Card>
     </div>

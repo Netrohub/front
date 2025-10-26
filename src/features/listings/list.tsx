@@ -1,44 +1,110 @@
-import React from 'react';
-import { useList } from '@refinedev/core';
-import { Card } from '@/components/ui/card';
-import { Button } from '@/components/ui/button';
+import React, { useState } from 'react';
+import { useList, useDelete } from '@refinedev/core';
+import { useNavigate } from 'react-router-dom';
+import { DataTable, Column } from '@/components/ui/DataTable';
+import { ConfirmDialog } from '@/components/ui/ConfirmDialog';
 import { Badge } from '@/components/ui/badge';
+import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
+import { useToast } from '@/hooks/use-toast';
+import { format } from 'date-fns';
 import { 
-  Table, 
-  TableBody, 
-  TableCell, 
-  TableHead, 
-  TableHeader, 
-  TableRow 
-} from '@/components/ui/table';
-import { 
-  Search, 
-  Filter, 
-  MoreHorizontal, 
-  Eye,
   Package,
+  Eye,
+  Edit,
+  Trash2,
+  CheckCircle,
+  XCircle,
+  Clock,
+  TrendingUp,
   Star,
-  TrendingUp
 } from 'lucide-react';
 
+interface Listing {
+  id: number;
+  title: string;
+  seller: {
+    name: string;
+    email: string;
+  };
+  price: number;
+  stock: number;
+  status: 'active' | 'pending' | 'rejected' | 'draft';
+  rating?: number;
+  sales_count?: number;
+  category?: string;
+  created_at: string;
+}
+
 function ListingsList() {
-  const { data, isLoading } = useList({
-    resource: 'listings',
+  const navigate = useNavigate();
+  const { toast } = useToast();
+  const [deleteDialog, setDeleteDialog] = useState<{
+    open: boolean;
+    listingId: number | null;
+  }>({ open: false, listingId: null });
+  const [searchTerm, setSearchTerm] = useState('');
+  const [statusFilter, setStatusFilter] = useState<string>('all');
+
+  const { data, isLoading, refetch } = useList<Listing>({
+    resource: 'products',
     pagination: { current: 1, pageSize: 10 },
   });
 
-  // TODO: Replace with actual listings data from API
-  const listings = [];
+  const { mutate: deleteListing } = useDelete();
+
+  const handleDelete = (listingId: number) => {
+    setDeleteDialog({ open: true, listingId });
+  };
+
+  const confirmDelete = () => {
+    if (deleteDialog.listingId) {
+      deleteListing({
+        resource: 'products',
+        id: deleteDialog.listingId,
+      }, {
+        onSuccess: () => {
+          toast({
+            title: 'Listing deleted',
+            description: 'Listing has been successfully deleted.',
+          });
+          refetch();
+        },
+        onError: () => {
+          toast({
+            title: 'Error',
+            description: 'Failed to delete listing.',
+            variant: 'destructive',
+          });
+        },
+      });
+    }
+    setDeleteDialog({ open: false, listingId: null });
+  };
 
   const getStatusBadge = (status: string) => {
     switch (status) {
       case 'active':
-        return <Badge className="bg-green-100 text-green-800">Active</Badge>;
+        return (
+          <Badge className="bg-green-100 text-green-800 hover:bg-green-100">
+            <CheckCircle className="w-3 h-3 mr-1" />
+            Active
+          </Badge>
+        );
       case 'pending':
-        return <Badge className="bg-yellow-100 text-yellow-800">Pending</Badge>;
+        return (
+          <Badge className="bg-yellow-100 text-yellow-800 hover:bg-yellow-100">
+            <Clock className="w-3 h-3 mr-1" />
+            Pending
+          </Badge>
+        );
       case 'rejected':
-        return <Badge className="bg-red-100 text-red-800">Rejected</Badge>;
+        return (
+          <Badge className="bg-red-100 text-red-800 hover:bg-red-100">
+            <XCircle className="w-3 h-3 mr-1" />
+            Rejected
+          </Badge>
+        );
       case 'draft':
         return <Badge variant="secondary">Draft</Badge>;
       default:
@@ -46,92 +112,179 @@ function ListingsList() {
     }
   };
 
+  const columns: Column<Listing>[] = [
+    {
+      key: 'title',
+      title: 'Listing',
+      dataIndex: 'title',
+      render: (value, record) => (
+        <div className="flex items-center gap-3">
+          <div className="w-10 h-10 rounded-lg bg-primary/10 flex items-center justify-center">
+            <Package className="h-5 w-5 text-primary" />
+          </div>
+          <div>
+            <p className="font-medium">{value}</p>
+            {record.category && (
+              <p className="text-sm text-muted-foreground">{record.category}</p>
+            )}
+          </div>
+        </div>
+      ),
+    },
+    {
+      key: 'seller',
+      title: 'Seller',
+      dataIndex: 'seller',
+      render: (value) => (
+        <div>
+          <p className="font-medium">{value?.name || 'N/A'}</p>
+          <p className="text-sm text-muted-foreground">{value?.email}</p>
+        </div>
+      ),
+    },
+    {
+      key: 'price',
+      title: 'Price',
+      dataIndex: 'price',
+      render: (value) => (
+        <div>
+          <p className="font-medium">${value?.toFixed(2)}</p>
+        </div>
+      ),
+    },
+    {
+      key: 'stock',
+      title: 'Stock',
+      dataIndex: 'stock',
+      render: (value) => (
+        <Badge variant={value > 0 ? 'secondary' : 'destructive'}>
+          {value || 0}
+        </Badge>
+      ),
+    },
+    {
+      key: 'status',
+      title: 'Status',
+      dataIndex: 'status',
+      render: (value) => getStatusBadge(value),
+    },
+    {
+      key: 'rating',
+      title: 'Rating',
+      dataIndex: 'rating',
+      render: (value) => (
+        value ? (
+          <div className="flex items-center gap-1">
+            <Star className="h-4 w-4 text-yellow-500 fill-current" />
+            <span>{value.toFixed(1)}</span>
+          </div>
+        ) : (
+          <span className="text-muted-foreground">-</span>
+        )
+      ),
+    },
+    {
+      key: 'sales_count',
+      title: 'Sales',
+      dataIndex: 'sales_count',
+      render: (value) => (
+        value ? (
+          <div className="flex items-center gap-1">
+            <TrendingUp className="h-4 w-4 text-green-500" />
+            <span>{value}</span>
+          </div>
+        ) : (
+          <span className="text-muted-foreground">0</span>
+        )
+      ),
+    },
+    {
+      key: 'created_at',
+      title: 'Created',
+      dataIndex: 'created_at',
+      render: (value) => format(new Date(value), 'MMM dd, yyyy'),
+    },
+  ];
+
+  const filteredData = data?.data?.filter((listing) => {
+    const matchesSearch = listing.title.toLowerCase().includes(searchTerm.toLowerCase()) ||
+      listing.seller?.name?.toLowerCase().includes(searchTerm.toLowerCase());
+    const matchesStatus = statusFilter === 'all' || listing.status === statusFilter;
+    return matchesSearch && matchesStatus;
+  });
+
   return (
     <div className="space-y-6">
-      {/* Header */}
       <div className="flex items-center justify-between">
         <div>
-          <h1 className="text-3xl font-bold text-foreground">Listings</h1>
+          <h1 className="text-3xl font-bold text-foreground">Product Listings</h1>
           <p className="text-muted-foreground">Manage product listings and approvals</p>
         </div>
-        <Button>
-          <Package className="w-4 h-4 mr-2" />
-          Add Listing
-        </Button>
+        <div className="flex items-center gap-2">
+          <Button variant="outline">
+            <Package className="w-4 h-4 mr-2" />
+            Export
+          </Button>
+          <Button>
+            <Package className="w-4 h-4 mr-2" />
+            Add Listing
+          </Button>
+        </div>
       </div>
 
       {/* Filters */}
-      <Card className="p-4">
-        <div className="flex items-center gap-4">
-          <div className="relative flex-1">
-            <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-muted-foreground w-4 h-4" />
-            <Input 
-              placeholder="Search listings..." 
-              className="pl-10"
-            />
-          </div>
-          <Button variant="outline">
-            <Filter className="w-4 h-4 mr-2" />
-            Filter
-          </Button>
+      <div className="flex items-center gap-4">
+        <div className="relative flex-1 max-w-md">
+          <Input
+            placeholder="Search listings..."
+            value={searchTerm}
+            onChange={(e) => setSearchTerm(e.target.value)}
+            className="pl-10"
+          />
+          <Package className="absolute left-3 top-1/2 transform -translate-y-1/2 h-4 w-4 text-muted-foreground" />
         </div>
-      </Card>
+        <div className="flex items-center gap-2">
+          {['all', 'active', 'pending', 'rejected'].map((status) => (
+            <Button
+              key={status}
+              variant={statusFilter === status ? 'default' : 'outline'}
+              size="sm"
+              onClick={() => setStatusFilter(status)}
+            >
+              {status.charAt(0).toUpperCase() + status.slice(1)}
+            </Button>
+          ))}
+        </div>
+      </div>
 
-      {/* Listings Table */}
-      <Card>
-        <Table>
-          <TableHeader>
-            <TableRow>
-              <TableHead>Listing</TableHead>
-              <TableHead>Seller</TableHead>
-              <TableHead>Price</TableHead>
-              <TableHead>Stock</TableHead>
-              <TableHead>Status</TableHead>
-              <TableHead>Rating</TableHead>
-              <TableHead>Sales</TableHead>
-              <TableHead className="w-[100px]">Actions</TableHead>
-            </TableRow>
-          </TableHeader>
-          <TableBody>
-            {listings.map((listing) => (
-              <TableRow key={listing.id}>
-                <TableCell>
-                  <div>
-                    <div className="font-medium">{listing.title}</div>
-                    <div className="text-sm text-muted-foreground">{listing.category}</div>
-                  </div>
-                </TableCell>
-                <TableCell>{listing.seller}</TableCell>
-                <TableCell>${listing.price.toFixed(2)}</TableCell>
-                <TableCell>{listing.stock}</TableCell>
-                <TableCell>{getStatusBadge(listing.status)}</TableCell>
-                <TableCell>
-                  <div className="flex items-center gap-1">
-                    <Star className="w-4 h-4 text-yellow-500 fill-current" />
-                    <span>{listing.rating.toFixed(1)}</span>
-                  </div>
-                </TableCell>
-                <TableCell>
-                  <div className="flex items-center gap-1">
-                    <TrendingUp className="w-4 h-4 text-green-500" />
-                    <span>{listing.sales_count}</span>
-                  </div>
-                </TableCell>
-                <TableCell>
-                  <div className="flex items-center gap-2">
-                    <Button variant="ghost" size="sm">
-                      <Eye className="w-4 h-4" />
-                    </Button>
-                    <Button variant="ghost" size="sm">
-                      <MoreHorizontal className="w-4 h-4" />
-                    </Button>
-                  </div>
-                </TableCell>
-              </TableRow>
-            ))}
-          </TableBody>
-        </Table>
-      </Card>
+      <DataTable
+        data={filteredData || []}
+        columns={columns}
+        loading={isLoading}
+        pagination={{
+          current: 1,
+          pageSize: 10,
+          total: filteredData?.length || 0,
+          onChange: (page, pageSize) => {
+            // Handle pagination
+          },
+        }}
+        actions={{
+          view: (record) => navigate(`/admin/listings/${record.id}`),
+          edit: (record) => navigate(`/admin/listings/${record.id}/edit`),
+          delete: handleDelete,
+        }}
+      />
+
+      <ConfirmDialog
+        open={deleteDialog.open}
+        onOpenChange={(open) => setDeleteDialog({ open, listingId: null })}
+        title="Delete Listing"
+        description="Are you sure you want to delete this listing? This action cannot be undone."
+        confirmText="Delete"
+        variant="destructive"
+        onConfirm={confirmDelete}
+      />
     </div>
   );
 }

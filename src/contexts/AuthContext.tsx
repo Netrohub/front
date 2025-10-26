@@ -37,11 +37,15 @@ function AuthProvider({ children }: AuthProviderProps) {
     const initAuth = async () => {
       try {
         if (apiClient.isAuthenticated()) {
+          console.log('🔄 AuthContext: Initializing auth...');
           const userData = await apiClient.getCurrentUser();
+          console.log('✅ AuthContext: User loaded', userData);
           setUser(userData);
+        } else {
+          console.log('ℹ️ AuthContext: No token found, user not authenticated');
         }
       } catch (error) {
-        console.error('Failed to initialize auth:', error);
+        console.error('❌ AuthContext: Failed to initialize auth:', error);
         apiClient.clearToken();
       } finally {
         setIsLoading(false);
@@ -59,8 +63,17 @@ function AuthProvider({ children }: AuthProviderProps) {
       const response = await apiClient.login({ email, password, remember });
       
       console.log('🔍 AuthContext: Full response:', response);
-      console.log('👤 AuthContext: Setting user', response.user);
-      setUser(response.user);
+      
+      // Extract user from response - handle both direct and nested data structure
+      const user = response.user || (response as any).data?.user || (response as any).user;
+      
+      if (!user) {
+        console.error('❌ AuthContext: No user in response', response);
+        throw new Error('Invalid login response: no user data');
+      }
+      
+      console.log('👤 AuthContext: Setting user', user);
+      setUser(user);
       
       console.log('✅ AuthContext: Login complete, user authenticated');
     } catch (error) {

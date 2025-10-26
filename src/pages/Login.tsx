@@ -286,8 +286,10 @@ const Login = () => {
                     <Mail className="absolute left-3 top-1/2 -translate-y-1/2 h-5 w-5 text-primary/70" />
                     <Input
                       id="identifier"
+                      name="identifier"
                       type="text"
                       placeholder="your@email.com or username"
+                      autoComplete="username"
                       className="pl-10 glass-card border-border/50 focus:border-primary/50 mobile-text"
                       {...emailForm.register("identifier")}
                     />
@@ -306,6 +308,7 @@ const Login = () => {
                     <Lock className="absolute left-3 top-1/2 -translate-y-1/2 h-5 w-5 text-primary/70" />
                     <Input
                       id="password"
+                      name="password"
                       type="password"
                       placeholder="••••••••"
                       autoComplete="current-password"

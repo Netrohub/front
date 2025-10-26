@@ -20,7 +20,6 @@ import {
 import {
   LayoutDashboard,
   Users,
-  Store,
   Package,
   ShoppingCart,
   AlertTriangle,
@@ -41,7 +40,6 @@ import {
 const navigation = [
   { name: 'Dashboard', href: '/admin/dashboard', icon: LayoutDashboard },
   { name: 'Users', href: '/admin/users', icon: Users },
-  { name: 'Vendors', href: '/admin/vendors', icon: Store },
   { name: 'Listings', href: '/admin/listings', icon: Package },
   { name: 'Orders', href: '/admin/orders', icon: ShoppingCart },
   { name: 'Disputes', href: '/admin/disputes', icon: AlertTriangle },
