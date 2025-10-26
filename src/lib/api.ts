@@ -285,6 +285,17 @@ class ApiClient {
         data: data
       });
 
+      // Handle 401 Unauthorized - token expired or invalid
+      if (response.status === 401) {
+        console.warn('🔄 Token expired or invalid, clearing authentication');
+        this.clearToken();
+        // Redirect to login page
+        if (typeof window !== 'undefined') {
+          window.location.href = '/login';
+        }
+        throw new Error('Session expired. Please login again.');
+      }
+
       if (!response.ok) {
         // Handle standardized error format
         const errorMessage = data.message || data.error?.message || `HTTP error! status: ${response.status}`;
@@ -295,7 +306,13 @@ class ApiClient {
       }
 
       return data;
-    } catch (error) {
+    } catch (error: any) {
+      // Network errors
+      if (error.name === 'TypeError' && error.message.includes('fetch')) {
+        console.error('❌ Network error:', error);
+        throw new Error('Network error. Please check your internet connection.');
+      }
+      
       console.error('❌ API request failed:', error);
       throw error;
     }
