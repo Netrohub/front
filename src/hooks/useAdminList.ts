@@ -1,4 +1,4 @@
-import { useState, useCallback } from 'react';
+import { useState, useCallback, useMemo } from 'react';
 import { toast } from 'sonner';
 import { useQuery, useQueryClient } from '@tanstack/react-query';
 import { apiClient } from '@/lib/api';
@@ -103,12 +103,13 @@ export function useAdminList<T extends { id: number }>({
 
   const data = queryData?.items || [];
   
-  // Merge pagination from query data with local state
-  const paginationState = {
-    ...pagination,
+  // Merge pagination from query data with local state - memoized to prevent re-renders
+  const paginationState = useMemo(() => ({
+    page: pagination.page,
+    limit: pagination.limit,
     total: queryData?.pagination?.total ?? pagination.total,
     totalPages: queryData?.pagination?.totalPages ?? pagination.totalPages,
-  };
+  }), [pagination.page, pagination.limit, pagination.total, pagination.totalPages, queryData?.pagination?.total, queryData?.pagination?.totalPages]);
 
   // Optimistic update for item update
   const updateItem = useCallback((id: number, updates: Partial<T>) => {
