@@ -2,6 +2,7 @@ import React, { useState } from 'react';
 import { Button } from '@/components/ui/button';
 import { Card } from '@/components/ui/card';
 import { Shield, Loader2 } from 'lucide-react';
+import { apiClient } from '@/lib/api';
 
 interface PersonaVerificationProps {
   onComplete?: (inquiryId: string) => void;
@@ -13,46 +14,22 @@ const PersonaVerification: React.FC<PersonaVerificationProps> = ({
   onError 
 }) => {
   const [isLoading, setIsLoading] = useState(false);
-  const PERSONA_TEMPLATE_ID = 'vtmpl_gnPSyThsGJMjMqU3rpS1DoXQ69rr';
-  const PERSONA_API_KEY = 'sk_test_c7fca5cf-4d36-4466-a8a0-cc4657055617'; // Sandbox key
 
   const handleStartVerification = async () => {
     setIsLoading(true);
     
     try {
-      // Create an inquiry using Persona API
-      const response = await fetch('https://api.withpersona.com/api/v1/inquiries', {
-        method: 'POST',
-        headers: {
-          'Authorization': `Bearer ${PERSONA_API_KEY}`,
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify({
-          data: {
-            type: 'inquiry',
-            attributes: {
-              template_id: PERSONA_TEMPLATE_ID,
-              reference_id: `user_${Date.now()}`, // Unique reference
-            }
-          }
-        }),
-      });
-
-      if (!response.ok) {
-        const error = await response.json();
-        throw new Error(error.error?.message || 'Failed to create Persona inquiry');
-      }
-
-      const result = await response.json();
-      const inquiryId = result.data.id;
-      const inquiryUrl = result.data.attributes.url;
+      // Call backend to create Persona inquiry
+      const response = await apiClient.post('/api/kyc/create-persona-inquiry');
+      
+      const { inquiryId, verificationUrl } = response.data;
 
       console.log('✅ Persona inquiry created:', inquiryId);
 
       // Redirect to Persona verification
-      if (inquiryUrl) {
+      if (verificationUrl) {
         const personaWindow = window.open(
-          inquiryUrl,
+          verificationUrl,
           'PersonaVerification',
           'width=600,height=800,resizable=yes,scrollbars=yes'
         );
@@ -60,7 +37,7 @@ const PersonaVerification: React.FC<PersonaVerificationProps> = ({
         if (!personaWindow) {
           // If popup is blocked, redirect in same window
           console.log('Popup blocked, redirecting in same window...');
-          window.location.href = inquiryUrl;
+          window.location.href = verificationUrl;
         }
       } else {
         throw new Error('No verification URL returned from Persona');
@@ -68,10 +45,10 @@ const PersonaVerification: React.FC<PersonaVerificationProps> = ({
 
       setIsLoading(false);
       
-    } catch (error) {
+    } catch (error: any) {
       console.error('Error starting Persona verification:', error);
       setIsLoading(false);
-      onError?.(error as Error);
+      onError?.(new Error(error?.response?.data?.message || 'Failed to start verification'));
     }
   };
 
