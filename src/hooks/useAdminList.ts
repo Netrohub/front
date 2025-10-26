@@ -105,23 +105,23 @@ export function useAdminList<T extends { id: number }>({
   // Update local pagination state when query data changes
   useEffect(() => {
     if (queryData?.pagination) {
-      const newPagination = {
-        page: pagination.page,
-        limit: pagination.limit,
-        total: queryData.pagination.total,
-        totalPages: queryData.pagination.totalPages,
-      };
-      
-      // Only update if changed to prevent infinite loop
-      if (JSON.stringify(newPagination) !== JSON.stringify(pagination)) {
-        setPagination(prev => ({
+      setPagination(prev => {
+        // Check if values actually changed
+        if (
+          prev.total === queryData.pagination.total &&
+          prev.totalPages === queryData.pagination.totalPages
+        ) {
+          return prev; // No change, return previous state
+        }
+        
+        return {
           ...prev,
           total: queryData.pagination.total,
           totalPages: queryData.pagination.totalPages,
-        }));
-      }
+        };
+      });
     }
-  }, [queryData?.pagination, pagination.page, pagination.limit]);
+  }, [queryData?.pagination?.total, queryData?.pagination?.totalPages]);
 
   const data = queryData?.items || [];
 

@@ -138,7 +138,6 @@ export function useAdminMutation<T extends { id: number }>({
 
   return {
     mutate,
-    create: mutate, // Alias for backward compatibility
     update,
     remove,
     isMutating,
