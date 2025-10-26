@@ -244,19 +244,23 @@ class ApiClient {
   ): Promise<ApiResponse<T>> {
     const url = `${this.baseURL}${endpoint}`;
     
+    // Always get fresh token from localStorage
+    const token = localStorage.getItem('auth_token');
+    
     console.log('🌐 API Request:', {
       url,
       method: options.method || 'GET',
       endpoint,
       baseURL: this.baseURL,
-      hasToken: !!this.token
+      hasToken: !!token,
+      tokenLength: token ? token.length : 0
     });
     
     const config: RequestInit = {
       headers: {
         'Content-Type': 'application/json',
         'Accept': 'application/json',
-        ...(this.token && { Authorization: `Bearer ${this.token}` }),
+        ...(token && { Authorization: `Bearer ${token}` }),
         ...options.headers,
       },
       ...options,
