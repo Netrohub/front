@@ -34,15 +34,17 @@ const Members = () => {
   };
 
   const handleCardClick = (member: any) => {
-    // Extract username from email or use member ID
-    const username = member.username || member.email?.split('@')[0] || `user${member.id}`;
+    // Use username from member data
+    const username = member.username || `user${member.id}`;
     navigate(`/seller/${username}`);
   };
 
   const filteredMembers = members?.filter((member) => {
-    const matchesSearch = member.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
-                         member.username?.toLowerCase().includes(searchTerm.toLowerCase()) ||
-                         member.email?.toLowerCase().includes(searchTerm.toLowerCase());
+    // Prioritize username search, then fall back to name and email
+    const matchesSearch = searchTerm === '' || 
+                         (member.username && member.username.toLowerCase().includes(searchTerm.toLowerCase())) ||
+                         (member.name && member.name.toLowerCase().includes(searchTerm.toLowerCase())) ||
+                         (member.email && member.email.toLowerCase().includes(searchTerm.toLowerCase()));
     
     const matchesVerified = !verifiedOnly || member.roles?.includes('seller');
     
@@ -132,9 +134,9 @@ const Members = () => {
                   {/* Avatar overlapping banner */}
                   <div className="flex justify-center -mt-12 mb-4">
                     <Avatar className="h-24 w-24 border-4 border-background ring-2 ring-primary/20">
-                      <AvatarImage src={member.avatar || ""} alt={member.name} />
+                      <AvatarImage src={member.avatar || ""} alt={member.username || member.name} />
                       <AvatarFallback className="bg-primary/10 text-primary font-bold text-xl">
-                        {getInitials(member.name || member.username)}
+                        {getInitials(member.username || member.name)}
                       </AvatarFallback>
                     </Avatar>
                     {member.roles?.includes('seller') && (
@@ -150,8 +152,11 @@ const Members = () => {
                   {/* Username */}
                   <div className="text-center mb-2">
                     <h3 className="font-bold text-lg text-primary group-hover:text-primary/80 transition-colors">
-                      @{member.username || member.email?.split('@')[0] || `user${member.id}`}
+                      @{member.username || `user${member.id}`}
                     </h3>
+                    {member.name && member.name !== member.username && (
+                      <p className="text-sm text-muted-foreground">{member.name}</p>
+                    )}
                   </div>
 
                   {/* Description */}
