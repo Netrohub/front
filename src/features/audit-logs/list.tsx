@@ -29,6 +29,8 @@ import {
 } from 'lucide-react';
 import { apiClient } from '@/lib/api';
 import { useAdminList } from '@/hooks/useAdminList';
+import { LoadingSpinner } from '@/components/admin/LoadingSpinner';
+import { EmptyState } from '@/components/admin/EmptyState';
 
 interface AuditLog {
   id: number;
@@ -227,13 +229,13 @@ function AuditLogsList() {
       {/* Audit Logs Table */}
       <Card>
         {isLoading ? (
-          <div className="flex items-center justify-center p-8">
-            <Loader2 className="w-8 h-8 animate-spin text-muted-foreground" />
-          </div>
+          <LoadingSpinner text="Loading audit logs..." />
         ) : filteredLogs.length === 0 ? (
-          <div className="text-center p-8 text-muted-foreground">
-            No audit logs found
-          </div>
+          <EmptyState 
+            icon={FileText}
+            title="No audit logs found"
+            description="System activity logs will appear here"
+          />
         ) : (
           <>
             <Table>

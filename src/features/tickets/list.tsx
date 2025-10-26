@@ -27,6 +27,8 @@ import {
 } from 'lucide-react';
 import { useAdminList } from '@/hooks/useAdminList';
 import { useAdminMutation } from '@/hooks/useAdminMutation';
+import { LoadingSpinner } from '@/components/admin/LoadingSpinner';
+import { EmptyState } from '@/components/admin/EmptyState';
 
 interface TicketType {
   id: number;
@@ -211,13 +213,13 @@ function TicketsList() {
       {/* Tickets Table */}
       <Card>
         {isLoading ? (
-          <div className="flex items-center justify-center p-8">
-            <Loader2 className="w-8 h-8 animate-spin text-muted-foreground" />
-          </div>
+          <LoadingSpinner text="Loading tickets..." />
         ) : filteredTickets?.length === 0 ? (
-          <div className="text-center p-8 text-muted-foreground">
-            No tickets found
-          </div>
+          <EmptyState 
+            icon={Ticket}
+            title="No tickets found"
+            description="Customer support tickets will appear here"
+          />
         ) : (
           <Table>
             <TableHeader>
