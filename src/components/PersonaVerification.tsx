@@ -8,12 +8,6 @@ interface PersonaVerificationProps {
   onError?: (error: Error) => void;
 }
 
-declare global {
-  interface Window {
-    Persona: any;
-  }
-}
-
 const PersonaVerification: React.FC<PersonaVerificationProps> = ({ 
   onComplete, 
   onError 
@@ -21,87 +15,111 @@ const PersonaVerification: React.FC<PersonaVerificationProps> = ({
   const [isLoading, setIsLoading] = useState(false);
   const [isSDKReady, setIsSDKReady] = useState(false);
   const mountedRef = useRef(true);
+  const iframeRef = useRef<HTMLIFrameElement>(null);
   const PERSONA_TEMPLATE_ID = 'vtmpl_gnPSyThsGJMjMqU3rpS1DoXQ69rr';
 
   useEffect(() => {
-    // Check if already loaded
-    if (window.Persona) {
-      console.log('✅ Persona SDK already available');
+    // Load Persona embedded flow using iframe approach
+    const iframe = document.createElement('iframe');
+    iframe.src = `https://withpersona.com/verify/inquiry/${PERSONA_TEMPLATE_ID}?environment=sandbox`;
+    iframe.style.display = 'none';
+    iframe.style.position = 'absolute';
+    iframe.style.width = '100%';
+    iframe.style.height = '100%';
+    iframe.style.border = 'none';
+    iframe.id = 'persona-iframe';
+    
+    iframe.onload = () => {
+      if (!mountedRef.current) return;
+      console.log('✅ Persona iframe loaded');
       setIsSDKReady(true);
-      return;
-    }
-
-    // Load Persona script using the correct URL
-    const script = document.createElement('script');
-    script.src = 'https://cdn.withpersona.com/dist/persona.js';
-    script.async = true;
-    script.id = 'persona-script';
-    
-    const handleLoad = () => {
-      if (!mountedRef.current) return;
-      console.log('✅ Persona SDK loaded successfully');
-      
-      // Wait a bit for Persona to initialize
-      setTimeout(() => {
-        if (!mountedRef.current) return;
-        setIsSDKReady(true);
-      }, 100);
     };
     
-    const handleError = (error: Event) => {
+    iframe.onerror = (error) => {
       if (!mountedRef.current) return;
-      console.error('❌ Failed to load Persona SDK:', error);
-      onError?.(new Error('Failed to load Persona SDK'));
+      console.error('❌ Failed to load Persona iframe:', error);
+      // Fallback: try direct link
+      setIsSDKReady(true); // Allow button to work as fallback
     };
-    
-    script.onload = handleLoad;
-    script.onerror = handleError;
-    
-    document.head.appendChild(script);
 
     return () => {
       mountedRef.current = false;
-      // Cleanup
-      const existingScript = document.getElementById('persona-script');
-      if (existingScript && existingScript.parentNode) {
-        existingScript.parentNode.removeChild(existingScript);
-      }
+      const existing = document.getElementById('persona-iframe');
+      if (existing) existing.remove();
     };
-  }, [onError]);
+  }, []);
 
   const handleStartVerification = () => {
     setIsLoading(true);
     
     try {
-      if (!window.Persona) {
-        console.error('Persona SDK not available');
-        setIsLoading(false);
-        onError?.(new Error('Persona SDK not loaded'));
-        return;
+      // Open Persona verification in a new window/tab
+      const width = 600;
+      const height = 800;
+      const left = (window.screen.width / 2) - (width / 2);
+      const top = (window.screen.height / 2) - (height / 2);
+      
+      const personaWindow = window.open(
+        `https://withpersona.com/verify/inquiry/${PERSONA_TEMPLATE_ID}?environment=sandbox`,
+        'PersonaVerification',
+        `width=${width},height=${height},left=${left},top=${top},resizable=yes,scrollbars=yes`
+      );
+
+      if (!personaWindow) {
+        throw new Error('Failed to open Persona verification window. Please allow popups.');
       }
 
-      // Use Persona's open method with correct configuration
-      window.Persona.open({
-        templateId: PERSONA_TEMPLATE_ID,
-        environment: 'sandbox',
-        onStart: () => {
-          console.log('📱 Persona verification started');
-        },
-        onComplete: ({ inquiryId }: { inquiryId: string }) => {
+      // Listen for messages from Persona
+      const handleMessage = (event: MessageEvent) => {
+        // Only accept messages from Persona
+        if (!event.origin.includes('withpersona.com')) return;
+
+        console.log('📨 Message from Persona:', event.data);
+
+        if (event.data.type === 'persona.verification.completed') {
+          const inquiryId = event.data.inquiryId;
           console.log('✅ Persona verification completed:', inquiryId);
           setIsLoading(false);
+          window.removeEventListener('message', handleMessage);
+          personaWindow.close();
           onComplete?.(inquiryId);
-        },
-        onCancel: () => {
+        } else if (event.data.type === 'persona.verification.canceled') {
           console.log('❌ Persona verification cancelled');
           setIsLoading(false);
-        },
-        onError: (error: any) => {
-          console.error('❌ Persona verification error:', error);
+          window.removeEventListener('message', handleMessage);
+          personaWindow.close();
+        } else if (event.data.type === 'persona.verification.failed') {
+          console.error('❌ Persona verification failed:', event.data.error);
           setIsLoading(false);
-          onError?.(new Error(error?.message || 'Verification failed'));
-        },
-      });
+          window.removeEventListener('message', handleMessage);
+          personaWindow.close();
+          onError?.(new Error(event.data.error?.message || 'Verification failed'));
+        }
+      };
+
+      window.addEventListener('message', handleMessage);
+
+      // Check if window was closed manually
+      const checkClosed = setInterval(() => {
+        if (personaWindow.closed) {
+          clearInterval(checkClosed);
+          window.removeEventListener('message', handleMessage);
+          if (isLoading) {
+            setIsLoading(false);
+          }
+        }
+      }, 1000);
+
+      // Cleanup after 30 minutes max
+      setTimeout(() => {
+        clearInterval(checkClosed);
+        window.removeEventListener('message', handleMessage);
+        if (!personaWindow.closed) {
+          personaWindow.close();
+        }
+        setIsLoading(false);
+      }, 30 * 60 * 1000);
+
     } catch (error) {
       console.error('Error starting Persona verification:', error);
       setIsLoading(false);
@@ -127,14 +145,14 @@ const PersonaVerification: React.FC<PersonaVerificationProps> = ({
 
         <Button
           onClick={handleStartVerification}
-          disabled={!isSDKReady || isLoading}
+          disabled={isLoading}
           className="w-full"
           size="lg"
         >
-          {(!isSDKReady || isLoading) ? (
+          {isLoading ? (
             <>
               <Loader2 className="mr-2 h-4 w-4 animate-spin" />
-              {isSDKReady ? 'Starting Verification...' : 'Loading Verification...'}
+              Opening Verification...
             </>
           ) : (
             <>
@@ -144,15 +162,9 @@ const PersonaVerification: React.FC<PersonaVerificationProps> = ({
           )}
         </Button>
 
-        {!isSDKReady && (
+        {isLoading && (
           <p className="text-sm text-muted-foreground">
-            Loading verification system...
-          </p>
-        )}
-        
-        {isLoading && isSDKReady && (
-          <p className="text-sm text-muted-foreground">
-            Opening verification window...
+            A new window will open for verification...
           </p>
         )}
       </div>
