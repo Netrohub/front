@@ -14,41 +14,59 @@ const PersonaVerification: React.FC<PersonaVerificationProps> = ({
 }) => {
   const [isLoading, setIsLoading] = useState(false);
   const PERSONA_TEMPLATE_ID = 'vtmpl_gnPSyThsGJMjMqU3rpS1DoXQ69rr';
+  const PERSONA_API_KEY = 'sk_test_c7fca5cf-4d36-4466-a8a0-cc4657055617'; // Sandbox key
 
-  const handleStartVerification = () => {
+  const handleStartVerification = async () => {
     setIsLoading(true);
     
     try {
-      // Redirect to Persona's hosted verification page
-      // This is the most reliable method
-      const personaUrl = `https://withpersona.com/verify?template-id=${PERSONA_TEMPLATE_ID}&environment=sandbox`;
-      
-      // Open in new window
-      const personaWindow = window.open(
-        personaUrl,
-        'PersonaVerification',
-        'width=600,height=800,resizable=yes,scrollbars=yes'
-      );
+      // Create an inquiry using Persona API
+      const response = await fetch('https://api.withpersona.com/api/v1/inquiries', {
+        method: 'POST',
+        headers: {
+          'Authorization': `Bearer ${PERSONA_API_KEY}`,
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+          data: {
+            type: 'inquiry',
+            attributes: {
+              template_id: PERSONA_TEMPLATE_ID,
+              reference_id: `user_${Date.now()}`, // Unique reference
+            }
+          }
+        }),
+      });
 
-      if (!personaWindow) {
-        // If popup is blocked, try redirecting in same window
-        console.log('Popup blocked, redirecting in same window...');
-        window.location.href = personaUrl;
-        setIsLoading(false);
-        return;
+      if (!response.ok) {
+        const error = await response.json();
+        throw new Error(error.error?.message || 'Failed to create Persona inquiry');
       }
 
-      console.log('✅ Persona verification window opened');
+      const result = await response.json();
+      const inquiryId = result.data.id;
+      const inquiryUrl = result.data.attributes.url;
 
-      // For now, just show success after opening
-      // In production, you would implement webhook handling on the backend
-      // to detect when verification is complete
-      setTimeout(() => {
-        setIsLoading(false);
-      }, 2000);
+      console.log('✅ Persona inquiry created:', inquiryId);
 
-      // Note: The actual verification completion will be handled via webhook
-      // which we already implemented in the backend
+      // Redirect to Persona verification
+      if (inquiryUrl) {
+        const personaWindow = window.open(
+          inquiryUrl,
+          'PersonaVerification',
+          'width=600,height=800,resizable=yes,scrollbars=yes'
+        );
+
+        if (!personaWindow) {
+          // If popup is blocked, redirect in same window
+          console.log('Popup blocked, redirecting in same window...');
+          window.location.href = inquiryUrl;
+        }
+      } else {
+        throw new Error('No verification URL returned from Persona');
+      }
+
+      setIsLoading(false);
       
     } catch (error) {
       console.error('Error starting Persona verification:', error);
@@ -82,7 +100,7 @@ const PersonaVerification: React.FC<PersonaVerificationProps> = ({
           {isLoading ? (
             <>
               <Loader2 className="mr-2 h-4 w-4 animate-spin" />
-              Opening Verification...
+              Creating Verification...
             </>
           ) : (
             <>
@@ -94,7 +112,7 @@ const PersonaVerification: React.FC<PersonaVerificationProps> = ({
 
         {isLoading && (
           <p className="text-sm text-muted-foreground">
-            A new window will open for verification...
+            Setting up verification...
           </p>
         )}
 
