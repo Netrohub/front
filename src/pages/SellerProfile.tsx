@@ -9,6 +9,7 @@ import { Card } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
+import { apiClient } from "@/lib/api";
 import { 
   Star, 
   MapPin, 
@@ -35,13 +36,7 @@ const SellerProfile = () => {
       
       try {
         setLoading(true);
-        const response = await fetch(`${import.meta.env.VITE_API_URL}/users/${seller}`);
-        
-        if (!response.ok) {
-          throw new Error('Failed to fetch seller data');
-        }
-        
-        const data = await response.json();
+        const data = await apiClient.getUserByUsername(seller);
         
         // Transform API data to match component expectations
         const sellerData = {
@@ -52,7 +47,7 @@ const SellerProfile = () => {
           rating: 4.8,
           totalReviews: 145,
           location: 'Global',
-          memberSince: new Date(data.created_at).toLocaleDateString('en-US', { month: 'long', year: 'numeric' }),
+          memberSince: new Date(data.created_at || Date.now()).toLocaleDateString('en-US', { month: 'long', year: 'numeric' }),
           description: `Welcome to ${data.name}'s profile!`,
           banner: 'https://images.unsplash.com/photo-1559027615-cd4628902d4a?w=1200&q=80',
           stats: [

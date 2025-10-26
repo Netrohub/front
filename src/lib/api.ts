@@ -374,11 +374,21 @@ class ApiClient {
   async getCurrentUser(): Promise<User> {
     const apiResponse = await this.request<User>('/auth/me');
     
-    // Handle wrapped response: { data: { ... }, message, status }
+    // Handle wrapped response from backend
     if ('data' in apiResponse && apiResponse.data) {
-      return apiResponse.data;
+      return apiResponse.data as User;
     }
-    return apiResponse as any;
+    return apiResponse as User;
+  }
+
+  async getUserByUsername(username: string): Promise<User> {
+    const apiResponse = await this.request<User>(`/users/${username}`);
+    
+    // Handle wrapped response from backend
+    if ('data' in apiResponse && apiResponse.data) {
+      return apiResponse.data as User;
+    }
+    return apiResponse as User;
   }
 
   async getMembers(): Promise<User[]> {
@@ -674,4 +684,8 @@ export const queryKeys = {
   
   // Members
   members: ['members'] as const,
+  
+  // Users
+  users: ['users'] as const,
+  userByUsername: (username: string) => [...queryKeys.users, username] as const,
 };
