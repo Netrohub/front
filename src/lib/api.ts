@@ -83,6 +83,7 @@ export interface Product {
   images: string[];
   seller: {
     id: number;
+    username?: string;
     name: string;
     avatar?: string;
     rating: number;
@@ -285,18 +286,17 @@ class ApiClient {
         data: data
       });
 
-      // Handle 401 Unauthorized - token expired or invalid
-      if (response.status === 401) {
-        console.warn('🔄 Token expired or invalid, clearing authentication');
-        this.clearToken();
-        // Redirect to login page
-        if (typeof window !== 'undefined') {
-          window.location.href = '/login';
-        }
-        throw new Error('Session expired. Please login again.');
-      }
-
       if (!response.ok) {
+        // Handle 401 Unauthorized - token expired or invalid
+        if (response.status === 401) {
+          console.warn('🔄 Token expired or invalid, clearing authentication');
+          this.clearToken();
+          // Redirect to login page
+          if (typeof window !== 'undefined') {
+            window.location.href = '/login';
+          }
+          throw new Error('Session expired. Please login again.');
+        }
         // Handle standardized error format
         const errorMessage = data.message || data.error?.message || `HTTP error! status: ${response.status}`;
         const error = new Error(errorMessage);

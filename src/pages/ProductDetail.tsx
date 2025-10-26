@@ -376,7 +376,7 @@ const ProductDetail = () => {
                         </div>
                       </div>
                     </div>
-                    <Link to={`/seller/${product.seller.name}`}>
+                    <Link to={`/seller/${product.seller.username || product.seller.name}`}>
                       <Button variant="outline" size="sm" className="glass-card border-primary/30">
                         View Profile
                       </Button>
