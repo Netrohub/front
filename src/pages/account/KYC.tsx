@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { Link } from 'react-router-dom';
 import AccountLayout from '@/components/AccountLayout';
+import PersonaVerification from '@/components/PersonaVerification';
 import { Card } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
@@ -194,18 +195,15 @@ const KYC = () => {
     }
   };
 
-  const handleIdentityVerification = async () => {
+  const handleIdentityVerificationComplete = async (inquiryId: string) => {
     try {
-      toast.loading('Submitting verification...');
-      
-      // Simulate API call
-      await new Promise(resolve => setTimeout(resolve, 3000));
+      console.log('✅ Persona verification completed with inquiry ID:', inquiryId);
       
       // Update KYC status in database
       await updateKYCStatus('identity', true);
       
       setVerificationStatus(prev => ({ ...prev, identity: true }));
-      toast.success('Verification submitted successfully!');
+      toast.success('Identity verification completed successfully!');
       
       // If all steps are complete, mark KYC as completed
       if (verificationStatus.email && verificationStatus.phone) {
@@ -213,8 +211,14 @@ const KYC = () => {
         toast.success('🎉 KYC verification completed! You can now access all seller features.');
       }
     } catch (error) {
-      toast.error('Verification Failed');
+      console.error('Error updating KYC status:', error);
+      toast.error('Failed to update verification status');
     }
+  };
+
+  const handleIdentityVerificationError = (error: Error) => {
+    console.error('Persona verification error:', error);
+    toast.error('Verification failed. Please try again.');
   };
 
   const renderCompletionScreen = () => {
@@ -427,22 +431,20 @@ const KYC = () => {
 
             {currentStep === 3 && (
               <div className="space-y-4">
-                <div className="text-center">
-                  <p className="text-sm text-foreground/60 mb-4">
-                    Verify your identity with government ID and selfie
-                  </p>
-                </div>
-                
                 {!verificationStatus.identity ? (
-                  <Button onClick={handleIdentityVerification} className="w-full btn-glow">
-                    <Shield className="h-4 w-4 mr-2" />
-                    Start Identity Verification
-                    <ExternalLink className="h-4 w-4 ml-2" />
-                  </Button>
+                  <PersonaVerification
+                    onComplete={handleIdentityVerificationComplete}
+                    onError={handleIdentityVerificationError}
+                  />
                 ) : (
-                  <div className="flex items-center justify-center gap-2 text-green-400">
-                    <CheckCircle className="h-5 w-5" />
-                    <span>Identity Verified</span>
+                  <div className="text-center py-8">
+                    <div className="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-green-500/10 border border-green-500/20 mb-4">
+                      <CheckCircle className="h-4 w-4 text-green-500" />
+                      <span className="text-sm font-medium text-green-500">Identity Verified</span>
+                    </div>
+                    <p className="text-sm text-foreground/60">
+                      Your identity has been successfully verified
+                    </p>
                   </div>
                 )}
               </div>
