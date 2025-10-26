@@ -79,7 +79,7 @@ const countries = [
 
 const KYC = () => {
   const { t } = useLanguage();
-  const { user, updateKYCStatus, completeKYC } = useAuth();
+  const { user, refreshUser, completeKYC } = useAuth();
   const [currentStep, setCurrentStep] = useState(1);
   const [selectedCountry, setSelectedCountry] = useState(countries[0]);
   const [countryOpen, setCountryOpen] = useState(false);
@@ -215,8 +215,8 @@ const KYC = () => {
       
       console.log('✅ Email verification response:', data);
       
-      // Update KYC status in database
-      await updateKYCStatus('email', true);
+      // Refresh user data to get updated verification status
+      await refreshUser();
       
       setVerificationStatus(prev => ({ ...prev, email: true }));
       toast.success('Email verified successfully!');
@@ -239,17 +239,10 @@ const KYC = () => {
     try {
       toast.loading('Sending verification code...');
       
-      // Simulate API call with full phone number
-      const fullPhoneNumber = `${selectedCountry.dialCode} ${phoneNumber}`;
-      console.log('Sending SMS to:', fullPhoneNumber);
-      
-      await new Promise(resolve => setTimeout(resolve, 2000));
-      
-      // Update KYC status in database
-      await updateKYCStatus('phone', true);
-      
+      // TODO: Implement actual phone verification API call
+      // For now, just update local state
+      toast.success('Phone verification is coming soon!');
       setVerificationStatus(prev => ({ ...prev, phone: true }));
-      toast.success('Phone verification code sent!');
     } catch (error) {
       toast.error('Phone Verification Failed');
     }
@@ -259,8 +252,8 @@ const KYC = () => {
     try {
       console.log('✅ Persona verification completed with inquiry ID:', inquiryId);
       
-      // Update KYC status in database
-      await updateKYCStatus('identity', true);
+      // Refresh user data to get updated verification status
+      await refreshUser();
       
       setVerificationStatus(prev => ({ ...prev, identity: true }));
       toast.success('Identity verification completed successfully!');
