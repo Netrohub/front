@@ -1,9 +1,9 @@
 import React, { useState } from 'react';
-import { useList } from '@refinedev/core';
 import { Card } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
 import { Progress } from '@/components/ui/progress';
+import { useAdminList } from '@/hooks/useAdminList';
 import { 
   DollarSign, 
   ShoppingCart, 
@@ -86,31 +86,31 @@ function DashboardPage() {
   const [timeRange, setTimeRange] = useState<'7d' | '30d' | '90d'>('30d');
 
   // Fetch data from API
-  const { data: ordersData, isLoading: ordersLoading } = useList({
-    resource: 'orders',
-    pagination: { current: 1, pageSize: 1 },
+  const { data: ordersData } = useAdminList({
+    endpoint: '/orders',
+    initialSearchTerm: '',
   });
 
-  const { data: usersData, isLoading: usersLoading } = useList({
-    resource: 'users',
-    pagination: { current: 1, pageSize: 1 },
+  const { data: usersData } = useAdminList({
+    endpoint: '/users',
+    initialSearchTerm: '',
   });
 
-  const { data: disputesData, isLoading: disputesLoading } = useList({
-    resource: 'disputes',
-    pagination: { current: 1, pageSize: 1 },
+  const { data: disputesData } = useAdminList({
+    endpoint: '/disputes',
+    initialSearchTerm: '',
   });
 
-  const { data: productsData, isLoading: productsLoading } = useList({
-    resource: 'products',
-    pagination: { current: 1, pageSize: 1 },
+  const { data: productsData } = useAdminList({
+    endpoint: '/products',
+    initialSearchTerm: '',
   });
 
-  const totalRevenue = ordersData?.total ? ordersData.total * 100 : 0;
-  const totalOrders = ordersData?.total || 0;
-  const totalUsers = usersData?.total || 0;
-  const openDisputes = disputesData?.total || 0;
-  const totalProducts = productsData?.total || 0;
+  const totalRevenue = ordersData?.length ? ordersData.length * 100 : 0;
+  const totalOrders = ordersData?.length || 0;
+  const totalUsers = usersData?.length || 0;
+  const openDisputes = disputesData?.length || 0;
+  const totalProducts = productsData?.length || 0;
 
   // Mock trend data (replace with real data)
   const revenueTrend = [12, 19, 15, 25, 30, 28, 35, 40, 38, 42, 45, 50];

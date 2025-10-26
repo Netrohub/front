@@ -1,6 +1,6 @@
 import React, { useState, useCallback, useMemo, memo } from 'react';
 import { Outlet, useNavigate, useLocation } from 'react-router-dom';
-import { useLogout } from '@refinedev/core';
+import { toast } from 'sonner';
 import { Button } from '@/components/ui/button';
 import { Card } from '@/components/ui/card';
 import { Input } from '@/components/ui/input';
@@ -56,10 +56,14 @@ function AdminLayout() {
   const [locale, setLocale] = useState<'en' | 'ar'>('en');
   const navigate = useNavigate();
   const location = useLocation();
-  const { mutate: logout } = useLogout();
 
   const handleLogout = async () => {
-    logout();
+    // Clear auth tokens from localStorage
+    localStorage.removeItem('auth_token');
+    localStorage.removeItem('admin_token');
+    localStorage.removeItem('refresh_token');
+    
+    toast.success('Logged out successfully');
     navigate('/login');
   };
 
