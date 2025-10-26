@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { isValidElement } from 'react';
 import {
   Table,
   TableBody,
@@ -202,19 +202,28 @@ export function DataTable<T extends { id: string | number }>({
                       />
                     </TableCell>
                   )}
-                  {columns.map((column) => (
-                    <TableCell key={column.key}>
-                      {column.render
-                        ? column.render(
-                            column.dataIndex ? record[column.dataIndex] : record,
-                            record,
-                            index
-                          )
-                        : column.dataIndex
-                        ? record[column.dataIndex]
-                        : record[column.key]}
-                    </TableCell>
-                  ))}
+                  {columns.map((column) => {
+                    const cellValue = column.render
+                      ? column.render(
+                          column.dataIndex ? record[column.dataIndex] : record,
+                          record,
+                          index
+                        )
+                      : column.dataIndex
+                      ? record[column.dataIndex]
+                      : record[column.key];
+                    
+                    // Prevent React error #130: ensure we never render plain objects
+                    const safeValue = typeof cellValue === 'object' && cellValue !== null && !isValidElement(cellValue)
+                      ? JSON.stringify(cellValue)
+                      : cellValue;
+                    
+                    return (
+                      <TableCell key={column.key}>
+                        {safeValue}
+                      </TableCell>
+                    );
+                  })}
                   {actions && (
                     <TableCell>
                       <DropdownMenu>

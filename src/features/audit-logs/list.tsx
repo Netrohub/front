@@ -272,8 +272,10 @@ function AuditLogsList() {
                     </TableCell>
                     <TableCell className="max-w-[300px] truncate">
                       <div className="text-sm">
-                        {JSON.stringify(log.new_values || {}).slice(0, 100)}
-                        {JSON.stringify(log.new_values || {}).length > 100 && '...'}
+                        {(() => {
+                          const jsonStr = JSON.stringify(log.new_values || {});
+                          return jsonStr.length > 100 ? jsonStr.slice(0, 100) + '...' : jsonStr;
+                        })()}
                       </div>
                     </TableCell>
                     <TableCell>
