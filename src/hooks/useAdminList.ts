@@ -1,4 +1,4 @@
-import { useState, useCallback, useEffect } from 'react';
+import { useState, useCallback } from 'react';
 import { toast } from 'sonner';
 import { useQuery, useQueryClient } from '@tanstack/react-query';
 import { apiClient } from '@/lib/api';
@@ -102,28 +102,14 @@ export function useAdminList<T extends { id: number }>({
     },
   });
 
-  // Update local pagination state when query data changes
-  useEffect(() => {
-    if (queryData?.pagination) {
-      setPagination(prev => {
-        // Check if values actually changed
-        if (
-          prev.total === queryData.pagination.total &&
-          prev.totalPages === queryData.pagination.totalPages
-        ) {
-          return prev; // No change, return previous state
-        }
-        
-        return {
-          ...prev,
-          total: queryData.pagination.total,
-          totalPages: queryData.pagination.totalPages,
-        };
-      });
-    }
-  }, [queryData?.pagination?.total, queryData?.pagination?.totalPages]);
-
   const data = queryData?.items || [];
+  
+  // Merge pagination from query data with local state
+  const paginationState = {
+    ...pagination,
+    total: queryData?.pagination?.total ?? pagination.total,
+    totalPages: queryData?.pagination?.totalPages ?? pagination.totalPages,
+  };
 
   // Optimistic update for item update
   const updateItem = useCallback((id: number, updates: Partial<T>) => {
@@ -171,7 +157,7 @@ export function useAdminList<T extends { id: number }>({
     isProcessing,
     searchTerm,
     setSearchTerm,
-    pagination,
+    pagination: paginationState,
     setPagination: (updates: Partial<typeof pagination>) => {
       setPagination(prev => ({ ...prev, ...updates }));
     },
