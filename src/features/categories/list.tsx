@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { Card } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
@@ -24,38 +24,94 @@ import {
   Tag,
   Plus,
   Edit,
-  Trash2
+  Trash2,
+  Loader2
 } from 'lucide-react';
+import { apiClient } from '@/lib/api';
+
+interface Category {
+  id: number;
+  name: string;
+  slug: string;
+  description: string | null;
+  status: string;
+  created_at: string;
+  updated_at: string;
+}
 
 function CategoriesList() {
   const [searchTerm, setSearchTerm] = useState('');
   const [isAddDialogOpen, setIsAddDialogOpen] = useState(false);
   const [isEditDialogOpen, setIsEditDialogOpen] = useState(false);
-  const [editingCategory, setEditingCategory] = useState<any>(null);
+  const [editingCategory, setEditingCategory] = useState<Category | null>(null);
   const [deleteDialogOpen, setDeleteDialogOpen] = useState(false);
   const [categoryToDelete, setCategoryToDelete] = useState<string | null>(null);
+  const [categories, setCategories] = useState<Category[]>([]);
+  const [isLoading, setIsLoading] = useState(true);
+  const [isSubmitting, setIsSubmitting] = useState(false);
   
   // Form state
   const [categoryName, setCategoryName] = useState('');
   const [categoryDescription, setCategoryDescription] = useState('');
   const [categoryStatus, setCategoryStatus] = useState('active');
-  
-  // TODO: Replace with actual categories data from API
-  const categories = [];
+
+  // Fetch categories
+  useEffect(() => {
+    fetchCategories();
+  }, []);
+
+  const fetchCategories = async () => {
+    try {
+      setIsLoading(true);
+      const response = await apiClient.request<Category[]>('/categories');
+      setCategories(response.data || []);
+    } catch (error: any) {
+      console.error('Failed to fetch categories:', error);
+      toast.error('Failed to load categories', {
+        description: error.message || 'An error occurred while loading categories',
+      });
+    } finally {
+      setIsLoading(false);
+    }
+  };
 
   const handleAddCategory = () => {
     setIsAddDialogOpen(true);
   };
 
   const handleAddSubmit = async () => {
-    // TODO: Call API to create category
-    toast.success('Category created', {
-      description: `Category "${categoryName}" has been created successfully.`,
-    });
-    setIsAddDialogOpen(false);
-    setCategoryName('');
-    setCategoryDescription('');
-    setCategoryStatus('active');
+    if (!categoryName.trim()) {
+      toast.error('Category name is required');
+      return;
+    }
+
+    try {
+      setIsSubmitting(true);
+      await apiClient.request('/categories', {
+        method: 'POST',
+        body: JSON.stringify({
+          name: categoryName,
+          description: categoryDescription || undefined,
+          isActive: categoryStatus === 'active',
+        }),
+      });
+      
+      toast.success('Category created', {
+        description: `Category "${categoryName}" has been created successfully.`,
+      });
+      setIsAddDialogOpen(false);
+      setCategoryName('');
+      setCategoryDescription('');
+      setCategoryStatus('active');
+      await fetchCategories();
+    } catch (error: any) {
+      console.error('Failed to create category:', error);
+      toast.error('Failed to create category', {
+        description: error.message || 'An error occurred while creating the category',
+      });
+    } finally {
+      setIsSubmitting(false);
+    }
   };
 
   const handleViewCategory = (categoryId: string) => {
@@ -65,27 +121,52 @@ function CategoriesList() {
   };
 
   const handleEditCategory = (categoryId: string) => {
-    // TODO: Fetch category data from API
-    const category = categories.find((c: any) => c.id === categoryId);
+    const category = categories.find((c) => c.id === parseInt(categoryId));
     if (category) {
       setEditingCategory(category);
       setCategoryName(category.name);
-      setCategoryDescription(category.description);
+      setCategoryDescription(category.description || '');
       setCategoryStatus(category.status);
       setIsEditDialogOpen(true);
     }
   };
 
   const handleEditSubmit = async () => {
-    // TODO: Call API to update category
-    toast.success('Category updated', {
-      description: `Category "${categoryName}" has been updated successfully.`,
-    });
-    setIsEditDialogOpen(false);
-    setEditingCategory(null);
-    setCategoryName('');
-    setCategoryDescription('');
-    setCategoryStatus('active');
+    if (!categoryName.trim()) {
+      toast.error('Category name is required');
+      return;
+    }
+
+    if (!editingCategory) return;
+
+    try {
+      setIsSubmitting(true);
+      await apiClient.request(`/categories/${editingCategory.id}`, {
+        method: 'PATCH',
+        body: JSON.stringify({
+          name: categoryName,
+          description: categoryDescription || undefined,
+          isActive: categoryStatus === 'active',
+        }),
+      });
+      
+      toast.success('Category updated', {
+        description: `Category "${categoryName}" has been updated successfully.`,
+      });
+      setIsEditDialogOpen(false);
+      setEditingCategory(null);
+      setCategoryName('');
+      setCategoryDescription('');
+      setCategoryStatus('active');
+      await fetchCategories();
+    } catch (error: any) {
+      console.error('Failed to update category:', error);
+      toast.error('Failed to update category', {
+        description: error.message || 'An error occurred while updating the category',
+      });
+    } finally {
+      setIsSubmitting(false);
+    }
   };
 
   const handleDeleteClick = (categoryId: string) => {
@@ -96,12 +177,26 @@ function CategoriesList() {
   const handleDeleteConfirm = async () => {
     if (!categoryToDelete) return;
     
-    // TODO: Call API to delete category
-    toast.success('Category deleted', {
-      description: 'Category has been deleted successfully.',
-    });
-    setDeleteDialogOpen(false);
-    setCategoryToDelete(null);
+    try {
+      setIsSubmitting(true);
+      await apiClient.request(`/categories/${categoryToDelete}`, {
+        method: 'DELETE',
+      });
+      
+      toast.success('Category deleted', {
+        description: 'Category has been deleted successfully.',
+      });
+      setDeleteDialogOpen(false);
+      setCategoryToDelete(null);
+      await fetchCategories();
+    } catch (error: any) {
+      console.error('Failed to delete category:', error);
+      toast.error('Failed to delete category', {
+        description: error.message || 'An error occurred while deleting the category',
+      });
+    } finally {
+      setIsSubmitting(false);
+    }
   };
 
   const getStatusBadge = (status: string) => {
@@ -114,6 +209,12 @@ function CategoriesList() {
         return <Badge variant="secondary">{status}</Badge>;
     }
   };
+
+  // Filter categories based on search term
+  const filteredCategories = categories.filter(category =>
+    category.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
+    (category.description && category.description.toLowerCase().includes(searchTerm.toLowerCase()))
+  );
 
   return (
     <div className="space-y-6">
@@ -170,11 +271,18 @@ function CategoriesList() {
                 </Select>
               </div>
               <div className="flex gap-2 justify-end">
-                <Button variant="outline" onClick={() => setIsAddDialogOpen(false)}>
+                <Button variant="outline" onClick={() => setIsAddDialogOpen(false)} disabled={isSubmitting}>
                   Cancel
                 </Button>
-                <Button onClick={handleAddSubmit}>
-                  Create Category
+                <Button onClick={handleAddSubmit} disabled={isSubmitting}>
+                  {isSubmitting ? (
+                    <>
+                      <Loader2 className="w-4 h-4 mr-2 animate-spin" />
+                      Creating...
+                    </>
+                  ) : (
+                    'Create Category'
+                  )}
                 </Button>
               </div>
             </div>
@@ -224,11 +332,18 @@ function CategoriesList() {
               </Select>
             </div>
             <div className="flex gap-2 justify-end">
-              <Button variant="outline" onClick={() => setIsEditDialogOpen(false)}>
+              <Button variant="outline" onClick={() => setIsEditDialogOpen(false)} disabled={isSubmitting}>
                 Cancel
               </Button>
-              <Button onClick={handleEditSubmit}>
-                Save Changes
+              <Button onClick={handleEditSubmit} disabled={isSubmitting}>
+                {isSubmitting ? (
+                  <>
+                    <Loader2 className="w-4 h-4 mr-2 animate-spin" />
+                    Saving...
+                  </>
+                ) : (
+                  'Save Changes'
+                )}
               </Button>
             </div>
           </div>
@@ -245,11 +360,22 @@ function CategoriesList() {
             </AlertDialogDescription>
           </AlertDialogHeader>
           <AlertDialogFooter>
-            <AlertDialogCancel onClick={() => setDeleteDialogOpen(false)}>
+            <AlertDialogCancel onClick={() => setDeleteDialogOpen(false)} disabled={isSubmitting}>
               Cancel
             </AlertDialogCancel>
-            <AlertDialogAction onClick={handleDeleteConfirm} className="bg-destructive text-destructive-foreground hover:bg-destructive/90">
-              Delete
+            <AlertDialogAction 
+              onClick={handleDeleteConfirm} 
+              className="bg-destructive text-destructive-foreground hover:bg-destructive/90"
+              disabled={isSubmitting}
+            >
+              {isSubmitting ? (
+                <>
+                  <Loader2 className="w-4 h-4 mr-2 animate-spin" />
+                  Deleting...
+                </>
+              ) : (
+                'Delete'
+              )}
             </AlertDialogAction>
           </AlertDialogFooter>
         </AlertDialogContent>
@@ -288,14 +414,23 @@ function CategoriesList() {
             </TableRow>
           </TableHeader>
           <TableBody>
-            {categories.length === 0 ? (
+            {isLoading ? (
+              <TableRow>
+                <TableCell colSpan={6} className="text-center py-8">
+                  <div className="flex items-center justify-center gap-2">
+                    <Loader2 className="w-5 h-5 animate-spin text-muted-foreground" />
+                    <span className="text-muted-foreground">Loading categories...</span>
+                  </div>
+                </TableCell>
+              </TableRow>
+            ) : filteredCategories.length === 0 ? (
               <TableRow>
                 <TableCell colSpan={6} className="text-center py-8 text-muted-foreground">
-                  No categories found
+                  {searchTerm ? 'No categories match your search' : 'No categories found'}
                 </TableCell>
               </TableRow>
             ) : (
-              categories.map((category: any) => (
+              filteredCategories.map((category) => (
                 <TableRow key={category.id}>
                   <TableCell>
                     <div className="flex items-center gap-2">
@@ -307,7 +442,7 @@ function CategoriesList() {
                     {category.description}
                   </TableCell>
                   <TableCell>
-                    <Badge variant="outline">{category.product_count}</Badge>
+                    <Badge variant="outline">0</Badge>
                   </TableCell>
                   <TableCell>{getStatusBadge(category.status)}</TableCell>
                   <TableCell>

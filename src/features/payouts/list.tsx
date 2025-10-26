@@ -1,5 +1,4 @@
-import React, { useState } from 'react';
-import { useList } from '@refinedev/core';
+import React, { useState, useEffect } from 'react';
 import { Card } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
@@ -22,19 +21,56 @@ import {
   DollarSign,
   Clock,
   CheckCircle,
-  XCircle
+  XCircle,
+  Loader2
 } from 'lucide-react';
+import { apiClient } from '@/lib/api';
+
+interface Payout {
+  id: number;
+  seller_id: number;
+  seller?: {
+    id: number;
+    name: string;
+    email: string;
+  };
+  amount: number;
+  status: string;
+  method: string | null;
+  reference: string | null;
+  description: string | null;
+  notes: string | null;
+  request_date: string;
+  process_date: string | null;
+  completed_date: string | null;
+  created_at: string;
+  updated_at: string;
+}
 
 function PayoutsList() {
   const [searchTerm, setSearchTerm] = useState('');
-  
-  const { data, isLoading } = useList({
-    resource: 'payouts',
-    pagination: { current: 1, pageSize: 10 },
-  });
+  const [payouts, setPayouts] = useState<Payout[]>([]);
+  const [isLoading, setIsLoading] = useState(true);
+  const [isProcessing, setIsProcessing] = useState(false);
 
-  // TODO: Replace with actual payouts data from API
-  const payouts = [];
+  useEffect(() => {
+    fetchPayouts();
+  }, []);
+
+  const fetchPayouts = async () => {
+    try {
+      setIsLoading(true);
+      const response = await apiClient.request<Payout[]>('/payouts');
+      setPayouts(response.data || []);
+    } catch (error: any) {
+      console.error('Failed to fetch payouts:', error);
+      toast.error('Failed to load payouts', {
+        description: error.message || 'An error occurred while loading payouts',
+      });
+    } finally {
+      setIsLoading(false);
+    }
+  };
 
   const handleProcessPayout = () => {
     toast.info('Process Payout', {
@@ -42,7 +78,30 @@ function PayoutsList() {
     });
   };
 
-  const handleViewPayout = (payoutId: string) => {
+  const handleUpdateStatus = async (payoutId: number, status: string) => {
+    try {
+      setIsProcessing(true);
+      await apiClient.request(`/payouts/${payoutId}`, {
+        method: 'PATCH',
+        body: JSON.stringify({ status }),
+      });
+      
+      toast.success('Payout updated', {
+        description: `Payout status updated to ${status}`,
+      });
+      
+      await fetchPayouts();
+    } catch (error: any) {
+      console.error('Failed to update payout:', error);
+      toast.error('Failed to update payout', {
+        description: error.message || 'An error occurred while updating payout',
+      });
+    } finally {
+      setIsProcessing(false);
+    }
+  };
+
+  const handleViewPayout = (payoutId: number) => {
     toast.info('Viewing payout', {
       description: `Opening payout #${payoutId}`,
     });
@@ -50,18 +109,34 @@ function PayoutsList() {
 
   const getStatusBadge = (status: string) => {
     switch (status) {
-      case 'paid':
-        return <Badge className="bg-green-100 text-green-800"><CheckCircle className="w-3 h-3 mr-1" />Paid</Badge>;
+      case 'completed':
+        return <Badge className="bg-green-100 text-green-800"><CheckCircle className="w-3 h-3 mr-1" />Completed</Badge>;
       case 'pending':
         return <Badge className="bg-yellow-100 text-yellow-800"><Clock className="w-3 h-3 mr-1" />Pending</Badge>;
       case 'failed':
         return <Badge className="bg-red-100 text-red-800"><XCircle className="w-3 h-3 mr-1" />Failed</Badge>;
-      case 'queued':
-        return <Badge className="bg-blue-100 text-blue-800">Queued</Badge>;
+      case 'processing':
+        return <Badge className="bg-blue-100 text-blue-800">Processing</Badge>;
       default:
         return <Badge variant="secondary">{status}</Badge>;
     }
   };
+
+  const filteredPayouts = payouts.filter(payout => {
+    const searchLower = searchTerm.toLowerCase();
+    return (
+      payout.seller?.name?.toLowerCase().includes(searchLower) ||
+      payout.reference?.toLowerCase().includes(searchLower) ||
+      payout.method?.toLowerCase().includes(searchLower)
+    );
+  });
+
+  const pendingPayouts = payouts.filter(p => p.status === 'pending').length;
+  const completedPayouts = payouts.filter(p => p.status === 'completed').length;
+  const failedPayouts = payouts.filter(p => p.status === 'failed').length;
+  const totalAmount = payouts
+    .filter(p => p.status === 'completed')
+    .reduce((sum, p) => sum + Number(p.amount), 0);
 
   return (
     <div className="space-y-6">
@@ -71,7 +146,8 @@ function PayoutsList() {
           <h1 className="text-3xl font-bold text-foreground">Payouts</h1>
           <p className="text-muted-foreground">Manage seller payouts and transactions</p>
         </div>
-        <Button onClick={handleProcessPayout}>
+        <Button onClick={handleProcessPayout} disabled={isProcessing}>
+          {isProcessing && <Loader2 className="w-4 h-4 mr-2 animate-spin" />}
           <CreditCard className="w-4 h-4 mr-2" />
           Process Payout
         </Button>
@@ -84,7 +160,7 @@ function PayoutsList() {
             <DollarSign className="w-5 h-5 text-green-500" />
             <div>
               <p className="text-sm text-muted-foreground">Total Paid</p>
-              <p className="text-2xl font-bold">$3,901.25</p>
+              <p className="text-2xl font-bold">${totalAmount.toFixed(2)}</p>
             </div>
           </div>
         </Card>
@@ -93,7 +169,16 @@ function PayoutsList() {
             <Clock className="w-5 h-5 text-yellow-500" />
             <div>
               <p className="text-sm text-muted-foreground">Pending</p>
-              <p className="text-2xl font-bold">$450.75</p>
+              <p className="text-2xl font-bold">{pendingPayouts}</p>
+            </div>
+          </div>
+        </Card>
+        <Card className="p-4">
+          <div className="flex items-center gap-2">
+            <CheckCircle className="w-5 h-5 text-green-500" />
+            <div>
+              <p className="text-sm text-muted-foreground">Completed</p>
+              <p className="text-2xl font-bold">{completedPayouts}</p>
             </div>
           </div>
         </Card>
@@ -102,16 +187,7 @@ function PayoutsList() {
             <XCircle className="w-5 h-5 text-red-500" />
             <div>
               <p className="text-sm text-muted-foreground">Failed</p>
-              <p className="text-2xl font-bold">$2,200.50</p>
-            </div>
-          </div>
-        </Card>
-        <Card className="p-4">
-          <div className="flex items-center gap-2">
-            <CreditCard className="w-5 h-5 text-blue-500" />
-            <div>
-              <p className="text-sm text-muted-foreground">This Month</p>
-              <p className="text-2xl font-bold">$1,700.75</p>
+              <p className="text-2xl font-bold">{failedPayouts}</p>
             </div>
           </div>
         </Card>
@@ -125,6 +201,8 @@ function PayoutsList() {
             <Input 
               placeholder="Search payouts..." 
               className="pl-10"
+              value={searchTerm}
+              onChange={(e) => setSearchTerm(e.target.value)}
             />
           </div>
           <Button variant="outline">
@@ -136,49 +214,73 @@ function PayoutsList() {
 
       {/* Payouts Table */}
       <Card>
-        <Table>
-          <TableHeader>
-            <TableRow>
-              <TableHead>Seller</TableHead>
-              <TableHead>Amount</TableHead>
-              <TableHead>Method</TableHead>
-              <TableHead>Status</TableHead>
-              <TableHead>Transaction ID</TableHead>
-              <TableHead>Created</TableHead>
-              <TableHead className="w-[100px]">Actions</TableHead>
-            </TableRow>
-          </TableHeader>
-          <TableBody>
-            {payouts.map((payout) => (
-              <TableRow key={payout.id}>
-                <TableCell className="font-medium">{payout.seller}</TableCell>
-                <TableCell>${payout.amount.toFixed(2)}</TableCell>
-                <TableCell>{payout.method}</TableCell>
-                <TableCell>{getStatusBadge(payout.status)}</TableCell>
-                <TableCell>
-                  {payout.transaction_id ? (
-                    <span className="font-mono text-sm">{payout.transaction_id}</span>
-                  ) : (
-                    <span className="text-muted-foreground">-</span>
-                  )}
-                </TableCell>
-                <TableCell>
-                  {new Date(payout.created_at).toLocaleDateString()}
-                </TableCell>
-                <TableCell>
-                  <div className="flex items-center gap-2">
-                    <Button variant="ghost" size="sm" onClick={() => handleViewPayout(payout.id)}>
-                      <Eye className="w-4 h-4" />
-                    </Button>
-                    <Button variant="ghost" size="sm">
-                      <MoreHorizontal className="w-4 h-4" />
-                    </Button>
-                  </div>
-                </TableCell>
+        {isLoading ? (
+          <div className="flex items-center justify-center p-8">
+            <Loader2 className="w-8 h-8 animate-spin text-muted-foreground" />
+          </div>
+        ) : filteredPayouts.length === 0 ? (
+          <div className="text-center p-8 text-muted-foreground">
+            No payouts found
+          </div>
+        ) : (
+          <Table>
+            <TableHeader>
+              <TableRow>
+                <TableHead>Seller</TableHead>
+                <TableHead>Amount</TableHead>
+                <TableHead>Method</TableHead>
+                <TableHead>Status</TableHead>
+                <TableHead>Reference</TableHead>
+                <TableHead>Request Date</TableHead>
+                <TableHead className="w-[100px]">Actions</TableHead>
               </TableRow>
-            ))}
-          </TableBody>
-        </Table>
+            </TableHeader>
+            <TableBody>
+              {filteredPayouts.map((payout) => (
+                <TableRow key={payout.id}>
+                  <TableCell className="font-medium">
+                    {payout.seller?.name || `Seller #${payout.seller_id}`}
+                  </TableCell>
+                  <TableCell>${Number(payout.amount).toFixed(2)}</TableCell>
+                  <TableCell>{payout.method || '-'}</TableCell>
+                  <TableCell>{getStatusBadge(payout.status)}</TableCell>
+                  <TableCell>
+                    {payout.reference ? (
+                      <span className="font-mono text-sm">{payout.reference}</span>
+                    ) : (
+                      <span className="text-muted-foreground">-</span>
+                    )}
+                  </TableCell>
+                  <TableCell>
+                    {new Date(payout.request_date).toLocaleDateString()}
+                  </TableCell>
+                  <TableCell>
+                    <div className="flex items-center gap-2">
+                      <Button 
+                        variant="ghost" 
+                        size="sm" 
+                        onClick={() => handleViewPayout(payout.id)}
+                      >
+                        <Eye className="w-4 h-4" />
+                      </Button>
+                      {payout.status === 'pending' && (
+                        <Button 
+                          variant="ghost" 
+                          size="sm"
+                          onClick={() => handleUpdateStatus(payout.id, 'processing')}
+                          disabled={isProcessing}
+                        >
+                          {isProcessing && <Loader2 className="w-4 h-4 animate-spin" />}
+                          <MoreHorizontal className="w-4 h-4" />
+                        </Button>
+                      )}
+                    </div>
+                  </TableCell>
+                </TableRow>
+              ))}
+            </TableBody>
+          </Table>
+        )}
       </Card>
     </div>
   );

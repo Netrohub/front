@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { Card } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
@@ -26,16 +26,37 @@ import {
   Edit,
   Trash2,
   Calendar,
-  Percent
+  Percent,
+  Loader2
 } from 'lucide-react';
+import { apiClient } from '@/lib/api';
+
+interface Coupon {
+  id: number;
+  code: string;
+  description: string | null;
+  type: string;
+  value: number;
+  min_amount: number | null;
+  max_discount: number | null;
+  usage_limit: number | null;
+  used_count: number;
+  status: string;
+  expires_at: string | null;
+  created_at: string;
+  updated_at: string;
+}
 
 function CouponsList() {
   const [searchTerm, setSearchTerm] = useState('');
   const [isAddDialogOpen, setIsAddDialogOpen] = useState(false);
   const [isEditDialogOpen, setIsEditDialogOpen] = useState(false);
-  const [editingCoupon, setEditingCoupon] = useState<any>(null);
+  const [editingCoupon, setEditingCoupon] = useState<Coupon | null>(null);
   const [deleteDialogOpen, setDeleteDialogOpen] = useState(false);
   const [couponToDelete, setCouponToDelete] = useState<string | null>(null);
+  const [coupons, setCoupons] = useState<Coupon[]>([]);
+  const [isLoading, setIsLoading] = useState(true);
+  const [isSubmitting, setIsSubmitting] = useState(false);
   
   // Form state
   const [couponCode, setCouponCode] = useState('');
@@ -44,20 +65,68 @@ function CouponsList() {
   const [couponValue, setCouponValue] = useState('');
   const [couponStatus, setCouponStatus] = useState('active');
   
-  // TODO: Replace with actual coupons data from API
-  const coupons = [];
+  // Fetch coupons
+  useEffect(() => {
+    fetchCoupons();
+  }, []);
+
+  const fetchCoupons = async () => {
+    try {
+      setIsLoading(true);
+      const response = await apiClient.request<Coupon[]>('/coupons');
+      setCoupons(response.data || []);
+    } catch (error: any) {
+      console.error('Failed to fetch coupons:', error);
+      toast.error('Failed to load coupons', {
+        description: error.message || 'An error occurred while loading coupons',
+      });
+    } finally {
+      setIsLoading(false);
+    }
+  };
 
   const handleAddCoupon = () => {
     setIsAddDialogOpen(true);
   };
 
   const handleAddSubmit = async () => {
-    // TODO: Call API to create coupon
-    toast.success('Coupon created', {
-      description: `Coupon "${couponCode}" has been created successfully.`,
-    });
-    setIsAddDialogOpen(false);
-    resetForm();
+    if (!couponCode.trim()) {
+      toast.error('Coupon code is required');
+      return;
+    }
+
+    if (!couponValue.trim()) {
+      toast.error('Coupon value is required');
+      return;
+    }
+
+    try {
+      setIsSubmitting(true);
+      await apiClient.request('/coupons', {
+        method: 'POST',
+        body: JSON.stringify({
+          code: couponCode,
+          description: couponDescription || undefined,
+          type: couponType,
+          value: parseFloat(couponValue),
+          status: couponStatus,
+        }),
+      });
+      
+      toast.success('Coupon created', {
+        description: `Coupon "${couponCode}" has been created successfully.`,
+      });
+      setIsAddDialogOpen(false);
+      resetForm();
+      await fetchCoupons();
+    } catch (error: any) {
+      console.error('Failed to create coupon:', error);
+      toast.error('Failed to create coupon', {
+        description: error.message || 'An error occurred while creating the coupon',
+      });
+    } finally {
+      setIsSubmitting(false);
+    }
   };
 
   const handleViewCoupon = (couponId: string) => {
@@ -67,26 +136,59 @@ function CouponsList() {
   };
 
   const handleEditCoupon = (couponId: string) => {
-    const coupon = coupons.find((c: any) => c.id === couponId);
+    const coupon = coupons.find((c) => c.id === parseInt(couponId));
     if (coupon) {
       setEditingCoupon(coupon);
       setCouponCode(coupon.code);
-      setCouponDescription(coupon.description);
+      setCouponDescription(coupon.description || '');
       setCouponType(coupon.type);
-      setCouponValue(coupon.value);
+      setCouponValue(coupon.value.toString());
       setCouponStatus(coupon.status);
       setIsEditDialogOpen(true);
     }
   };
 
   const handleEditSubmit = async () => {
-    // TODO: Call API to update coupon
-    toast.success('Coupon updated', {
-      description: `Coupon "${couponCode}" has been updated successfully.`,
-    });
-    setIsEditDialogOpen(false);
-    setEditingCoupon(null);
-    resetForm();
+    if (!couponCode.trim()) {
+      toast.error('Coupon code is required');
+      return;
+    }
+
+    if (!couponValue.trim()) {
+      toast.error('Coupon value is required');
+      return;
+    }
+
+    if (!editingCoupon) return;
+
+    try {
+      setIsSubmitting(true);
+      await apiClient.request(`/coupons/${editingCoupon.id}`, {
+        method: 'PATCH',
+        body: JSON.stringify({
+          code: couponCode,
+          description: couponDescription || undefined,
+          type: couponType,
+          value: parseFloat(couponValue),
+          status: couponStatus,
+        }),
+      });
+      
+      toast.success('Coupon updated', {
+        description: `Coupon "${couponCode}" has been updated successfully.`,
+      });
+      setIsEditDialogOpen(false);
+      setEditingCoupon(null);
+      resetForm();
+      await fetchCoupons();
+    } catch (error: any) {
+      console.error('Failed to update coupon:', error);
+      toast.error('Failed to update coupon', {
+        description: error.message || 'An error occurred while updating the coupon',
+      });
+    } finally {
+      setIsSubmitting(false);
+    }
   };
 
   const handleDeleteClick = (couponId: string) => {
@@ -97,12 +199,23 @@ function CouponsList() {
   const handleDeleteConfirm = async () => {
     if (!couponToDelete) return;
     
-    // TODO: Call API to delete coupon
-    toast.success('Coupon deleted', {
-      description: 'Coupon has been deleted successfully.',
-    });
-    setDeleteDialogOpen(false);
-    setCouponToDelete(null);
+    try {
+      await apiClient.request(`/coupons/${couponToDelete}`, {
+        method: 'DELETE',
+      });
+      
+      toast.success('Coupon deleted', {
+        description: 'Coupon has been deleted successfully.',
+      });
+      setDeleteDialogOpen(false);
+      setCouponToDelete(null);
+      await fetchCoupons();
+    } catch (error: any) {
+      console.error('Failed to delete coupon:', error);
+      toast.error('Failed to delete coupon', {
+        description: error.message || 'An error occurred while deleting the coupon',
+      });
+    }
   };
 
   const resetForm = () => {
@@ -213,11 +326,18 @@ function CouponsList() {
                 </Select>
               </div>
               <div className="flex gap-2 justify-end">
-                <Button variant="outline" onClick={() => setIsAddDialogOpen(false)}>
+                <Button variant="outline" onClick={() => setIsAddDialogOpen(false)} disabled={isSubmitting}>
                   Cancel
                 </Button>
-                <Button onClick={handleAddSubmit}>
-                  Create Coupon
+                <Button onClick={handleAddSubmit} disabled={isSubmitting}>
+                  {isSubmitting ? (
+                    <>
+                      <Loader2 className="w-4 h-4 mr-2 animate-spin" />
+                      Creating...
+                    </>
+                  ) : (
+                    'Create Coupon'
+                  )}
                 </Button>
               </div>
             </div>
@@ -291,11 +411,18 @@ function CouponsList() {
               </Select>
             </div>
             <div className="flex gap-2 justify-end">
-              <Button variant="outline" onClick={() => setIsEditDialogOpen(false)}>
+              <Button variant="outline" onClick={() => setIsEditDialogOpen(false)} disabled={isSubmitting}>
                 Cancel
               </Button>
-              <Button onClick={handleEditSubmit}>
-                Save Changes
+              <Button onClick={handleEditSubmit} disabled={isSubmitting}>
+                {isSubmitting ? (
+                  <>
+                    <Loader2 className="w-4 h-4 mr-2 animate-spin" />
+                    Saving...
+                  </>
+                ) : (
+                  'Save Changes'
+                )}
               </Button>
             </div>
           </div>
@@ -356,7 +483,16 @@ function CouponsList() {
             </TableRow>
           </TableHeader>
           <TableBody>
-            {coupons.length === 0 ? (
+            {isLoading ? (
+              <TableRow>
+                <TableCell colSpan={7} className="text-center py-8">
+                  <div className="flex items-center justify-center gap-2">
+                    <Loader2 className="w-4 h-4 animate-spin" />
+                    <span>Loading coupons...</span>
+                  </div>
+                </TableCell>
+              </TableRow>
+            ) : coupons.length === 0 ? (
               <TableRow>
                 <TableCell colSpan={7} className="text-center py-8 text-muted-foreground">
                   No coupons found
