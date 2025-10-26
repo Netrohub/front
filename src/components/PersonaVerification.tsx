@@ -27,7 +27,10 @@ const PersonaVerification: React.FC<PersonaVerificationProps> = ({
         }
       );
       
-      const { inquiryId, verificationUrl } = response.data;
+      console.log('Backend response:', response);
+
+      // The response should be wrapped in { data: { ... } }
+      const { inquiryId, verificationUrl } = response.data || response;
 
       console.log('✅ Persona inquiry created:', inquiryId);
 
