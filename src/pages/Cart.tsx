@@ -12,6 +12,7 @@ import { Trash2, ShoppingBag, ArrowRight, Tag } from "lucide-react";
 import { useLanguage } from "@/contexts/LanguageContext";
 import { useCart, useRemoveFromCart } from "@/hooks/useApi";
 import { useToast } from "@/hooks/use-toast";
+import { formatPrice } from "@/lib/utils";
 
 // Removed hardcoded cart items - now using real cart data
 
@@ -152,7 +153,7 @@ const Cart = () => {
                         <div className="flex items-center justify-between mt-4">
                           <span className="text-sm text-foreground/60">Quantity: {item.quantity}</span>
                           <p className="text-xl font-bold bg-gradient-to-r from-primary to-accent bg-clip-text text-transparent">
-                            ${item.price.toFixed(2)}
+                            ${formatPrice(item.price)}
                           </p>
                         </div>
                       </div>
@@ -192,17 +193,17 @@ const Cart = () => {
                 <div className="space-y-4 mb-6">
                   <div className="flex justify-between text-foreground/70">
                     <span>{t('subtotal')}</span>
-                    <span className="font-semibold">${subtotal.toFixed(2)}</span>
+                    <span className="font-semibold">${formatPrice(subtotal)}</span>
                   </div>
                   <div className="flex justify-between text-foreground/70">
                     <span>{t('serviceFee')} (3%)</span>
-                    <span className="font-semibold">${serviceFee.toFixed(2)}</span>
+                    <span className="font-semibold">${formatPrice(serviceFee)}</span>
                   </div>
                   <div className="border-t border-border/30 pt-4">
                     <div className="flex justify-between items-center">
                       <span className="text-lg font-bold text-foreground">{t('total')}</span>
                       <span className="text-2xl font-black bg-gradient-to-r from-primary to-accent bg-clip-text text-transparent">
-                        ${total.toFixed(2)}
+                        ${formatPrice(total)}
                       </span>
                     </div>
                   </div>

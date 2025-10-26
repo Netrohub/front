@@ -7,11 +7,12 @@ import { useLanguage } from "@/contexts/LanguageContext";
 import { usePrefetch } from "@/hooks/usePrefetch";
 import { useAddToCart } from "@/hooks/useApi";
 import { Link } from "react-router-dom";
+import { formatPrice } from "@/lib/utils";
 
 interface ProductCardProps {
   id: string | number;
   name: string;
-  price: number;
+  price: number | string;
   image: string;
   category: string;
   rating: number;
@@ -73,7 +74,7 @@ const ProductCard = ({ id, name, price, image, category, rating, reviews, featur
           <h3 className="line-clamp-2 font-semibold text-xs sm:text-sm group-hover:text-primary transition-colors min-h-[2rem] sm:min-h-[2.5rem] leading-tight">{name}</h3>
           <div className="flex items-baseline gap-2">
             <p className="text-lg sm:text-xl font-bold bg-gradient-to-r from-primary to-accent bg-clip-text text-transparent">
-              ${price.toFixed(2)}
+              ${formatPrice(price)}
             </p>
           </div>
         </div>
