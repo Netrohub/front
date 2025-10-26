@@ -20,11 +20,14 @@ const PersonaVerification: React.FC<PersonaVerificationProps> = ({
     
     try {
       console.log('🚀 Starting Persona verification...');
+      console.log('🔍 API Client:', apiClient);
+      console.log('🔍 API Client baseURL:', (apiClient as any).baseURL);
       
       const url = '/kyc/create-persona-inquiry';
       console.log('🔗 Calling URL:', url);
       
       // Call backend to create Persona inquiry
+      console.log('📞 About to call apiClient.request with:', { url, method: 'POST' });
       const response = await apiClient.request<{ inquiryId: string; verificationUrl: string }>(
         url,
         {
@@ -32,50 +35,52 @@ const PersonaVerification: React.FC<PersonaVerificationProps> = ({
         }
       );
       
+      console.log('✅ Got response from apiClient.request');
       console.log('📦 Full backend response:', response);
-      console.log('📦 Response type:', typeof response);
-      console.log('📦 Response keys:', Object.keys(response || {}));
-      console.log('📦 Response.data:', response.data);
 
-      // The response should be wrapped in { data: { ... } }
+      // Extract verification URL from backend response
       const result = response.data || response;
       const { inquiryId, verificationUrl } = result;
 
       console.log('✅ Extracted inquiryId:', inquiryId);
       console.log('✅ Extracted verificationUrl:', verificationUrl);
 
-      // Redirect to Persona verification
-      if (verificationUrl) {
-        console.log('🔗 Opening verification URL:', verificationUrl);
-        const personaWindow = window.open(
-          verificationUrl,
-          'PersonaVerification',
-          'width=600,height=800,resizable=yes,scrollbars=yes'
-        );
-
-        if (!personaWindow) {
-          // If popup is blocked, redirect in same window
-          console.log('⚠️ Popup blocked, redirecting in same window...');
-          window.location.href = verificationUrl;
-        }
-        
-        onComplete?.(inquiryId);
-      } else {
-        console.error('❌ No verificationUrl found in response');
-        throw new Error('No verification URL returned from Persona');
+      if (!verificationUrl) {
+        throw new Error('No verification URL returned from backend');
       }
 
-      setIsLoading(false);
+      // Open Persona verification in new window
+      const personaWindow = window.open(
+        verificationUrl,
+        'PersonaVerification',
+        'width=600,height=800,resizable=yes,scrollbars=yes'
+      );
+
+      if (!personaWindow) {
+        // If popup is blocked, try redirecting in same window
+        console.log('Popup blocked, redirecting in same window...');
+        window.location.href = verificationUrl;
+        setIsLoading(false);
+        return;
+      }
+
+      console.log('✅ Persona verification window opened');
+      onComplete?.(inquiryId);
+
+      // For now, just show success after opening
+      // In production, you would implement webhook handling on the backend
+      // to detect when verification is complete
+      setTimeout(() => {
+        setIsLoading(false);
+      }, 2000);
+
+      // Note: The actual verification completion will be handled via webhook
+      // which we already implemented in the backend
       
-    } catch (error: any) {
-      console.error('❌ Error starting Persona verification:', error);
-      console.error('❌ Error details:', {
-        message: error?.message,
-        stack: error?.stack,
-        response: error?.response,
-      });
+    } catch (error) {
+      console.error('Error starting Persona verification:', error);
       setIsLoading(false);
-      onError?.(new Error(error?.message || 'Failed to start verification'));
+      onError?.(error as Error);
     }
   };
 
