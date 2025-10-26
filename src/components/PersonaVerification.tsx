@@ -52,8 +52,15 @@ const PersonaVerification: React.FC<PersonaVerificationProps> = ({
       // Log the URL for debugging
       console.log('🔗 Opening Persona verification URL:', verificationUrl);
       
-      // Open Persona verification in same tab (blank issue fix)
-      window.location.href = verificationUrl;
+      // Open Persona verification in new tab
+      const personaWindow = window.open(verificationUrl, '_blank');
+      
+      if (!personaWindow) {
+        // If popup is blocked, fall back to same tab
+        console.log('Popup blocked, redirecting in same tab...');
+        window.location.href = verificationUrl;
+      }
+      
       setIsLoading(false);
       
       // DON'T call onComplete here - only call it after webhook confirms verification is done
