@@ -63,10 +63,9 @@ interface AuditLogsResponse {
 }
 
 function AuditLogsList() {
-  const [searchTerm, setSearchTerm] = useState('');
   const [isExporting, setIsExporting] = useState(false);
   
-  const { data: auditLogs, isLoading, pagination, setPagination } = useAdminList<AuditLog>({
+  const { data: auditLogs, isLoading, pagination, setPagination, searchTerm, setSearchTerm } = useAdminList<AuditLog>({
     endpoint: '/audit-logs',
     initialSearchTerm: '',
     pageSize: 50,
