@@ -1,12 +1,11 @@
 import React, { useState } from 'react';
-import { useList, useDelete } from '@refinedev/core';
 import { useNavigate } from 'react-router-dom';
 import { DataTable, Column } from '@/components/ui/DataTable';
 import { ConfirmDialog } from '@/components/ui/ConfirmDialog';
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
-import { useToast } from '@/hooks/use-toast';
+import { toast } from 'sonner';
 import { format } from 'date-fns';
 import { 
   Package,
@@ -19,6 +18,8 @@ import {
   TrendingUp,
   Star,
 } from 'lucide-react';
+import { useAdminList } from '@/hooks/useAdminList';
+import { useAdminMutation } from '@/hooks/useAdminMutation';
 
 interface Listing {
   id: number;
@@ -38,7 +39,6 @@ interface Listing {
 
 function ListingsList() {
   const navigate = useNavigate();
-  const { toast } = useToast();
   const [deleteDialog, setDeleteDialog] = useState<{
     open: boolean;
     listingId: number | null;
@@ -46,38 +46,31 @@ function ListingsList() {
   const [searchTerm, setSearchTerm] = useState('');
   const [statusFilter, setStatusFilter] = useState<string>('all');
 
-  const { data, isLoading, refetch } = useList<Listing>({
-    resource: 'products',
-    pagination: { current: 1, pageSize: 10 },
+  const { data, isLoading } = useAdminList<Listing>({
+    endpoint: '/products',
+    initialSearchTerm: '',
   });
 
-  const { mutate: deleteListing } = useDelete();
+  const { remove } = useAdminMutation<Listing>({
+    endpoint: '/products',
+    invalidateQueries: ['admin-list', '/products'],
+  });
 
   const handleDelete = (listingId: number) => {
     setDeleteDialog({ open: true, listingId });
   };
 
-  const confirmDelete = () => {
+  const confirmDelete = async () => {
     if (deleteDialog.listingId) {
-      deleteListing({
-        resource: 'products',
-        id: deleteDialog.listingId,
-      }, {
-        onSuccess: () => {
-          toast({
-            title: 'Listing deleted',
-            description: 'Listing has been successfully deleted.',
-          });
-          refetch();
-        },
-        onError: () => {
-          toast({
-            title: 'Error',
-            description: 'Failed to delete listing.',
-            variant: 'destructive',
-          });
-        },
-      });
+      try {
+        await remove(deleteDialog.listingId);
+        toast.success('Listing deleted', {
+          description: 'Listing has been successfully deleted.',
+        });
+      } catch (error: any) {
+        console.error('Failed to delete listing:', error);
+        // Error is already handled by the hook
+      }
     }
     setDeleteDialog({ open: false, listingId: null });
   };
@@ -206,7 +199,7 @@ function ListingsList() {
     },
   ];
 
-  const filteredData = data?.data?.filter((listing) => {
+  const filteredData = data?.filter((listing) => {
     const matchesSearch = listing.title.toLowerCase().includes(searchTerm.toLowerCase()) ||
       listing.seller?.name?.toLowerCase().includes(searchTerm.toLowerCase());
     const matchesStatus = statusFilter === 'all' || listing.status === statusFilter;
