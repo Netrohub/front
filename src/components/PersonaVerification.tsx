@@ -14,7 +14,6 @@ const PersonaVerification: React.FC<PersonaVerificationProps> = ({
   onError 
 }) => {
   const [isLoading, setIsLoading] = useState(false);
-  const PERSONA_TEMPLATE_ID = 'vtmpl_gnPSyThsGJMjMqU3rpS1DoXQ69rr';
 
   const handleStartVerification = async () => {
     setIsLoading(true);
@@ -22,9 +21,12 @@ const PersonaVerification: React.FC<PersonaVerificationProps> = ({
     try {
       console.log('🚀 Starting Persona verification...');
       
-      // Call backend to create Persona inquiry using the request method
+      const url = '/kyc/create-persona-inquiry';
+      console.log('🔗 Calling URL:', url);
+      
+      // Call backend to create Persona inquiry
       const response = await apiClient.request<{ inquiryId: string; verificationUrl: string }>(
-        '/kyc/create-persona-inquiry',
+        url,
         {
           method: 'POST',
         }
@@ -36,7 +38,8 @@ const PersonaVerification: React.FC<PersonaVerificationProps> = ({
       console.log('📦 Response.data:', response.data);
 
       // The response should be wrapped in { data: { ... } }
-      const { inquiryId, verificationUrl } = response.data || response;
+      const result = response.data || response;
+      const { inquiryId, verificationUrl } = result;
 
       console.log('✅ Extracted inquiryId:', inquiryId);
       console.log('✅ Extracted verificationUrl:', verificationUrl);
@@ -55,6 +58,8 @@ const PersonaVerification: React.FC<PersonaVerificationProps> = ({
           console.log('⚠️ Popup blocked, redirecting in same window...');
           window.location.href = verificationUrl;
         }
+        
+        onComplete?.(inquiryId);
       } else {
         console.error('❌ No verificationUrl found in response');
         throw new Error('No verification URL returned from Persona');
