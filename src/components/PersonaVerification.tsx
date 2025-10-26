@@ -49,33 +49,15 @@ const PersonaVerification: React.FC<PersonaVerificationProps> = ({
         throw new Error('No verification URL returned from backend');
       }
 
-      // Open Persona verification in new window
-      const personaWindow = window.open(
-        verificationUrl,
-        'PersonaVerification',
-        'width=600,height=800,resizable=yes,scrollbars=yes'
-      );
-
-      if (!personaWindow) {
-        // If popup is blocked, try redirecting in same window
-        console.log('Popup blocked, redirecting in same window...');
-        window.location.href = verificationUrl;
-        setIsLoading(false);
-        return;
-      }
-
-      console.log('✅ Persona verification window opened');
-      onComplete?.(inquiryId);
-
-      // For now, just show success after opening
-      // In production, you would implement webhook handling on the backend
-      // to detect when verification is complete
-      setTimeout(() => {
-        setIsLoading(false);
-      }, 2000);
-
-      // Note: The actual verification completion will be handled via webhook
-      // which we already implemented in the backend
+      // Log the URL for debugging
+      console.log('🔗 Opening Persona verification URL:', verificationUrl);
+      
+      // Open Persona verification in same tab (blank issue fix)
+      window.location.href = verificationUrl;
+      setIsLoading(false);
+      
+      // DON'T call onComplete here - only call it after webhook confirms verification is done
+      // The webhook will be triggered by Persona when the verification is actually completed
       
     } catch (error) {
       console.error('Error starting Persona verification:', error);
