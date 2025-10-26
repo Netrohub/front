@@ -30,10 +30,12 @@ import {
   ArrowRight,
   ExternalLink,
   ChevronDown,
-  Search
+  Search,
+  Loader2
 } from 'lucide-react';
 import { useLanguage } from '@/contexts/LanguageContext';
 import { useAuth } from '@/contexts/AuthContext';
+import { apiClient } from '@/lib/api';
 import { toast } from 'sonner';
 import { cn } from '@/lib/utils';
 
@@ -82,6 +84,9 @@ const KYC = () => {
   const [selectedCountry, setSelectedCountry] = useState(countries[0]);
   const [countryOpen, setCountryOpen] = useState(false);
   const [phoneNumber, setPhoneNumber] = useState('');
+  const [emailCode, setEmailCode] = useState('');
+  const [isSendingEmail, setIsSendingEmail] = useState(false);
+  const [isVerifyingEmail, setIsVerifyingEmail] = useState(false);
   const [verificationStatus, setVerificationStatus] = useState({
     email: user?.emailVerified || false,
     phone: user?.phoneVerified || false,
@@ -153,20 +158,59 @@ const KYC = () => {
     return false;
   };
 
-  const handleEmailVerification = async () => {
+  const handleSendEmailVerification = async () => {
     try {
+      setIsSendingEmail(true);
       toast.loading('Sending verification email...');
       
-      // Simulate API call
-      await new Promise(resolve => setTimeout(resolve, 2000));
+      // Call backend API to send verification code
+      const response = await apiClient.request('/kyc/send-email-verification', {
+        method: 'POST',
+      });
+
+      if (!response.ok) {
+        throw new Error('Failed to send verification email');
+      }
+
+      toast.success('Verification code sent to your email!');
+      setIsSendingEmail(false);
+    } catch (error: any) {
+      console.error('Error sending verification email:', error);
+      toast.error(error.message || 'Failed to send verification email');
+      setIsSendingEmail(false);
+    }
+  };
+
+  const handleVerifyEmailCode = async () => {
+    if (!emailCode || emailCode.length !== 6) {
+      toast.error('Please enter a valid 6-digit code');
+      return;
+    }
+
+    try {
+      setIsVerifyingEmail(true);
+      toast.loading('Verifying email...');
+      
+      // Call backend API to verify code
+      const data = await apiClient.request('/kyc/verify-email', {
+        method: 'POST',
+        body: JSON.stringify({ code: emailCode }),
+        headers: {
+          'Content-Type': 'application/json',
+        },
+      });
       
       // Update KYC status in database
       await updateKYCStatus('email', true);
       
       setVerificationStatus(prev => ({ ...prev, email: true }));
-      toast.success('Verification email sent!');
-    } catch (error) {
-      toast.error('Email Verification Failed');
+      toast.success('Email verified successfully!');
+      setIsVerifyingEmail(false);
+      setEmailCode('');
+    } catch (error: any) {
+      console.error('Error verifying email:', error);
+      toast.error(error.message || 'Failed to verify email');
+      setIsVerifyingEmail(false);
     }
   };
 
@@ -323,17 +367,65 @@ const KYC = () => {
                   <>
                     <div className="text-center">
                       <p className="text-sm text-foreground/60 mb-4">
-                        We'll send a verification link to your email address
+                        We'll send a verification code to your email address
                       </p>
                       <div className="p-4 bg-primary/5 rounded-lg border border-primary/20">
                         <p className="font-medium text-primary">{user?.email}</p>
                       </div>
                     </div>
                     
-                    <Button onClick={handleEmailVerification} className="w-full btn-glow">
-                      <Mail className="h-4 w-4 mr-2" />
-                      Send Verification Email
+                    <Button 
+                      onClick={handleSendEmailVerification} 
+                      className="w-full btn-glow"
+                      disabled={isSendingEmail}
+                    >
+                      {isSendingEmail ? (
+                        <>
+                          <Loader2 className="h-4 w-4 mr-2 animate-spin" />
+                          Sending...
+                        </>
+                      ) : (
+                        <>
+                          <Mail className="h-4 w-4 mr-2" />
+                          Send Verification Code
+                        </>
+                      )}
                     </Button>
+
+                    {emailCode && (
+                      <div className="space-y-4 pt-4 border-t border-border/50">
+                        <div>
+                          <label className="text-sm font-medium mb-2 block">
+                            Enter Verification Code
+                          </label>
+                          <Input
+                            type="text"
+                            placeholder="123456"
+                            value={emailCode}
+                            onChange={(e) => setEmailCode(e.target.value.replace(/\D/g, '').slice(0, 6))}
+                            maxLength={6}
+                            className="text-center text-2xl tracking-widest"
+                          />
+                        </div>
+                        <Button 
+                          onClick={handleVerifyEmailCode} 
+                          className="w-full btn-glow"
+                          disabled={emailCode.length !== 6 || isVerifyingEmail}
+                        >
+                          {isVerifyingEmail ? (
+                            <>
+                              <Loader2 className="h-4 w-4 mr-2 animate-spin" />
+                              Verifying...
+                            </>
+                          ) : (
+                            <>
+                              <CheckCircle className="h-4 w-4 mr-2" />
+                              Verify Code
+                            </>
+                          )}
+                        </Button>
+                      </div>
+                    )}
                   </>
                 )}
               </div>
