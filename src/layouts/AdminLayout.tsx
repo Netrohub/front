@@ -86,30 +86,33 @@ function AdminLayout() {
     setSidebarOpen(false);
   }, [navigate]);
 
-  // Memoize SidebarContent to prevent re-renders
-  const SidebarContent = useMemo(() => (
-    <div className="flex flex-col h-full">
-      <div className="flex items-center justify-between p-4 border-b border-border">
-        <h1 className="text-xl font-bold text-foreground">Admin Panel</h1>
+  // Memoize SidebarContent component to prevent re-renders
+  const SidebarContent = useMemo(() => {
+    const SidebarComponent = () => (
+      <div className="flex flex-col h-full">
+        <div className="flex items-center justify-between p-4 border-b border-border">
+          <h1 className="text-xl font-bold text-foreground">Admin Panel</h1>
+        </div>
+        <nav className="flex-1 p-4 space-y-2">
+          {navigation.map((item) => {
+            const isActive = location.pathname === item.href;
+            return (
+              <Button
+                key={item.name}
+                variant={isActive ? 'default' : 'ghost'}
+                className={`w-full justify-start ${isActive ? 'bg-primary text-primary-foreground' : ''}`}
+                onClick={() => handleNavClick(item.href)}
+              >
+                <item.icon className="mr-3 h-4 w-4" />
+                {item.name}
+              </Button>
+            );
+          })}
+        </nav>
       </div>
-      <nav className="flex-1 p-4 space-y-2">
-        {navigation.map((item) => {
-          const isActive = location.pathname === item.href;
-          return (
-            <Button
-              key={item.name}
-              variant={isActive ? 'default' : 'ghost'}
-              className={`w-full justify-start ${isActive ? 'bg-primary text-primary-foreground' : ''}`}
-              onClick={() => handleNavClick(item.href)}
-            >
-              <item.icon className="mr-3 h-4 w-4" />
-              {item.name}
-            </Button>
-          );
-        })}
-      </nav>
-    </div>
-  ), [location.pathname, handleNavClick]);
+    );
+    return SidebarComponent;
+  }, [location.pathname, handleNavClick]);
 
   return (
     <div className="min-h-screen bg-background">
