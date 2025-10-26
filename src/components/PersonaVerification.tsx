@@ -14,11 +14,14 @@ const PersonaVerification: React.FC<PersonaVerificationProps> = ({
   onError 
 }) => {
   const [isLoading, setIsLoading] = useState(false);
+  const PERSONA_TEMPLATE_ID = 'vtmpl_gnPSyThsGJMjMqU3rpS1DoXQ69rr';
 
   const handleStartVerification = async () => {
     setIsLoading(true);
     
     try {
+      console.log('🚀 Starting Persona verification...');
+      
       // Call backend to create Persona inquiry using the request method
       const response = await apiClient.request<{ inquiryId: string; verificationUrl: string }>(
         '/kyc/create-persona-inquiry',
@@ -27,15 +30,20 @@ const PersonaVerification: React.FC<PersonaVerificationProps> = ({
         }
       );
       
-      console.log('Backend response:', response);
+      console.log('📦 Full backend response:', response);
+      console.log('📦 Response type:', typeof response);
+      console.log('📦 Response keys:', Object.keys(response || {}));
+      console.log('📦 Response.data:', response.data);
 
       // The response should be wrapped in { data: { ... } }
       const { inquiryId, verificationUrl } = response.data || response;
 
-      console.log('✅ Persona inquiry created:', inquiryId);
+      console.log('✅ Extracted inquiryId:', inquiryId);
+      console.log('✅ Extracted verificationUrl:', verificationUrl);
 
       // Redirect to Persona verification
       if (verificationUrl) {
+        console.log('🔗 Opening verification URL:', verificationUrl);
         const personaWindow = window.open(
           verificationUrl,
           'PersonaVerification',
@@ -44,17 +52,23 @@ const PersonaVerification: React.FC<PersonaVerificationProps> = ({
 
         if (!personaWindow) {
           // If popup is blocked, redirect in same window
-          console.log('Popup blocked, redirecting in same window...');
+          console.log('⚠️ Popup blocked, redirecting in same window...');
           window.location.href = verificationUrl;
         }
       } else {
+        console.error('❌ No verificationUrl found in response');
         throw new Error('No verification URL returned from Persona');
       }
 
       setIsLoading(false);
       
     } catch (error: any) {
-      console.error('Error starting Persona verification:', error);
+      console.error('❌ Error starting Persona verification:', error);
+      console.error('❌ Error details:', {
+        message: error?.message,
+        stack: error?.stack,
+        response: error?.response,
+      });
       setIsLoading(false);
       onError?.(new Error(error?.message || 'Failed to start verification'));
     }
@@ -85,7 +99,7 @@ const PersonaVerification: React.FC<PersonaVerificationProps> = ({
           {isLoading ? (
             <>
               <Loader2 className="mr-2 h-4 w-4 animate-spin" />
-              Creating Verification...
+              Opening Verification...
             </>
           ) : (
             <>
@@ -97,7 +111,7 @@ const PersonaVerification: React.FC<PersonaVerificationProps> = ({
 
         {isLoading && (
           <p className="text-sm text-muted-foreground">
-            Setting up verification...
+            A new window will open for verification...
           </p>
         )}
 
