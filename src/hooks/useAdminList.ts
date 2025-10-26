@@ -60,7 +60,7 @@ export function useAdminList<T extends { id: number }>({
         params.append('search', searchTerm);
       }
 
-      const response = await apiClient.request<any>(`${endpoint}?${params}`);
+      const response = await apiClient.request<any>(`/admin${endpoint}?${params}`);
       
       // Handle both array and wrapped responses
       let items: T[] = [];
