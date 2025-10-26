@@ -128,7 +128,7 @@ const Wishlist = () => {
                 <div className="p-4 space-y-3">
                   <div className="flex items-center justify-between">
                     <Badge variant="secondary" className="text-xs bg-primary/10 text-primary border-primary/20">
-                      {item.category}
+                      {typeof item.category === 'string' ? item.category : 'Category'}
                     </Badge>
                     {item.rating && (
                       <div className="flex items-center gap-1 text-sm">

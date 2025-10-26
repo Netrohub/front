@@ -1,4 +1,5 @@
 import React, { isValidElement } from 'react';
+import { safeRender } from '@/lib/display';
 import {
   Table,
   TableBody,
@@ -213,14 +214,9 @@ export function DataTable<T extends { id: string | number }>({
                       ? record[column.dataIndex]
                       : record[column.key];
                     
-                    // Prevent React error #130: ensure we never render plain objects
-                    const safeValue = typeof cellValue === 'object' && cellValue !== null && !isValidElement(cellValue)
-                      ? JSON.stringify(cellValue)
-                      : cellValue;
-                    
                     return (
                       <TableCell key={column.key}>
-                        {safeValue}
+                        {safeRender(cellValue)}
                       </TableCell>
                     );
                   })}

@@ -135,7 +135,7 @@ const Cart = () => {
                               by {item.product?.seller?.name || 'Seller'}
                             </p>
                             <Badge variant="secondary" className="mt-2 bg-primary/10 text-primary border-primary/20">
-                              {item.product?.category || 'Category'}
+                              {typeof item.product?.category === 'string' ? item.product.category : 'Category'}
                             </Badge>
                           </div>
                           <Button

@@ -200,7 +200,7 @@ const AdvancedSearch = ({ onClose }: AdvancedSearchProps) => {
                                 variant="secondary"
                                 className="bg-primary/10 text-primary border-primary/20 text-xs"
                               >
-                                {result.category}
+                                {typeof result.category === 'string' ? result.category : 'Category'}
                               </Badge>
                               <span className="text-xs text-foreground/60">${result.price}</span>
                             </div>

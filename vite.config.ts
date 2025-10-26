@@ -31,6 +31,8 @@ export default defineConfig(({ mode }) => {
     build: {
       // Increase chunk size limit to 1000kb
       chunkSizeWarningLimit: 1000,
+      // Enable source maps for production debugging
+      sourcemap: true,
       rollupOptions: {
         output: {
           manualChunks: {
