@@ -1,13 +1,14 @@
 import React, { useState } from 'react';
-import { useList, useDelete } from '@refinedev/core';
 import { useNavigate } from 'react-router-dom';
 import { DataTable, Column } from '@/components/ui/DataTable';
 import { ConfirmDialog } from '@/components/ui/ConfirmDialog';
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
-import { useToast } from '@/hooks/use-toast';
+import { toast } from 'sonner';
 import { format } from 'date-fns';
 import { User, Shield, UserX } from 'lucide-react';
+import { useAdminList } from '@/hooks/useAdminList';
+import { useAdminMutation } from '@/hooks/useAdminMutation';
 
 interface User {
   id: number;
@@ -20,45 +21,37 @@ interface User {
 
 function UsersList() {
   const navigate = useNavigate();
-  const { toast } = useToast();
   const [deleteDialog, setDeleteDialog] = useState<{
     open: boolean;
     userId: number | null;
   }>({ open: false, userId: null });
   const [selectedRows, setSelectedRows] = useState<string[]>([]);
 
-  const { data, isLoading, refetch } = useList<User>({
-    resource: 'users',
-    pagination: { current: 1, pageSize: 10 },
+  const { data, isLoading } = useAdminList<User>({
+    endpoint: '/users',
+    initialSearchTerm: '',
   });
 
-  const { mutate: deleteUser } = useDelete();
+  const { remove } = useAdminMutation<User>({
+    endpoint: '/users',
+    invalidateQueries: ['admin-list', '/users'],
+  });
 
   const handleDelete = (userId: number) => {
     setDeleteDialog({ open: true, userId });
   };
 
-  const confirmDelete = () => {
+  const confirmDelete = async () => {
     if (deleteDialog.userId) {
-      deleteUser({
-        resource: 'users',
-        id: deleteDialog.userId,
-      }, {
-        onSuccess: () => {
-          toast({
-            title: 'User deleted',
-            description: 'User has been successfully deleted.',
-          });
-          refetch();
-        },
-        onError: () => {
-          toast({
-            title: 'Error',
-            description: 'Failed to delete user.',
-            variant: 'destructive',
-          });
-        },
-      });
+      try {
+        await remove(deleteDialog.userId);
+        toast.success('User deleted', {
+          description: 'User has been successfully deleted.',
+        });
+      } catch (error: any) {
+        console.error('Failed to delete user:', error);
+        // Error is already handled by the hook
+      }
     }
     setDeleteDialog({ open: false, userId: null });
   };
@@ -66,8 +59,7 @@ function UsersList() {
   const handleBulkAction = (action: string) => {
     if (selectedRows.length === 0) return;
     
-    toast({
-      title: 'Bulk Action',
+    toast.info('Bulk Action', {
       description: `${action} applied to ${selectedRows.length} users.`,
     });
   };
@@ -146,13 +138,13 @@ function UsersList() {
       </div>
 
       <DataTable
-        data={data?.data || []}
+        data={data || []}
         columns={columns}
         loading={isLoading}
         pagination={{
           current: 1,
           pageSize: 10,
-          total: data?.total || 0,
+          total: data?.length || 0,
           onChange: (page, pageSize) => {
             // Handle pagination
           },
