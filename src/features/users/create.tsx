@@ -1,5 +1,4 @@
 import React from 'react';
-import { useCreate } from '@refinedev/core';
 import { useNavigate } from 'react-router-dom';
 import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
@@ -8,8 +7,9 @@ import { Form, FormField } from '@/components/ui/form';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
-import { useToast } from '@/hooks/use-toast';
+import { toast } from 'sonner';
 import { ArrowLeft } from 'lucide-react';
+import { useAdminMutation } from '@/hooks/useAdminMutation';
 
 const userSchema = z.object({
   name: z.string().min(1, 'Name is required'),
@@ -22,8 +22,10 @@ type UserFormData = z.infer<typeof userSchema>;
 
 function UsersCreate() {
   const navigate = useNavigate();
-  const { toast } = useToast();
-  const { mutate: createUser, isLoading } = useCreate();
+  const { create, isPending } = useAdminMutation<any>({
+    endpoint: '/users',
+    invalidateQueries: ['admin-list', '/users'],
+  });
 
   const form = useForm<UserFormData>({
     resolver: zodResolver(userSchema),
@@ -35,26 +37,17 @@ function UsersCreate() {
     },
   });
 
-  const onSubmit = (data: UserFormData) => {
-    createUser({
-      resource: 'users',
-      values: data,
-    }, {
-      onSuccess: () => {
-        toast({
-          title: 'User created',
-          description: 'User has been successfully created.',
-        });
-        navigate('/admin/users');
-      },
-      onError: () => {
-        toast({
-          title: 'Error',
-          description: 'Failed to create user.',
-          variant: 'destructive',
-        });
-      },
-    });
+  const onSubmit = async (data: UserFormData) => {
+    try {
+      await create(data);
+      toast.success('User created', {
+        description: 'User has been successfully created.',
+      });
+      navigate('/admin/users');
+    } catch (error: any) {
+      console.error('Failed to create user:', error);
+      // Error is already handled by the hook
+    }
   };
 
   return (
@@ -78,7 +71,7 @@ function UsersCreate() {
         schema={userSchema}
         defaultValues={form.getValues()}
         onSubmit={onSubmit}
-        loading={isLoading}
+        loading={isPending}
       >
         {(form) => (
           <div className="space-y-6">
