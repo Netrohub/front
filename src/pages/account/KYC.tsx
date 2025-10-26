@@ -87,6 +87,7 @@ const KYC = () => {
   const [emailCode, setEmailCode] = useState('');
   const [isSendingEmail, setIsSendingEmail] = useState(false);
   const [isVerifyingEmail, setIsVerifyingEmail] = useState(false);
+  const [showEmailCodeInput, setShowEmailCodeInput] = useState(false);
   const [verificationStatus, setVerificationStatus] = useState({
     email: user?.emailVerified || false,
     phone: user?.phoneVerified || false,
@@ -170,6 +171,10 @@ const KYC = () => {
 
       console.log('✅ Email verification sent successfully:', response);
       
+      // Show the code input field after successfully sending email
+      setShowEmailCodeInput(true);
+      setEmailCode(''); // Clear any previous code
+      
       toast.success('Verification code sent to your email!');
       setIsSendingEmail(false);
     } catch (error: any) {
@@ -201,10 +206,11 @@ const KYC = () => {
       // Update KYC status in database
       await updateKYCStatus('email', true);
       
-      setVerificationStatus(prev => ({ ...prev, email: true }));
-      toast.success('Email verified successfully!');
-      setIsVerifyingEmail(false);
-      setEmailCode('');
+             setVerificationStatus(prev => ({ ...prev, email: true }));
+       toast.success('Email verified successfully!');
+       setIsVerifyingEmail(false);
+       setEmailCode('');
+       setShowEmailCodeInput(false);
     } catch (error: any) {
       console.error('Error verifying email:', error);
       toast.error(error.message || 'Failed to verify email');
@@ -390,40 +396,40 @@ const KYC = () => {
                       )}
                     </Button>
 
-                    {emailCode && (
-                      <div className="space-y-4 pt-4 border-t border-border/50">
-                        <div>
-                          <label className="text-sm font-medium mb-2 block">
-                            Enter Verification Code
-                          </label>
-                          <Input
-                            type="text"
-                            placeholder="123456"
-                            value={emailCode}
-                            onChange={(e) => setEmailCode(e.target.value.replace(/\D/g, '').slice(0, 6))}
-                            maxLength={6}
-                            className="text-center text-2xl tracking-widest"
-                          />
-                        </div>
-                        <Button 
-                          onClick={handleVerifyEmailCode} 
-                          className="w-full btn-glow"
-                          disabled={emailCode.length !== 6 || isVerifyingEmail}
-                        >
-                          {isVerifyingEmail ? (
-                            <>
-                              <Loader2 className="h-4 w-4 mr-2 animate-spin" />
-                              Verifying...
-                            </>
-                          ) : (
-                            <>
-                              <CheckCircle className="h-4 w-4 mr-2" />
-                              Verify Code
-                            </>
-                          )}
-                        </Button>
-                      </div>
-                    )}
+                                         {showEmailCodeInput && (
+                       <div className="space-y-4 pt-4 border-t border-border/50">
+                         <div>
+                           <label className="text-sm font-medium mb-2 block">
+                             Enter Verification Code
+                           </label>
+                           <Input
+                             type="text"
+                             placeholder="123456"
+                             value={emailCode}
+                             onChange={(e) => setEmailCode(e.target.value.replace(/\D/g, '').slice(0, 6))}
+                             maxLength={6}
+                             className="text-center text-2xl tracking-widest"
+                           />
+                         </div>
+                         <Button 
+                           onClick={handleVerifyEmailCode} 
+                           className="w-full btn-glow"
+                           disabled={emailCode.length !== 6 || isVerifyingEmail}
+                         >
+                           {isVerifyingEmail ? (
+                             <>
+                               <Loader2 className="h-4 w-4 mr-2 animate-spin" />
+                               Verifying...
+                             </>
+                           ) : (
+                             <>
+                               <CheckCircle className="h-4 w-4 mr-2" />
+                               Verify Code
+                             </>
+                           )}
+                         </Button>
+                       </div>
+                     )}
                   </>
                 )}
               </div>
