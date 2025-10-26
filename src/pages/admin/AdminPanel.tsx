@@ -43,11 +43,6 @@ const AdminPanelContent = () => {
           show: '/admin/orders/:id',
         },
         {
-          name: 'vendors',
-          list: '/admin/vendors',
-          show: '/admin/vendors/:id',
-        },
-        {
           name: 'listings',
           list: '/admin/listings',
           show: '/admin/listings/:id',
