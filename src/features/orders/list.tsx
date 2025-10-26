@@ -1,13 +1,14 @@
 import React, { useState } from 'react';
-import { useList, useUpdate } from '@refinedev/core';
 import { useNavigate } from 'react-router-dom';
 import { DataTable, Column } from '@/components/ui/DataTable';
 import { ConfirmDialog } from '@/components/ui/ConfirmDialog';
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
-import { useToast } from '@/hooks/use-toast';
+import { toast } from 'sonner';
 import { format } from 'date-fns';
 import { CreditCard, Shield, RotateCcw } from 'lucide-react';
+import { useAdminList } from '@/hooks/useAdminList';
+import { useAdminMutation } from '@/hooks/useAdminMutation';
 
 interface Order {
   id: number;
@@ -27,7 +28,6 @@ interface Order {
 
 function OrdersList() {
   const navigate = useNavigate();
-  const { toast } = useToast();
   const [releaseDialog, setReleaseDialog] = useState<{
     open: boolean;
     orderId: number | null;
@@ -37,12 +37,15 @@ function OrdersList() {
     orderId: number | null;
   }>({ open: false, orderId: null });
 
-  const { data, isLoading, refetch } = useList<Order>({
-    resource: 'orders',
-    pagination: { current: 1, pageSize: 10 },
+  const { data, isLoading, refetch } = useAdminList<Order>({
+    endpoint: '/orders',
+    initialSearchTerm: '',
   });
 
-  const { mutate: updateOrder } = useUpdate();
+  const { update } = useAdminMutation<Order>({
+    endpoint: '/orders',
+    invalidateQueries: ['admin-list', '/orders'],
+  });
 
   const handleReleaseEscrow = (orderId: number) => {
     setReleaseDialog({ open: true, orderId });
@@ -52,54 +55,32 @@ function OrdersList() {
     setRefundDialog({ open: true, orderId });
   };
 
-  const confirmRelease = () => {
+  const confirmRelease = async () => {
     if (releaseDialog.orderId) {
-      updateOrder({
-        resource: 'orders',
-        id: releaseDialog.orderId,
-        values: { escrow_status: 'released' },
-      }, {
-        onSuccess: () => {
-          toast({
-            title: 'Escrow Released',
-            description: 'Funds have been released to the seller.',
-          });
-          refetch();
-        },
-        onError: () => {
-          toast({
-            title: 'Error',
-            description: 'Failed to release escrow.',
-            variant: 'destructive',
-          });
-        },
-      });
+      try {
+        await update(releaseDialog.orderId, { escrow_status: 'released' });
+        toast.success('Escrow Released', {
+          description: 'Funds have been released to the seller.',
+        });
+      } catch (error: any) {
+        console.error('Failed to release escrow:', error);
+        // Error is already handled by the hook
+      }
     }
     setReleaseDialog({ open: false, orderId: null });
   };
 
-  const confirmRefund = () => {
+  const confirmRefund = async () => {
     if (refundDialog.orderId) {
-      updateOrder({
-        resource: 'orders',
-        id: refundDialog.orderId,
-        values: { escrow_status: 'refunded' },
-      }, {
-        onSuccess: () => {
-          toast({
-            title: 'Refund Processed',
-            description: 'Order has been refunded to the buyer.',
-          });
-          refetch();
-        },
-        onError: () => {
-          toast({
-            title: 'Error',
-            description: 'Failed to process refund.',
-            variant: 'destructive',
-          });
-        },
-      });
+      try {
+        await update(refundDialog.orderId, { escrow_status: 'refunded' });
+        toast.success('Refund Processed', {
+          description: 'Order has been refunded to the buyer.',
+        });
+      } catch (error: any) {
+        console.error('Failed to process refund:', error);
+        // Error is already handled by the hook
+      }
     }
     setRefundDialog({ open: false, orderId: null });
   };
@@ -182,8 +163,7 @@ function OrdersList() {
   ];
 
   const handleBulkAction = (action: string) => {
-    toast({
-      title: 'Bulk Action',
+    toast.info('Bulk Action', {
       description: `${action} applied to selected orders.`,
     });
   };
@@ -198,13 +178,13 @@ function OrdersList() {
       </div>
 
       <DataTable
-        data={data?.data || []}
+        data={data || []}
         columns={columns}
         loading={isLoading}
         pagination={{
           current: 1,
           pageSize: 10,
-          total: data?.total || 0,
+          total: data?.length || 0,
           onChange: (page, pageSize) => {
             // Handle pagination
           },
