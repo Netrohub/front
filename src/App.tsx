@@ -101,7 +101,13 @@ const queryClient = new QueryClient({
       staleTime: 60 * 1000, // 1 minute
       gcTime: 5 * 60 * 1000, // 5 minutes (formerly cacheTime)
       refetchOnWindowFocus: false,
+      refetchOnMount: false, // Don't refetch on component mount if data is fresh
+      refetchOnReconnect: false, // Don't refetch on reconnect if data is fresh
       retry: 1,
+      retryDelay: 1000, // 1 second between retries
+    },
+    mutations: {
+      retry: 0, // Don't retry mutations by default
     },
   },
 });

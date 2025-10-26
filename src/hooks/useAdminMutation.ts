@@ -1,5 +1,6 @@
 import { useState, useCallback } from 'react';
 import { toast } from 'sonner';
+import { useQueryClient } from '@tanstack/react-query';
 import { apiClient } from '@/lib/api';
 import { rateLimitApiCall } from '@/lib/rateLimiter';
 import { sanitizeObject } from '@/lib/sanitize';
@@ -10,6 +11,7 @@ interface UseAdminMutationOptions<T> {
   onError?: (error: Error) => void;
   successMessage?: string;
   errorMessage?: string;
+  invalidateQueries?: string[]; // Query keys to invalidate after mutation
 }
 
 interface UseAdminMutationReturn<T> {
@@ -26,7 +28,9 @@ export function useAdminMutation<T extends { id: number }>({
   onError,
   successMessage = 'Operation completed successfully',
   errorMessage = 'Operation failed',
+  invalidateQueries = ['admin-list'],
 }: UseAdminMutationOptions<T>): UseAdminMutationReturn<T> {
+  const queryClient = useQueryClient();
   const [isMutating, setIsMutating] = useState(false);
   const [error, setError] = useState<Error | null>(null);
 
@@ -47,6 +51,9 @@ export function useAdminMutation<T extends { id: number }>({
         'write'
       );
       
+      // Invalidate related queries to refetch fresh data
+      queryClient.invalidateQueries({ queryKey: invalidateQueries });
+      
       toast.success(successMessage);
       onSuccess?.(response);
     } catch (err: any) {
@@ -60,7 +67,7 @@ export function useAdminMutation<T extends { id: number }>({
     } finally {
       setIsMutating(false);
     }
-  }, [endpoint, successMessage, errorMessage, onSuccess, onError]);
+  }, [endpoint, successMessage, errorMessage, onSuccess, onError, queryClient, invalidateQueries]);
 
   const update = useCallback(async (id: number, data: Partial<T>) => {
     try {
@@ -79,6 +86,9 @@ export function useAdminMutation<T extends { id: number }>({
         'write'
       );
       
+      // Invalidate related queries to refetch fresh data
+      queryClient.invalidateQueries({ queryKey: invalidateQueries });
+      
       toast.success('Updated successfully');
       onSuccess?.(response);
     } catch (err: any) {
@@ -92,7 +102,7 @@ export function useAdminMutation<T extends { id: number }>({
     } finally {
       setIsMutating(false);
     }
-  }, [endpoint, onSuccess, onError]);
+  }, [endpoint, onSuccess, onError, queryClient, invalidateQueries]);
 
   const remove = useCallback(async (id: number) => {
     try {
@@ -107,6 +117,9 @@ export function useAdminMutation<T extends { id: number }>({
         'write'
       );
       
+      // Invalidate related queries to refetch fresh data
+      queryClient.invalidateQueries({ queryKey: invalidateQueries });
+      
       toast.success('Deleted successfully');
       onSuccess?.();
     } catch (err: any) {
@@ -120,7 +133,7 @@ export function useAdminMutation<T extends { id: number }>({
     } finally {
       setIsMutating(false);
     }
-  }, [endpoint, onSuccess, onError]);
+  }, [endpoint, onSuccess, onError, queryClient, invalidateQueries]);
 
   return {
     mutate,

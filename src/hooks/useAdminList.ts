@@ -1,11 +1,13 @@
-import { useState, useEffect, useCallback } from 'react';
+import { useState, useCallback } from 'react';
 import { toast } from 'sonner';
+import { useQuery, useQueryClient } from '@tanstack/react-query';
 import { apiClient } from '@/lib/api';
 
 interface UseAdminListOptions<T> {
   endpoint: string;
   initialSearchTerm?: string;
   pageSize?: number;
+  queryKey?: string[];
 }
 
 interface UseAdminListReturn<T> {
@@ -30,9 +32,9 @@ export function useAdminList<T extends { id: number }>({
   endpoint,
   initialSearchTerm = '',
   pageSize = 25,
+  queryKey,
 }: UseAdminListOptions<T>): UseAdminListReturn<T> {
-  const [data, setData] = useState<T[]>([]);
-  const [isLoading, setIsLoading] = useState(true);
+  const queryClient = useQueryClient();
   const [isProcessing, setIsProcessing] = useState(false);
   const [searchTerm, setSearchTerm] = useState(initialSearchTerm);
   const [pagination, setPagination] = useState({
@@ -42,9 +44,14 @@ export function useAdminList<T extends { id: number }>({
     totalPages: 0,
   });
 
-  const fetchData = useCallback(async () => {
-    try {
-      setIsLoading(true);
+  // Generate query key for React Query cache
+  const generatedQueryKey = queryKey || ['admin-list', endpoint];
+  const queryKeyWithParams = [...generatedQueryKey, pagination.page, pagination.limit, searchTerm];
+
+  // Use React Query for data fetching with caching
+  const { data: queryData, isLoading, refetch: queryRefetch } = useQuery({
+    queryKey: queryKeyWithParams,
+    queryFn: async () => {
       const params = new URLSearchParams({
         page: pagination.page.toString(),
         limit: pagination.limit.toString(),
@@ -57,45 +64,104 @@ export function useAdminList<T extends { id: number }>({
       const response = await apiClient.request<any>(`${endpoint}?${params}`);
       
       // Handle both array and wrapped responses
+      let items: T[] = [];
+      let paginationData = {
+        total: 0,
+        totalPages: 0,
+      };
+
       if (Array.isArray(response)) {
-        setData(response);
-        setPagination(prev => ({
-          ...prev,
+        items = response;
+        paginationData = {
           total: response.length,
           totalPages: Math.ceil(response.length / pagination.limit),
-        }));
+        };
       } else if (response.data) {
-        setData(response.data);
+        items = response.data;
         if (response.pagination) {
-          setPagination(response.pagination);
+          paginationData = {
+            total: response.pagination.total || 0,
+            totalPages: response.pagination.total_pages || 0,
+          };
         }
-      } else {
-        setData([]);
       }
-    } catch (error: any) {
+
+      return {
+        items,
+        pagination: paginationData,
+      };
+    },
+    staleTime: 30 * 1000, // 30 seconds - data is fresh for 30s
+    gcTime: 5 * 60 * 1000, // 5 minutes - cache for 5 minutes
+    retry: 1,
+    onError: (error: any) => {
       console.error(`Failed to fetch ${endpoint}:`, error);
       toast.error('Failed to load data', {
         description: error.message || 'An error occurred while loading data',
       });
-      setData([]);
-    } finally {
-      setIsLoading(false);
+    },
+  });
+
+  // Update local pagination state when query data changes
+  if (queryData?.pagination) {
+    const newPagination = {
+      page: pagination.page,
+      limit: pagination.limit,
+      total: queryData.pagination.total,
+      totalPages: queryData.pagination.totalPages,
+    };
+    
+    // Only update if changed to prevent infinite loop
+    if (JSON.stringify(newPagination) !== JSON.stringify(pagination)) {
+      setPagination(prev => ({
+        ...prev,
+        total: queryData.pagination.total,
+        totalPages: queryData.pagination.totalPages,
+      }));
     }
-  }, [endpoint, pagination.page, pagination.limit, searchTerm]);
+  }
 
+  const data = queryData?.items || [];
+
+  // Optimistic update for item update
   const updateItem = useCallback((id: number, updates: Partial<T>) => {
-    setData(prev => prev.map(item => 
-      item.id === id ? { ...item, ...updates } : item
-    ));
-  }, []);
+    setIsProcessing(true);
+    
+    // Optimistically update the cache
+    queryClient.setQueryData(queryKeyWithParams, (oldData: any) => {
+      if (!oldData) return oldData;
+      
+      return {
+        ...oldData,
+        items: oldData.items.map((item: T) =>
+          item.id === id ? { ...item, ...updates } : item
+        ),
+      };
+    });
+    
+    setIsProcessing(false);
+  }, [queryClient, queryKeyWithParams]);
 
+  // Optimistic update for item delete
   const deleteItem = useCallback((id: number) => {
-    setData(prev => prev.filter(item => item.id !== id));
-  }, []);
+    setIsProcessing(true);
+    
+    // Optimistically update the cache
+    queryClient.setQueryData(queryKeyWithParams, (oldData: any) => {
+      if (!oldData) return oldData;
+      
+      return {
+        ...oldData,
+        items: oldData.items.filter((item: T) => item.id !== id),
+      };
+    });
+    
+    setIsProcessing(false);
+  }, [queryClient, queryKeyWithParams]);
 
-  useEffect(() => {
-    fetchData();
-  }, [fetchData]);
+  const refetch = useCallback(async () => {
+    await queryRefetch();
+  }, [queryRefetch]);
 
   return {
     data,
@@ -107,7 +173,7 @@ export function useAdminList<T extends { id: number }>({
     setPagination: (updates: Partial<typeof pagination>) => {
       setPagination(prev => ({ ...prev, ...updates }));
     },
-    refetch: fetchData,
+    refetch,
     updateItem,
     deleteItem,
   };
