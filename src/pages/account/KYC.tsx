@@ -194,6 +194,9 @@ const KYC = () => {
       setIsVerifyingEmail(true);
       toast.loading('Verifying email...');
       
+      console.log('🔑 Verifying email code:', emailCode);
+      console.log('👤 Current user:', user);
+      
       // Call backend API to verify code
       const data = await apiClient.request('/kyc/verify-email', {
         method: 'POST',
@@ -203,16 +206,18 @@ const KYC = () => {
         },
       });
       
+      console.log('✅ Email verification response:', data);
+      
       // Update KYC status in database
       await updateKYCStatus('email', true);
       
-             setVerificationStatus(prev => ({ ...prev, email: true }));
-       toast.success('Email verified successfully!');
-       setIsVerifyingEmail(false);
-       setEmailCode('');
-       setShowEmailCodeInput(false);
+      setVerificationStatus(prev => ({ ...prev, email: true }));
+      toast.success('Email verified successfully!');
+      setIsVerifyingEmail(false);
+      setEmailCode('');
+      setShowEmailCodeInput(false);
     } catch (error: any) {
-      console.error('Error verifying email:', error);
+      console.error('❌ Error verifying email:', error);
       toast.error(error.message || 'Failed to verify email');
       setIsVerifyingEmail(false);
     }
