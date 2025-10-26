@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useCallback, useMemo, memo } from 'react';
 import { Outlet, useNavigate, useLocation } from 'react-router-dom';
 import { useLogout } from '@refinedev/core';
 import { Button } from '@/components/ui/button';
@@ -63,20 +63,27 @@ function AdminLayout() {
     navigate('/login');
   };
 
-  const toggleTheme = () => {
+  const toggleTheme = useCallback(() => {
     const newTheme = theme === 'light' ? 'dark' : 'light';
     setTheme(newTheme);
     document.documentElement.classList.toggle('dark', newTheme === 'dark');
-  };
+  }, [theme]);
 
-  const toggleLocale = () => {
+  const toggleLocale = useCallback(() => {
     const newLocale = locale === 'en' ? 'ar' : 'en';
     setLocale(newLocale);
     document.documentElement.setAttribute('dir', newLocale === 'ar' ? 'rtl' : 'ltr');
     document.documentElement.setAttribute('lang', newLocale);
-  };
+  }, [locale]);
 
-  const SidebarContent = () => (
+  // Memoize navigation click handler
+  const handleNavClick = useCallback((href: string) => {
+    navigate(href);
+    setSidebarOpen(false);
+  }, [navigate]);
+
+  // Memoize SidebarContent to prevent re-renders
+  const SidebarContent = useMemo(() => (
     <div className="flex flex-col h-full">
       <div className="flex items-center justify-between p-4 border-b border-border">
         <h1 className="text-xl font-bold text-foreground">Admin Panel</h1>
@@ -89,10 +96,7 @@ function AdminLayout() {
               key={item.name}
               variant={isActive ? 'default' : 'ghost'}
               className={`w-full justify-start ${isActive ? 'bg-primary text-primary-foreground' : ''}`}
-              onClick={() => {
-                navigate(item.href);
-                setSidebarOpen(false);
-              }}
+              onClick={() => handleNavClick(item.href)}
             >
               <item.icon className="mr-3 h-4 w-4" />
               {item.name}
@@ -101,7 +105,7 @@ function AdminLayout() {
         })}
       </nav>
     </div>
-  );
+  ), [location.pathname, handleNavClick]);
 
   return (
     <div className="min-h-screen bg-background">
@@ -213,4 +217,4 @@ function AdminLayout() {
   );
 }
 
-export default AdminLayout;
+export default memo(AdminLayout);
