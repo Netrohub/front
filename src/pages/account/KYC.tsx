@@ -197,6 +197,16 @@ const KYC = () => {
       console.log('🔑 Verifying email code:', emailCode);
       console.log('👤 Current user:', user);
       
+      // Check if we have a token
+      const token = localStorage.getItem('auth_token');
+      console.log('🔐 Auth token exists:', !!token, token ? 'Token length: ' + token.length : 'No token');
+      
+      if (!token) {
+        toast.error('Your session has expired. Please log in again.');
+        setIsVerifyingEmail(false);
+        return;
+      }
+      
       // Call backend API to verify code
       const data = await apiClient.request('/kyc/verify-email', {
         method: 'POST',
