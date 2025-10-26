@@ -168,10 +168,8 @@ const KYC = () => {
         method: 'POST',
       });
 
-      if (!response.ok) {
-        throw new Error('Failed to send verification email');
-      }
-
+      console.log('✅ Email verification sent successfully:', response);
+      
       toast.success('Verification code sent to your email!');
       setIsSendingEmail(false);
     } catch (error: any) {
