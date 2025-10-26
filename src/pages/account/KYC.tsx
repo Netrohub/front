@@ -211,9 +211,6 @@ const KYC = () => {
       const data = await apiClient.request('/kyc/verify-email', {
         method: 'POST',
         body: JSON.stringify({ code: emailCode }),
-        headers: {
-          'Content-Type': 'application/json',
-        },
       });
       
       console.log('✅ Email verification response:', data);
