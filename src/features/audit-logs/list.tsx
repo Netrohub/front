@@ -28,6 +28,7 @@ import {
   Download
 } from 'lucide-react';
 import { apiClient } from '@/lib/api';
+import { useAdminList } from '@/hooks/useAdminList';
 
 interface AuditLog {
   id: number;
@@ -61,42 +62,13 @@ interface AuditLogsResponse {
 
 function AuditLogsList() {
   const [searchTerm, setSearchTerm] = useState('');
-  const [auditLogs, setAuditLogs] = useState<AuditLog[]>([]);
-  const [isLoading, setIsLoading] = useState(true);
   const [isExporting, setIsExporting] = useState(false);
-  const [pagination, setPagination] = useState<Pagination>({
-    total: 0,
-    page: 1,
-    limit: 50,
-    total_pages: 1,
+  
+  const { data: auditLogs, isLoading, pagination, setPagination } = useAdminList<AuditLog>({
+    endpoint: '/audit-logs',
+    initialSearchTerm: '',
+    pageSize: 50,
   });
-
-  useEffect(() => {
-    fetchAuditLogs();
-  }, []);
-
-  const fetchAuditLogs = async (page: number = 1) => {
-    try {
-      setIsLoading(true);
-      const params = new URLSearchParams({
-        page: page.toString(),
-        limit: '50',
-      });
-
-      const response = await apiClient.request<AuditLogsResponse>(`/audit-logs?${params}`);
-      setAuditLogs(response.data || []);
-      if (response.pagination) {
-        setPagination(response.pagination);
-      }
-    } catch (error: any) {
-      console.error('Failed to fetch audit logs:', error);
-      toast.error('Failed to load audit logs', {
-        description: error.message || 'An error occurred while loading audit logs',
-      });
-    } finally {
-      setIsLoading(false);
-    }
-  };
 
   const handleExportLogs = async () => {
     try {
@@ -162,7 +134,7 @@ function AuditLogsList() {
     return <Badge variant="secondary">{action}</Badge>;
   };
 
-  const filteredLogs = auditLogs.filter(log => {
+  const filteredLogs = auditLogs?.filter(log => {
     const searchLower = searchTerm.toLowerCase();
     return (
       log.user?.name?.toLowerCase().includes(searchLower) ||
@@ -171,12 +143,12 @@ function AuditLogsList() {
       log.entity_type?.toLowerCase().includes(searchLower) ||
       log.ip_address?.toLowerCase().includes(searchLower)
     );
-  });
+  }) || [];
 
-  const totalLogs = pagination.total;
-  const infoLogs = auditLogs.filter(l => !l.action.includes('error') && !l.action.includes('warning')).length;
-  const warningLogs = auditLogs.filter(l => l.action.includes('warning') || l.action.includes('Failed')).length;
-  const securityLogs = auditLogs.filter(l => l.action.includes('login') || l.action.includes('password')).length;
+  const totalLogs = pagination?.total || 0;
+  const infoLogs = auditLogs?.filter(l => !l.action.includes('error') && !l.action.includes('warning')).length || 0;
+  const warningLogs = auditLogs?.filter(l => l.action.includes('warning') || l.action.includes('Failed')).length || 0;
+  const securityLogs = auditLogs?.filter(l => l.action.includes('login') || l.action.includes('password')).length || 0;
 
   return (
     <div className="space-y-6">
@@ -331,25 +303,25 @@ function AuditLogsList() {
             </Table>
 
             {/* Pagination */}
-            {pagination.total_pages > 1 && (
+            {(pagination?.totalPages || 0) > 1 && (
               <div className="flex items-center justify-between px-4 py-3 border-t">
                 <div className="text-sm text-muted-foreground">
-                  Showing {((pagination.page - 1) * pagination.limit) + 1} to {Math.min(pagination.page * pagination.limit, pagination.total)} of {pagination.total} results
+                  Showing {(((pagination?.page || 1) - 1) * (pagination?.limit || 50)) + 1} to {Math.min((pagination?.page || 1) * (pagination?.limit || 50), pagination?.total || 0)} of {pagination?.total || 0} results
                 </div>
                 <div className="flex gap-2">
                   <Button
                     variant="outline"
                     size="sm"
-                    onClick={() => fetchAuditLogs(pagination.page - 1)}
-                    disabled={pagination.page === 1 || isLoading}
+                    onClick={() => setPagination({ ...pagination, page: (pagination?.page || 1) - 1 })}
+                    disabled={(pagination?.page || 1) === 1 || isLoading}
                   >
                     Previous
                   </Button>
                   <Button
                     variant="outline"
                     size="sm"
-                    onClick={() => fetchAuditLogs(pagination.page + 1)}
-                    disabled={pagination.page === pagination.total_pages || isLoading}
+                    onClick={() => setPagination({ ...pagination, page: (pagination?.page || 1) + 1 })}
+                    disabled={(pagination?.page || 1) >= (pagination?.totalPages || 1) || isLoading}
                   >
                     Next
                   </Button>

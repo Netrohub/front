@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState } from 'react';
 import { Card } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
@@ -24,7 +24,8 @@ import {
   XCircle,
   Loader2
 } from 'lucide-react';
-import { apiClient } from '@/lib/api';
+import { useAdminList } from '@/hooks/useAdminList';
+import { useAdminMutation } from '@/hooks/useAdminMutation';
 
 interface Payout {
   id: number;
@@ -49,28 +50,16 @@ interface Payout {
 
 function PayoutsList() {
   const [searchTerm, setSearchTerm] = useState('');
-  const [payouts, setPayouts] = useState<Payout[]>([]);
-  const [isLoading, setIsLoading] = useState(true);
-  const [isProcessing, setIsProcessing] = useState(false);
+  
+  const { data: payouts, isLoading, refetch } = useAdminList<Payout>({
+    endpoint: '/payouts',
+    initialSearchTerm: '',
+  });
 
-  useEffect(() => {
-    fetchPayouts();
-  }, []);
-
-  const fetchPayouts = async () => {
-    try {
-      setIsLoading(true);
-      const response = await apiClient.request<Payout[]>('/payouts');
-      setPayouts(response.data || []);
-    } catch (error: any) {
-      console.error('Failed to fetch payouts:', error);
-      toast.error('Failed to load payouts', {
-        description: error.message || 'An error occurred while loading payouts',
-      });
-    } finally {
-      setIsLoading(false);
-    }
-  };
+  const { update } = useAdminMutation<Payout>({
+    endpoint: '/payouts',
+    invalidateQueries: ['admin-list', '/payouts'],
+  });
 
   const handleProcessPayout = () => {
     toast.info('Process Payout', {
@@ -80,24 +69,13 @@ function PayoutsList() {
 
   const handleUpdateStatus = async (payoutId: number, status: string) => {
     try {
-      setIsProcessing(true);
-      await apiClient.request(`/payouts/${payoutId}`, {
-        method: 'PATCH',
-        body: JSON.stringify({ status }),
-      });
-      
+      await update(payoutId, { status });
       toast.success('Payout updated', {
         description: `Payout status updated to ${status}`,
       });
-      
-      await fetchPayouts();
     } catch (error: any) {
       console.error('Failed to update payout:', error);
-      toast.error('Failed to update payout', {
-        description: error.message || 'An error occurred while updating payout',
-      });
-    } finally {
-      setIsProcessing(false);
+      // Error is already handled by the hook
     }
   };
 
@@ -111,12 +89,12 @@ function PayoutsList() {
     switch (status) {
       case 'completed':
         return <Badge className="bg-green-100 text-green-800"><CheckCircle className="w-3 h-3 mr-1" />Completed</Badge>;
+      case 'processing':
+        return <Badge className="bg-blue-100 text-blue-800"><Clock className="w-3 h-3 mr-1" />Processing</Badge>;
       case 'pending':
         return <Badge className="bg-yellow-100 text-yellow-800"><Clock className="w-3 h-3 mr-1" />Pending</Badge>;
       case 'failed':
         return <Badge className="bg-red-100 text-red-800"><XCircle className="w-3 h-3 mr-1" />Failed</Badge>;
-      case 'processing':
-        return <Badge className="bg-blue-100 text-blue-800">Processing</Badge>;
       default:
         return <Badge variant="secondary">{status}</Badge>;
     }
@@ -126,8 +104,10 @@ function PayoutsList() {
     const searchLower = searchTerm.toLowerCase();
     return (
       payout.seller?.name?.toLowerCase().includes(searchLower) ||
-      payout.reference?.toLowerCase().includes(searchLower) ||
-      payout.method?.toLowerCase().includes(searchLower)
+      payout.seller?.email?.toLowerCase().includes(searchLower) ||
+      payout.status?.toLowerCase().includes(searchLower) ||
+      payout.method?.toLowerCase().includes(searchLower) ||
+      payout.reference?.toLowerCase().includes(searchLower)
     );
   });
 
@@ -146,8 +126,8 @@ function PayoutsList() {
           <h1 className="text-3xl font-bold text-foreground">Payouts</h1>
           <p className="text-muted-foreground">Manage seller payouts and transactions</p>
         </div>
-        <Button onClick={handleProcessPayout} disabled={isProcessing}>
-          {isProcessing && <Loader2 className="w-4 h-4 mr-2 animate-spin" />}
+        <Button onClick={handleProcessPayout} disabled={false}>
+          {false && <Loader2 className="w-4 h-4 mr-2 animate-spin" />}
           <CreditCard className="w-4 h-4 mr-2" />
           Process Payout
         </Button>
@@ -268,9 +248,9 @@ function PayoutsList() {
                           variant="ghost" 
                           size="sm"
                           onClick={() => handleUpdateStatus(payout.id, 'processing')}
-                          disabled={isProcessing}
+                          disabled={false}
                         >
-                          {isProcessing && <Loader2 className="w-4 h-4 animate-spin" />}
+                          {false && <Loader2 className="w-4 h-4 animate-spin" />}
                           <MoreHorizontal className="w-4 h-4" />
                         </Button>
                       )}

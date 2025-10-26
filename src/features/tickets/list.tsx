@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState } from 'react';
 import { Card } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
@@ -25,7 +25,8 @@ import {
   AlertCircle,
   Loader2
 } from 'lucide-react';
-import { apiClient } from '@/lib/api';
+import { useAdminList } from '@/hooks/useAdminList';
+import { useAdminMutation } from '@/hooks/useAdminMutation';
 
 interface TicketType {
   id: number;
@@ -53,28 +54,16 @@ interface TicketType {
 
 function TicketsList() {
   const [searchTerm, setSearchTerm] = useState('');
-  const [tickets, setTickets] = useState<TicketType[]>([]);
-  const [isLoading, setIsLoading] = useState(true);
-  const [isProcessing, setIsProcessing] = useState(false);
+  
+  const { data: tickets, isLoading } = useAdminList<TicketType>({
+    endpoint: '/tickets',
+    initialSearchTerm: '',
+  });
 
-  useEffect(() => {
-    fetchTickets();
-  }, []);
-
-  const fetchTickets = async () => {
-    try {
-      setIsLoading(true);
-      const response = await apiClient.request<TicketType[]>('/tickets');
-      setTickets(response.data || []);
-    } catch (error: any) {
-      console.error('Failed to fetch tickets:', error);
-      toast.error('Failed to load tickets', {
-        description: error.message || 'An error occurred while loading tickets',
-      });
-    } finally {
-      setIsLoading(false);
-    }
-  };
+  const { update } = useAdminMutation<TicketType>({
+    endpoint: '/tickets',
+    invalidateQueries: ['admin-list', '/tickets'],
+  });
 
   const handleNewTicket = () => {
     toast.info('New Ticket', {
@@ -84,24 +73,13 @@ function TicketsList() {
 
   const handleUpdateStatus = async (ticketId: number, status: string) => {
     try {
-      setIsProcessing(true);
-      await apiClient.request(`/tickets/${ticketId}`, {
-        method: 'PATCH',
-        body: JSON.stringify({ status }),
-      });
-      
+      await update(ticketId, { status });
       toast.success('Ticket updated', {
         description: `Ticket status updated to ${status}`,
       });
-      
-      await fetchTickets();
     } catch (error: any) {
       console.error('Failed to update ticket:', error);
-      toast.error('Failed to update ticket', {
-        description: error.message || 'An error occurred while updating ticket',
-      });
-    } finally {
-      setIsProcessing(false);
+      // Error is already handled by the hook
     }
   };
 
@@ -141,7 +119,7 @@ function TicketsList() {
     }
   };
 
-  const filteredTickets = tickets.filter(ticket => {
+  const filteredTickets = tickets?.filter(ticket => {
     const searchLower = searchTerm.toLowerCase();
     return (
       ticket.subject?.toLowerCase().includes(searchLower) ||
@@ -151,10 +129,10 @@ function TicketsList() {
     );
   });
 
-  const openTickets = tickets.filter(t => t.status === 'open').length;
-  const inProgressTickets = tickets.filter(t => t.status === 'in_progress').length;
-  const resolvedTickets = tickets.filter(t => t.status === 'resolved').length;
-  const totalTickets = tickets.length;
+  const openTickets = tickets?.filter(t => t.status === 'open').length || 0;
+  const inProgressTickets = tickets?.filter(t => t.status === 'in_progress').length || 0;
+  const resolvedTickets = tickets?.filter(t => t.status === 'resolved').length || 0;
+  const totalTickets = tickets?.length || 0;
 
   return (
     <div className="space-y-6">
@@ -164,8 +142,8 @@ function TicketsList() {
           <h1 className="text-3xl font-bold text-foreground">Support Tickets</h1>
           <p className="text-muted-foreground">Manage customer support tickets</p>
         </div>
-        <Button onClick={handleNewTicket} disabled={isProcessing}>
-          {isProcessing && <Loader2 className="w-4 h-4 mr-2 animate-spin" />}
+        <Button onClick={handleNewTicket} disabled={isLoading}>
+          {isLoading && <Loader2 className="w-4 h-4 mr-2 animate-spin" />}
           <Plus className="w-4 h-4 mr-2" />
           New Ticket
         </Button>
@@ -236,7 +214,7 @@ function TicketsList() {
           <div className="flex items-center justify-center p-8">
             <Loader2 className="w-8 h-8 animate-spin text-muted-foreground" />
           </div>
-        ) : filteredTickets.length === 0 ? (
+        ) : filteredTickets?.length === 0 ? (
           <div className="text-center p-8 text-muted-foreground">
             No tickets found
           </div>
@@ -255,7 +233,7 @@ function TicketsList() {
               </TableRow>
             </TableHeader>
             <TableBody>
-              {filteredTickets.map((ticket) => (
+              {filteredTickets?.map((ticket) => (
                 <TableRow key={ticket.id}>
                   <TableCell>
                     <div>
@@ -292,9 +270,9 @@ function TicketsList() {
                           variant="ghost" 
                           size="sm"
                           onClick={() => handleUpdateStatus(ticket.id, 'in_progress')}
-                          disabled={isProcessing}
+                          disabled={isLoading}
                         >
-                          {isProcessing && <Loader2 className="w-4 h-4 animate-spin" />}
+                          {isLoading && <Loader2 className="w-4 h-4 animate-spin" />}
                           <MoreHorizontal className="w-4 h-4" />
                         </Button>
                       )}
