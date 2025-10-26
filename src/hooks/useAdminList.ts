@@ -46,11 +46,10 @@ export function useAdminList<T extends { id: number }>({
 
   // Generate query key for React Query cache
   const generatedQueryKey = queryKey || ['admin-list', endpoint];
-  const queryKeyWithParams = [...generatedQueryKey, pagination.page, pagination.limit, searchTerm];
-
+  
   // Use React Query for data fetching with caching
   const { data: queryData, isLoading, refetch: queryRefetch } = useQuery({
-    queryKey: queryKeyWithParams,
+    queryKey: [...generatedQueryKey, pagination.page, pagination.limit, searchTerm],
     queryFn: async () => {
       const params = new URLSearchParams({
         page: pagination.page.toString(),
@@ -115,8 +114,10 @@ export function useAdminList<T extends { id: number }>({
   const updateItem = useCallback((id: number, updates: Partial<T>) => {
     setIsProcessing(true);
     
+    const queryKey = [...generatedQueryKey, pagination.page, pagination.limit, searchTerm];
+    
     // Optimistically update the cache
-    queryClient.setQueryData(queryKeyWithParams, (oldData: any) => {
+    queryClient.setQueryData(queryKey, (oldData: any) => {
       if (!oldData) return oldData;
       
       return {
@@ -128,14 +129,16 @@ export function useAdminList<T extends { id: number }>({
     });
     
     setIsProcessing(false);
-  }, [queryClient, queryKeyWithParams]);
+  }, [queryClient, generatedQueryKey, pagination.page, pagination.limit, searchTerm]);
 
   // Optimistic update for item delete
   const deleteItem = useCallback((id: number) => {
     setIsProcessing(true);
     
+    const queryKey = [...generatedQueryKey, pagination.page, pagination.limit, searchTerm];
+    
     // Optimistically update the cache
-    queryClient.setQueryData(queryKeyWithParams, (oldData: any) => {
+    queryClient.setQueryData(queryKey, (oldData: any) => {
       if (!oldData) return oldData;
       
       return {
@@ -145,7 +148,7 @@ export function useAdminList<T extends { id: number }>({
     });
     
     setIsProcessing(false);
-  }, [queryClient, queryKeyWithParams]);
+  }, [queryClient, generatedQueryKey, pagination.page, pagination.limit, searchTerm]);
 
   const refetch = useCallback(async () => {
     await queryRefetch();
