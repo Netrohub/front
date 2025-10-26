@@ -244,6 +244,14 @@ class ApiClient {
   ): Promise<ApiResponse<T>> {
     const url = `${this.baseURL}${endpoint}`;
     
+    console.log('🌐 API Request:', {
+      url,
+      method: options.method || 'GET',
+      endpoint,
+      baseURL: this.baseURL,
+      hasToken: !!this.token
+    });
+    
     const config: RequestInit = {
       headers: {
         'Content-Type': 'application/json',
@@ -257,6 +265,13 @@ class ApiClient {
     try {
       const response = await fetch(url, config);
       const data = await response.json();
+      
+      console.log('📥 API Response:', {
+        url,
+        status: response.status,
+        ok: response.ok,
+        data: data
+      });
 
       if (!response.ok) {
         // Handle standardized error format
@@ -269,7 +284,7 @@ class ApiClient {
 
       return data;
     } catch (error) {
-      console.error('API request failed:', error);
+      console.error('❌ API request failed:', error);
       throw error;
     }
   }
