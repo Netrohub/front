@@ -237,14 +237,25 @@ const KYC = () => {
     }
 
     try {
-      toast.loading('Sending verification code...');
+      toast.loading('Verifying phone number...');
       
-      // TODO: Implement actual phone verification API call
-      // For now, just update local state
-      toast.success('Phone verification is coming soon!');
+      // Call backend API to verify phone
+      const fullPhoneNumber = `${selectedCountry.dialCode} ${phoneNumber}`;
+      const data = await apiClient.request('/kyc/verify-phone', {
+        method: 'POST',
+        body: JSON.stringify({ phone: fullPhoneNumber, code: '123456' }), // TODO: Replace with actual SMS code
+      });
+      
+      console.log('✅ Phone verification response:', data);
+      
+      // Refresh user data to get updated verification status
+      await refreshUser();
+      
       setVerificationStatus(prev => ({ ...prev, phone: true }));
-    } catch (error) {
-      toast.error('Phone Verification Failed');
+      toast.success('Phone verified successfully!');
+    } catch (error: any) {
+      console.error('❌ Error verifying phone:', error);
+      toast.error(error.message || 'Failed to verify phone');
     }
   };
 
