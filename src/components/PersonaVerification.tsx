@@ -19,8 +19,13 @@ const PersonaVerification: React.FC<PersonaVerificationProps> = ({
     setIsLoading(true);
     
     try {
-      // Call backend to create Persona inquiry
-      const response = await apiClient.post('/api/kyc/create-persona-inquiry');
+      // Call backend to create Persona inquiry using the request method
+      const response = await apiClient.request<{ inquiryId: string; verificationUrl: string }>(
+        '/kyc/create-persona-inquiry',
+        {
+          method: 'POST',
+        }
+      );
       
       const { inquiryId, verificationUrl } = response.data;
 
@@ -48,7 +53,7 @@ const PersonaVerification: React.FC<PersonaVerificationProps> = ({
     } catch (error: any) {
       console.error('Error starting Persona verification:', error);
       setIsLoading(false);
-      onError?.(new Error(error?.response?.data?.message || 'Failed to start verification'));
+      onError?.(new Error(error?.message || 'Failed to start verification'));
     }
   };
 
