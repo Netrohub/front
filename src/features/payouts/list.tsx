@@ -1,9 +1,10 @@
-import React from 'react';
+import React, { useState } from 'react';
 import { useList } from '@refinedev/core';
 import { Card } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
 import { Input } from '@/components/ui/input';
+import { toast } from 'sonner';
 import { 
   Table, 
   TableBody, 
@@ -25,6 +26,8 @@ import {
 } from 'lucide-react';
 
 function PayoutsList() {
+  const [searchTerm, setSearchTerm] = useState('');
+  
   const { data, isLoading } = useList({
     resource: 'payouts',
     pagination: { current: 1, pageSize: 10 },
@@ -32,6 +35,18 @@ function PayoutsList() {
 
   // TODO: Replace with actual payouts data from API
   const payouts = [];
+
+  const handleProcessPayout = () => {
+    toast.info('Process Payout', {
+      description: 'Opening payout processing form...',
+    });
+  };
+
+  const handleViewPayout = (payoutId: string) => {
+    toast.info('Viewing payout', {
+      description: `Opening payout #${payoutId}`,
+    });
+  };
 
   const getStatusBadge = (status: string) => {
     switch (status) {
@@ -56,7 +71,7 @@ function PayoutsList() {
           <h1 className="text-3xl font-bold text-foreground">Payouts</h1>
           <p className="text-muted-foreground">Manage seller payouts and transactions</p>
         </div>
-        <Button>
+        <Button onClick={handleProcessPayout}>
           <CreditCard className="w-4 h-4 mr-2" />
           Process Payout
         </Button>
@@ -152,7 +167,7 @@ function PayoutsList() {
                 </TableCell>
                 <TableCell>
                   <div className="flex items-center gap-2">
-                    <Button variant="ghost" size="sm">
+                    <Button variant="ghost" size="sm" onClick={() => handleViewPayout(payout.id)}>
                       <Eye className="w-4 h-4" />
                     </Button>
                     <Button variant="ghost" size="sm">

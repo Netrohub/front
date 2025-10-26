@@ -3,6 +3,7 @@ import { Card } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
 import { Input } from '@/components/ui/input';
+import { toast } from 'sonner';
 import { 
   Table, 
   TableBody, 
@@ -29,6 +30,20 @@ function AuditLogsList() {
   // TODO: Replace with actual audit logs data from API
   const auditLogs = [];
 
+  const handleExportLogs = () => {
+    toast.success('Exporting audit logs...', {
+      description: 'Your audit logs will be downloaded shortly.',
+    });
+    // TODO: Implement actual export functionality
+  };
+
+  const handleViewLog = (logId: string) => {
+    toast.info('Viewing log details', {
+      description: `Opening log #${logId}`,
+    });
+    // TODO: Navigate to log detail page
+  };
+
   const getLevelBadge = (level: string) => {
     switch (level) {
       case 'info':
@@ -52,7 +67,7 @@ function AuditLogsList() {
           <h1 className="text-3xl font-bold text-foreground">Audit Logs</h1>
           <p className="text-muted-foreground">System activity and security logs</p>
         </div>
-        <Button variant="outline">
+        <Button variant="outline" onClick={handleExportLogs}>
           <FileText className="w-4 h-4 mr-2" />
           Export Logs
         </Button>
@@ -165,7 +180,7 @@ function AuditLogsList() {
                 </TableCell>
                 <TableCell>
                   <div className="flex items-center gap-2">
-                    <Button variant="ghost" size="sm">
+                    <Button variant="ghost" size="sm" onClick={() => handleViewLog(log.id)}>
                       <Eye className="w-4 h-4" />
                     </Button>
                     <Button variant="ghost" size="sm">

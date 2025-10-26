@@ -1,8 +1,9 @@
-import React from 'react';
+import React, { useState } from 'react';
 import { Card } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
 import { Input } from '@/components/ui/input';
+import { toast } from 'sonner';
 import { 
   Table, 
   TableBody, 
@@ -25,8 +26,22 @@ import {
 } from 'lucide-react';
 
 function TicketsList() {
+  const [searchTerm, setSearchTerm] = useState('');
+  
   // TODO: Replace with actual tickets data from API
   const tickets = [];
+
+  const handleNewTicket = () => {
+    toast.info('New Ticket', {
+      description: 'Opening ticket creation form...',
+    });
+  };
+
+  const handleViewTicket = (ticketId: string) => {
+    toast.info('Viewing ticket', {
+      description: `Opening ticket #${ticketId}`,
+    });
+  };
 
   const getStatusBadge = (status: string) => {
     switch (status) {
@@ -64,7 +79,7 @@ function TicketsList() {
           <h1 className="text-3xl font-bold text-foreground">Support Tickets</h1>
           <p className="text-muted-foreground">Manage customer support tickets</p>
         </div>
-        <Button>
+        <Button onClick={handleNewTicket}>
           <Plus className="w-4 h-4 mr-2" />
           New Ticket
         </Button>
@@ -163,7 +178,7 @@ function TicketsList() {
                 </TableCell>
                 <TableCell>
                   <div className="flex items-center gap-2">
-                    <Button variant="ghost" size="sm">
+                    <Button variant="ghost" size="sm" onClick={() => handleViewTicket(ticket.id)}>
                       <Eye className="w-4 h-4" />
                     </Button>
                     <Button variant="ghost" size="sm">

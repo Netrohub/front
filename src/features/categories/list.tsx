@@ -1,8 +1,9 @@
-import React from 'react';
+import React, { useState } from 'react';
 import { Card } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
 import { Input } from '@/components/ui/input';
+import { toast } from 'sonner';
 import { 
   Table, 
   TableBody, 
@@ -23,8 +24,38 @@ import {
 } from 'lucide-react';
 
 function CategoriesList() {
+  const [searchTerm, setSearchTerm] = useState('');
+  
   // TODO: Replace with actual categories data from API
   const categories = [];
+
+  const handleAddCategory = () => {
+    toast.info('Add Category', {
+      description: 'Opening add category form...',
+    });
+    // TODO: Open add category modal or navigate to create page
+  };
+
+  const handleViewCategory = (categoryId: string) => {
+    toast.info('Viewing category', {
+      description: `Opening category #${categoryId}`,
+    });
+    // TODO: Navigate to category detail page
+  };
+
+  const handleEditCategory = (categoryId: string) => {
+    toast.info('Editing category', {
+      description: `Opening edit form for #${categoryId}`,
+    });
+    // TODO: Open edit category modal or navigate to edit page
+  };
+
+  const handleDeleteCategory = (categoryId: string) => {
+    toast.error('Delete Category', {
+      description: 'Category deletion not implemented yet.',
+    });
+    // TODO: Implement delete functionality with confirmation dialog
+  };
 
   const getStatusBadge = (status: string) => {
     switch (status) {
@@ -45,7 +76,7 @@ function CategoriesList() {
           <h1 className="text-3xl font-bold text-foreground">Categories</h1>
           <p className="text-muted-foreground">Manage product categories</p>
         </div>
-        <Button>
+        <Button onClick={handleAddCategory}>
           <Plus className="w-4 h-4 mr-2" />
           Add Category
         </Button>
@@ -102,13 +133,13 @@ function CategoriesList() {
                 </TableCell>
                 <TableCell>
                   <div className="flex items-center gap-2">
-                    <Button variant="ghost" size="sm">
+                    <Button variant="ghost" size="sm" onClick={() => handleViewCategory(category.id)}>
                       <Eye className="w-4 h-4" />
                     </Button>
-                    <Button variant="ghost" size="sm">
+                    <Button variant="ghost" size="sm" onClick={() => handleEditCategory(category.id)}>
                       <Edit className="w-4 h-4" />
                     </Button>
-                    <Button variant="ghost" size="sm">
+                    <Button variant="ghost" size="sm" onClick={() => handleDeleteCategory(category.id)}>
                       <Trash2 className="w-4 h-4" />
                     </Button>
                   </div>

@@ -1,8 +1,9 @@
-import React from 'react';
+import React, { useState } from 'react';
 import { Card } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
 import { Input } from '@/components/ui/input';
+import { toast } from 'sonner';
 import { 
   Table, 
   TableBody, 
@@ -25,8 +26,34 @@ import {
 } from 'lucide-react';
 
 function CouponsList() {
+  const [searchTerm, setSearchTerm] = useState('');
+  
   // TODO: Replace with actual coupons data from API
   const coupons = [];
+
+  const handleAddCoupon = () => {
+    toast.info('Add Coupon', {
+      description: 'Opening add coupon form...',
+    });
+  };
+
+  const handleViewCoupon = (couponId: string) => {
+    toast.info('Viewing coupon', {
+      description: `Opening coupon #${couponId}`,
+    });
+  };
+
+  const handleEditCoupon = (couponId: string) => {
+    toast.info('Editing coupon', {
+      description: `Opening edit form for #${couponId}`,
+    });
+  };
+
+  const handleDeleteCoupon = (couponId: string) => {
+    toast.error('Delete Coupon', {
+      description: 'Coupon deletion not implemented yet.',
+    });
+  };
 
   const getStatusBadge = (status: string) => {
     switch (status) {
@@ -57,7 +84,7 @@ function CouponsList() {
           <h1 className="text-3xl font-bold text-foreground">Coupons</h1>
           <p className="text-muted-foreground">Manage discount coupons and promotions</p>
         </div>
-        <Button>
+        <Button onClick={handleAddCoupon}>
           <Plus className="w-4 h-4 mr-2" />
           Add Coupon
         </Button>
@@ -135,13 +162,13 @@ function CouponsList() {
                 </TableCell>
                 <TableCell>
                   <div className="flex items-center gap-2">
-                    <Button variant="ghost" size="sm">
+                    <Button variant="ghost" size="sm" onClick={() => handleViewCoupon(coupon.id)}>
                       <Eye className="w-4 h-4" />
                     </Button>
-                    <Button variant="ghost" size="sm">
+                    <Button variant="ghost" size="sm" onClick={() => handleEditCoupon(coupon.id)}>
                       <Edit className="w-4 h-4" />
                     </Button>
-                    <Button variant="ghost" size="sm">
+                    <Button variant="ghost" size="sm" onClick={() => handleDeleteCoupon(coupon.id)}>
                       <Trash2 className="w-4 h-4" />
                     </Button>
                   </div>
