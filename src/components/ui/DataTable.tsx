@@ -11,6 +11,8 @@ import { Button } from '@/components/ui/button';
 import { Checkbox } from '@/components/ui/checkbox';
 import { Badge } from '@/components/ui/badge';
 import { Card } from '@/components/ui/card';
+import { LoadingSpinner } from '@/components/admin/LoadingSpinner';
+import { EmptyState } from '@/components/admin/EmptyState';
 import { 
   MoreHorizontal, 
   Edit, 
@@ -107,9 +109,7 @@ export function DataTable<T extends { id: string | number }>({
   if (loading) {
     return (
       <Card className="p-6">
-        <div className="flex items-center justify-center h-32">
-          <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-primary"></div>
-        </div>
+        <LoadingSpinner text="Loading data..." />
       </Card>
     );
   }
@@ -180,9 +180,10 @@ export function DataTable<T extends { id: string | number }>({
             {data.length === 0 ? (
               <TableRow>
                 <TableCell colSpan={columns.length + (rowSelection ? 1 : 0) + (actions ? 1 : 0)}>
-                  <div className="text-center py-8 text-muted-foreground">
-                    No data available
-                  </div>
+                  <EmptyState
+                    title="No data available"
+                    description="There are no records to display at the moment."
+                  />
                 </TableCell>
               </TableRow>
             ) : (
