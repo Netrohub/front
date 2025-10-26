@@ -1,5 +1,6 @@
 import React, { createContext, useContext, useState, useEffect, ReactNode } from 'react';
 import { apiClient } from '@/lib/api';
+import { storeSecureToken, getSecureToken, removeSecureToken } from '@/lib/tokenEncryption';
 
 interface AdminUser {
   id: number;
@@ -40,9 +41,9 @@ export const AdminAuthProvider: React.FC<AdminAuthProviderProps> = ({ children }
   // Check if user is authenticated
   const isAuthenticated = !!adminUser;
 
-  // Get auth token from localStorage
+  // Get auth token from secure storage
   const getAuthToken = (): string | null => {
-    return localStorage.getItem('admin_token');
+    return getSecureToken('auth_token');
   };
 
   // Login function
@@ -60,10 +61,10 @@ export const AdminAuthProvider: React.FC<AdminAuthProviderProps> = ({ children }
         console.log('✅ AdminAuth: Admin user authenticated');
         setAdminUser(response.user);
         
-        // Store token for API calls
+        // Store token securely for API calls
         if (response.access_token) {
-          localStorage.setItem('auth_token', response.access_token);
-          console.log('💾 AdminAuth: Token stored');
+          storeSecureToken('auth_token', response.access_token);
+          console.log('💾 AdminAuth: Token stored securely');
         }
       } else {
         console.log('❌ AdminAuth: User is not an admin');
@@ -82,14 +83,14 @@ export const AdminAuthProvider: React.FC<AdminAuthProviderProps> = ({ children }
   const logout = () => {
     console.log('🚪 AdminAuth: Logging out');
     setAdminUser(null);
-    localStorage.removeItem('auth_token');
+    removeSecureToken('auth_token');
   };
 
   // Check for existing token on mount
   useEffect(() => {
     const checkAuth = async () => {
       try {
-        const token = localStorage.getItem('auth_token');
+        const token = getSecureToken('auth_token');
         if (token) {
           console.log('🔍 AdminAuth: Checking existing token');
           // Verify token by calling /auth/me endpoint

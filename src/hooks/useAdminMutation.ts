@@ -1,6 +1,8 @@
 import { useState, useCallback } from 'react';
 import { toast } from 'sonner';
 import { apiClient } from '@/lib/api';
+import { rateLimitApiCall } from '@/lib/rateLimiter';
+import { sanitizeObject } from '@/lib/sanitize';
 
 interface UseAdminMutationOptions<T> {
   endpoint: string;
@@ -32,10 +34,18 @@ export function useAdminMutation<T extends { id: number }>({
     try {
       setIsMutating(true);
       setError(null);
-      const response = await apiClient.request<T>(endpoint, {
-        method: 'POST',
-        body: JSON.stringify(data),
-      });
+      
+      // Sanitize input data
+      const sanitizedData = sanitizeObject(data as Record<string, any>) as T;
+      
+      // Rate limit the API call
+      const response = await rateLimitApiCall(
+        () => apiClient.request<T>(endpoint, {
+          method: 'POST',
+          body: JSON.stringify(sanitizedData),
+        }),
+        'write'
+      );
       
       toast.success(successMessage);
       onSuccess?.(response);
@@ -56,10 +66,18 @@ export function useAdminMutation<T extends { id: number }>({
     try {
       setIsMutating(true);
       setError(null);
-      const response = await apiClient.request<T>(`${endpoint}/${id}`, {
-        method: 'PATCH',
-        body: JSON.stringify(data),
-      });
+      
+      // Sanitize input data
+      const sanitizedData = sanitizeObject(data as Record<string, any>) as T;
+      
+      // Rate limit the API call
+      const response = await rateLimitApiCall(
+        () => apiClient.request<T>(`${endpoint}/${id}`, {
+          method: 'PATCH',
+          body: JSON.stringify(sanitizedData),
+        }),
+        'write'
+      );
       
       toast.success('Updated successfully');
       onSuccess?.(response);
@@ -80,9 +98,14 @@ export function useAdminMutation<T extends { id: number }>({
     try {
       setIsMutating(true);
       setError(null);
-      await apiClient.request(`${endpoint}/${id}`, {
-        method: 'DELETE',
-      });
+      
+      // Rate limit the API call
+      await rateLimitApiCall(
+        () => apiClient.request(`${endpoint}/${id}`, {
+          method: 'DELETE',
+        }),
+        'write'
+      );
       
       toast.success('Deleted successfully');
       onSuccess?.();
