@@ -256,13 +256,21 @@ class ApiClient {
       tokenLength: token ? token.length : 0
     });
     
+    const headers = {
+      'Content-Type': 'application/json',
+      'Accept': 'application/json',
+      ...(token && { Authorization: `Bearer ${token}` }),
+      ...options.headers,
+    };
+    
+    console.log('📋 Request headers:', {
+      'Content-Type': headers['Content-Type'],
+      'Accept': headers['Accept'],
+      'Authorization': headers['Authorization'] ? `${headers['Authorization'].substring(0, 30)}...` : 'none'
+    });
+    
     const config: RequestInit = {
-      headers: {
-        'Content-Type': 'application/json',
-        'Accept': 'application/json',
-        ...(token && { Authorization: `Bearer ${token}` }),
-        ...options.headers,
-      },
+      headers,
       ...options,
     };
 
