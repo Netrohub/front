@@ -1,8 +1,14 @@
-import React, { useState } from 'react';
+import React, { useEffect, useState, useRef } from 'react';
 import { Button } from '@/components/ui/button';
 import { Card } from '@/components/ui/card';
 import { Shield, Loader2 } from 'lucide-react';
-import { apiClient } from '@/lib/api';
+
+// Add Persona types
+declare global {
+  interface Window {
+    Persona: any;
+  }
+}
 
 interface PersonaVerificationProps {
   onComplete?: (inquiryId: string) => void;
@@ -14,60 +20,101 @@ const PersonaVerification: React.FC<PersonaVerificationProps> = ({
   onError 
 }) => {
   const [isLoading, setIsLoading] = useState(false);
+  const [isSDKReady, setIsSDKReady] = useState(false);
+  const clientRef = useRef<any>(null);
+
+  // Load Persona SDK
+  useEffect(() => {
+    const loadPersonaSDK = () => {
+      // Check if SDK is already loaded
+      if (window.Persona) {
+        console.log('✅ Persona SDK already loaded');
+        setIsSDKReady(true);
+        return;
+      }
+
+      // Check if script is already being loaded
+      if (document.querySelector('script[src*="persona"]')) {
+        console.log('⏳ Persona SDK script already exists, waiting...');
+        // Wait for script to load
+        const checkInterval = setInterval(() => {
+          if (window.Persona) {
+            console.log('✅ Persona SDK loaded after waiting');
+            setIsSDKReady(true);
+            clearInterval(checkInterval);
+          }
+        }, 100);
+        return;
+      }
+
+      console.log('📥 Loading Persona SDK...');
+      const script = document.createElement('script');
+      script.src = 'https://cdn.withpersona.com/dist/persona-v5.1.2.js';
+      script.integrity = 'sha384-nuMfOsYXMwp5L13VJicJkSs8tObai/UtHEOg3f7tQuFWU5j6LAewJbjbF5ZkfoDo';
+      script.crossOrigin = 'anonymous';
+      
+      script.onload = () => {
+        console.log('✅ Persona SDK loaded successfully');
+        setIsSDKReady(true);
+      };
+      
+      script.onerror = () => {
+        console.error('❌ Failed to load Persona SDK');
+        setIsSDKReady(false);
+        onError?.(new Error('Failed to load Persona SDK'));
+      };
+
+      document.body.appendChild(script);
+    };
+
+    loadPersonaSDK();
+  }, [onError]);
 
   const handleStartVerification = async () => {
-    setIsLoading(true);
-    
+    if (!isSDKReady || !window.Persona) {
+      console.error('❌ Persona SDK not ready');
+      onError?.(new Error('Persona SDK not ready'));
+      return;
+    }
+
     try {
       console.log('🚀 Starting Persona verification...');
-      console.log('🔍 API Client:', apiClient);
-      console.log('🔍 API Client baseURL:', (apiClient as any).baseURL);
-      
-      const url = '/kyc/create-persona-inquiry';
-      console.log('🔗 Calling URL:', url);
-      
-      // Call backend to create Persona inquiry
-      console.log('📞 About to call apiClient.request with:', { url, method: 'POST' });
-      const response = await apiClient.request<{ inquiryId: string; verificationUrl: string }>(
-        url,
-        {
-          method: 'POST',
-        }
-      );
-      
-      console.log('✅ Got response from apiClient.request');
-      console.log('📦 Full backend response:', response);
+      setIsLoading(true);
 
-      // Extract verification URL from backend response
-      const result = response.data || response;
-      const { inquiryId, verificationUrl } = result;
+      // Get template ID and environment ID from environment variables
+      const templateId = import.meta.env.VITE_PERSONA_TEMPLATE_ID || 'itmpl_aHKymLqP5kWjmgQyZ5jrSUgDHDpF';
+      const environmentId = import.meta.env.VITE_PERSONA_ENVIRONMENT_ID || 'env_G6yssyR43GAhoTicT3digMzo8gUL';
 
-      console.log('✅ Extracted inquiryId:', inquiryId);
-      console.log('✅ Extracted verificationUrl:', verificationUrl);
+      console.log('📋 Template ID:', templateId);
+      console.log('🌍 Environment ID:', environmentId);
 
-      if (!verificationUrl) {
-        throw new Error('No verification URL returned from backend');
-      }
-
-      // Log the URL for debugging
-      console.log('🔗 Opening Persona verification URL:', verificationUrl);
-      
-      // Open Persona verification in new tab
-      const personaWindow = window.open(verificationUrl, '_blank');
-      
-      if (!personaWindow) {
-        // If popup is blocked, fall back to same tab
-        console.log('Popup blocked, redirecting in same tab...');
-        window.location.href = verificationUrl;
-      }
-      
-      setIsLoading(false);
-      
-      // DON'T call onComplete here - only call it after webhook confirms verification is done
-      // The webhook will be triggered by Persona when the verification is actually completed
+      // Initialize Persona Client
+      clientRef.current = new window.Persona.Client({
+        templateId,
+        environmentId,
+        onReady: () => {
+          console.log('✅ Persona client ready');
+          // Open the embedded flow
+          clientRef.current.open();
+        },
+        onComplete: ({ inquiryId, status, fields }: any) => {
+          console.log('✅ Persona verification completed:', { inquiryId, status, fields });
+          setIsLoading(false);
+          onComplete?.(inquiryId);
+        },
+        onError: (error: any) => {
+          console.error('❌ Persona verification error:', error);
+          setIsLoading(false);
+          onError?.(new Error(error?.message || 'Persona verification failed'));
+        },
+        onCancel: () => {
+          console.log('⚠️ Persona verification cancelled');
+          setIsLoading(false);
+        },
+      });
       
     } catch (error) {
-      console.error('Error starting Persona verification:', error);
+      console.error('❌ Error starting Persona verification:', error);
       setIsLoading(false);
       onError?.(error as Error);
     }
@@ -91,14 +138,19 @@ const PersonaVerification: React.FC<PersonaVerificationProps> = ({
 
         <Button
           onClick={handleStartVerification}
-          disabled={isLoading}
+          disabled={isLoading || !isSDKReady}
           className="w-full"
           size="lg"
         >
           {isLoading ? (
             <>
               <Loader2 className="mr-2 h-4 w-4 animate-spin" />
-              Opening Verification...
+              Verifying...
+            </>
+          ) : !isSDKReady ? (
+            <>
+              <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+              Loading...
             </>
           ) : (
             <>
@@ -108,14 +160,10 @@ const PersonaVerification: React.FC<PersonaVerificationProps> = ({
           )}
         </Button>
 
-        {isLoading && (
-          <p className="text-sm text-muted-foreground">
-            A new window will open for verification...
-          </p>
-        )}
-
         <p className="text-xs text-muted-foreground mt-4">
-          Note: If a popup window doesn't open, please allow popups for this site.
+          {isSDKReady 
+            ? 'Click the button above to start verification'
+            : 'Loading verification system...'}
         </p>
       </div>
     </Card>
