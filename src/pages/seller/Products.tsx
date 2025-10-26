@@ -112,7 +112,13 @@ const SellerProducts = () => {
   };
 
   const handleEdit = (productId: string) => {
-    navigate(`/seller/products/${productId}/edit`);
+    // Navigate to create product page with edit mode (route doesn't exist yet, so use modal as fallback)
+    toast({
+      title: "Edit Product",
+      description: "Edit functionality will open the product creation form in edit mode.",
+    });
+    // For now, navigate to create product with query param
+    navigate(`/seller/products/create?edit=${productId}`);
   };
 
   const handleDeleteClick = (productId: string) => {

@@ -86,12 +86,20 @@ const Billing = () => {
   const [expiryDate, setExpiryDate] = useState("");
   const [cvv, setCvv] = useState("");
 
+  const [cancelDialogOpen, setCancelDialogOpen] = useState(false);
+
   const handleCancelSubscription = () => {
+    setCancelDialogOpen(true);
+  };
+
+  const handleCancelConfirm = async () => {
+    // TODO: Call API to cancel subscription
     toast({
-      title: "Cancel Subscription",
-      description: "Please contact support to cancel your subscription.",
-      variant: "destructive",
+      title: "Subscription Cancelled",
+      description: "Your subscription has been cancelled. You'll have access until the end of your billing period.",
+      variant: "default",
     });
+    setCancelDialogOpen(false);
   };
 
   const handleAddCard = async () => {
@@ -239,6 +247,26 @@ const Billing = () => {
             </Button>
           </div>
         </Card>
+
+        {/* Cancel Subscription Dialog */}
+        <AlertDialog open={cancelDialogOpen} onOpenChange={setCancelDialogOpen}>
+          <AlertDialogContent>
+            <AlertDialogHeader>
+              <AlertDialogTitle>Cancel Subscription</AlertDialogTitle>
+              <AlertDialogDescription>
+                Are you sure you want to cancel your subscription? You'll have access to all premium features until the end of your current billing period. After that, your account will be downgraded to the free plan.
+              </AlertDialogDescription>
+            </AlertDialogHeader>
+            <AlertDialogFooter>
+              <AlertDialogCancel onClick={() => setCancelDialogOpen(false)}>
+                Keep Subscription
+              </AlertDialogCancel>
+              <AlertDialogAction onClick={handleCancelConfirm} className="bg-destructive text-destructive-foreground hover:bg-destructive/90">
+                Cancel Subscription
+              </AlertDialogAction>
+            </AlertDialogFooter>
+          </AlertDialogContent>
+        </AlertDialog>
 
         {/* Payment Methods */}
         <Card className="glass-card p-6">

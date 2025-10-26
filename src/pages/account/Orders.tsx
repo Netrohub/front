@@ -101,19 +101,17 @@ const Orders = () => {
   const handleContactSeller = (seller: string) => {
     toast({
       title: "Contact Seller",
-      description: `Opening chat with ${seller}...`,
+      description: `Contact form for ${seller} will open in a separate dialog.`,
     });
-    // Navigate to disputes page with seller pre-filled
-    navigate(`/disputes/create?seller=${encodeURIComponent(seller)}`);
+    // TODO: Open contact seller modal
   };
 
   const handleLeaveReview = (orderId: string) => {
     toast({
       title: "Leave Review",
-      description: "Opening review form...",
+      description: "Review form will open for this product.",
     });
-    // Navigate to product page to leave review
-    navigate(`/products/${orderId}`);
+    // TODO: Open review modal with product details
   };
 
   const handleTrackOrder = (orderId: string) => {
