@@ -19,19 +19,27 @@ const PersonaVerification: React.FC<PersonaVerificationProps> = ({
   const PERSONA_ENVIRONMENT = 'sandbox'; // or 'production'
 
   useEffect(() => {
-    // Load Persona script
+    // Check if script already exists
+    if (document.getElementById('persona-script')) {
+      console.log('✅ Persona SDK already loaded');
+      setIsSDKReady(true);
+      return;
+    }
+
+    // Load Persona script - official CDN
     const script = document.createElement('script');
-    script.src = `https://cdn.withpersona.com/dist/persona-v1.0.0.js`;
+    script.src = 'https://cdn.withpersona.com/dist/persona-v2.js';
     script.async = true;
     script.id = 'persona-script';
+    script.type = 'text/javascript';
     
     script.onload = () => {
       console.log('✅ Persona SDK loaded successfully');
       setIsSDKReady(true);
     };
     
-    script.onerror = () => {
-      console.error('❌ Failed to load Persona SDK');
+    script.onerror = (error) => {
+      console.error('❌ Failed to load Persona SDK:', error);
       onError?.(new Error('Failed to load Persona SDK'));
     };
     
@@ -40,8 +48,8 @@ const PersonaVerification: React.FC<PersonaVerificationProps> = ({
     return () => {
       // Cleanup on unmount
       const existingScript = document.getElementById('persona-script');
-      if (existingScript) {
-        existingScript.remove();
+      if (existingScript && existingScript.parentNode) {
+        existingScript.parentNode.removeChild(existingScript);
       }
     };
   }, [onError]);
