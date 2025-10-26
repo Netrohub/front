@@ -1,13 +1,14 @@
 import React, { useState } from 'react';
-import { useList, useUpdate } from '@refinedev/core';
 import { useNavigate } from 'react-router-dom';
 import { DataTable, Column } from '@/components/ui/DataTable';
 import { ConfirmDialog } from '@/components/ui/ConfirmDialog';
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
-import { useToast } from '@/hooks/use-toast';
+import { toast } from 'sonner';
 import { format } from 'date-fns';
 import { AlertTriangle, User, CheckCircle, MessageSquare } from 'lucide-react';
+import { useAdminList } from '@/hooks/useAdminList';
+import { useAdminMutation } from '@/hooks/useAdminMutation';
 
 interface Dispute {
   id: number;
@@ -29,7 +30,6 @@ interface Dispute {
 
 function DisputesList() {
   const navigate = useNavigate();
-  const { toast } = useToast();
   const [assignDialog, setAssignDialog] = useState<{
     open: boolean;
     disputeId: number | null;
@@ -39,12 +39,15 @@ function DisputesList() {
     disputeId: number | null;
   }>({ open: false, disputeId: null });
 
-  const { data, isLoading, refetch } = useList<Dispute>({
-    resource: 'disputes',
-    pagination: { current: 1, pageSize: 10 },
+  const { data, isLoading } = useAdminList<Dispute>({
+    endpoint: '/disputes',
+    initialSearchTerm: '',
   });
 
-  const { mutate: updateDispute } = useUpdate();
+  const { update } = useAdminMutation<Dispute>({
+    endpoint: '/disputes',
+    invalidateQueries: ['admin-list', '/disputes'],
+  });
 
   const handleAssignModerator = (disputeId: number) => {
     setAssignDialog({ open: true, disputeId });
@@ -54,54 +57,32 @@ function DisputesList() {
     setResolveDialog({ open: true, disputeId });
   };
 
-  const confirmAssign = () => {
+  const confirmAssign = async () => {
     if (assignDialog.disputeId) {
-      updateDispute({
-        resource: 'disputes',
-        id: assignDialog.disputeId,
-        values: { state: 'in_review' },
-      }, {
-        onSuccess: () => {
-          toast({
-            title: 'Moderator Assigned',
-            description: 'A moderator has been assigned to this dispute.',
-          });
-          refetch();
-        },
-        onError: () => {
-          toast({
-            title: 'Error',
-            description: 'Failed to assign moderator.',
-            variant: 'destructive',
-          });
-        },
-      });
+      try {
+        await update(assignDialog.disputeId, { state: 'in_review' });
+        toast.success('Moderator Assigned', {
+          description: 'A moderator has been assigned to this dispute.',
+        });
+      } catch (error: any) {
+        console.error('Failed to assign moderator:', error);
+        // Error is already handled by the hook
+      }
     }
     setAssignDialog({ open: false, disputeId: null });
   };
 
-  const confirmResolve = () => {
+  const confirmResolve = async () => {
     if (resolveDialog.disputeId) {
-      updateDispute({
-        resource: 'disputes',
-        id: resolveDialog.disputeId,
-        values: { state: 'resolved' },
-      }, {
-        onSuccess: () => {
-          toast({
-            title: 'Dispute Resolved',
-            description: 'The dispute has been marked as resolved.',
-          });
-          refetch();
-        },
-        onError: () => {
-          toast({
-            title: 'Error',
-            description: 'Failed to resolve dispute.',
-            variant: 'destructive',
-          });
-        },
-      });
+      try {
+        await update(resolveDialog.disputeId, { state: 'resolved' });
+        toast.success('Dispute Resolved', {
+          description: 'The dispute has been marked as resolved.',
+        });
+      } catch (error: any) {
+        console.error('Failed to resolve dispute:', error);
+        // Error is already handled by the hook
+      }
     }
     setResolveDialog({ open: false, disputeId: null });
   };
@@ -192,8 +173,7 @@ function DisputesList() {
   ];
 
   const handleBulkAction = (action: string) => {
-    toast({
-      title: 'Bulk Action',
+    toast.info('Bulk Action', {
       description: `${action} applied to selected disputes.`,
     });
   };
@@ -208,13 +188,13 @@ function DisputesList() {
       </div>
 
       <DataTable
-        data={data?.data || []}
+        data={data || []}
         columns={columns}
         loading={isLoading}
         pagination={{
           current: 1,
           pageSize: 10,
-          total: data?.total || 0,
+          total: data?.length || 0,
           onChange: (page, pageSize) => {
             // Handle pagination
           },
