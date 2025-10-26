@@ -23,7 +23,8 @@ import {
   Brain,
   Globe,
   Lock,
-  AlertTriangle
+  AlertTriangle,
+  Clock
 } from "lucide-react";
 
 // Advanced analytics data for Elite users
