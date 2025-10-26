@@ -16,6 +16,7 @@ interface UseAdminMutationOptions<T> {
 
 interface UseAdminMutationReturn<T> {
   mutate: (data: Partial<T> | T) => Promise<void>;
+  create: (data: Partial<T> | T) => Promise<void>;
   update: (id: number, data: Partial<T>) => Promise<void>;
   remove: (id: number) => Promise<void>;
   isMutating: boolean;
@@ -137,6 +138,7 @@ export function useAdminMutation<T extends { id: number }>({
 
   return {
     mutate,
+    create: mutate, // Alias for backward compatibility
     update,
     remove,
     isMutating,

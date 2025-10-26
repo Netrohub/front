@@ -1,4 +1,4 @@
-import { useState, useCallback } from 'react';
+import { useState, useCallback, useEffect } from 'react';
 import { toast } from 'sonner';
 import { useQuery, useQueryClient } from '@tanstack/react-query';
 import { apiClient } from '@/lib/api';
@@ -103,23 +103,25 @@ export function useAdminList<T extends { id: number }>({
   });
 
   // Update local pagination state when query data changes
-  if (queryData?.pagination) {
-    const newPagination = {
-      page: pagination.page,
-      limit: pagination.limit,
-      total: queryData.pagination.total,
-      totalPages: queryData.pagination.totalPages,
-    };
-    
-    // Only update if changed to prevent infinite loop
-    if (JSON.stringify(newPagination) !== JSON.stringify(pagination)) {
-      setPagination(prev => ({
-        ...prev,
+  useEffect(() => {
+    if (queryData?.pagination) {
+      const newPagination = {
+        page: pagination.page,
+        limit: pagination.limit,
         total: queryData.pagination.total,
         totalPages: queryData.pagination.totalPages,
-      }));
+      };
+      
+      // Only update if changed to prevent infinite loop
+      if (JSON.stringify(newPagination) !== JSON.stringify(pagination)) {
+        setPagination(prev => ({
+          ...prev,
+          total: queryData.pagination.total,
+          totalPages: queryData.pagination.totalPages,
+        }));
+      }
     }
-  }
+  }, [queryData?.pagination, pagination.page, pagination.limit]);
 
   const data = queryData?.items || [];
 
