@@ -87,13 +87,13 @@ const Footer = () => {
             <h3 className="font-bold mb-4 text-foreground">{t('myAccount')}</h3>
             <ul className="space-y-3">
               <li>
-                <Link to="/account" className="text-sm text-foreground/60 hover:text-primary transition-colors flex items-center gap-2 group">
+                <Link to="/dashboard" className="text-sm text-foreground/60 hover:text-primary transition-colors flex items-center gap-2 group">
                   <span className="w-1 h-1 rounded-full bg-primary opacity-0 group-hover:opacity-100 transition-opacity" />
                   {t('dashboard')}
                 </Link>
               </li>
               <li>
-                <Link to="/seller/dashboard" className="text-sm text-foreground/60 hover:text-primary transition-colors flex items-center gap-2 group">
+                <Link to="/dashboard?tab=seller" className="text-sm text-foreground/60 hover:text-primary transition-colors flex items-center gap-2 group">
                   <span className="w-1 h-1 rounded-full bg-primary opacity-0 group-hover:opacity-100 transition-opacity" />
                   {t('sellOnNexo')}
                 </Link>

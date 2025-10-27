@@ -262,7 +262,13 @@ const Navbar = () => {
                             </div>
                             <DropdownMenuSeparator />
                             <DropdownMenuItem asChild>
-                              <Link to="/account/dashboard" className="cursor-pointer" onClick={() => setMobileMenuOpen(false)}>
+                              <Link to={`/@${user?.username}`} className="cursor-pointer" onClick={() => setMobileMenuOpen(false)}>
+                                <User className="mr-2 h-4 w-4" />
+                                <span>View Profile</span>
+                              </Link>
+                            </DropdownMenuItem>
+                            <DropdownMenuItem asChild>
+                              <Link to="/dashboard" className="cursor-pointer" onClick={() => setMobileMenuOpen(false)}>
                                 <User className="mr-2 h-4 w-4" />
                                 <span>{t('myAccount')}</span>
                               </Link>
@@ -275,7 +281,7 @@ const Navbar = () => {
                             </DropdownMenuItem>
                             {user?.roles?.includes('seller') && (
                               <DropdownMenuItem asChild>
-                                <Link to="/seller/dashboard" className="cursor-pointer" onClick={() => setMobileMenuOpen(false)}>
+                                <Link to="/dashboard?tab=seller" className="cursor-pointer" onClick={() => setMobileMenuOpen(false)}>
                                   <User className="mr-2 h-4 w-4" />
                                   <span>{t('sellerDashboard')}</span>
                                 </Link>

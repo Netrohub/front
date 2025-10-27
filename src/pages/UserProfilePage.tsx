@@ -5,6 +5,7 @@ import { Helmet } from "react-helmet-async";
 import Navbar from "@/components/Navbar";
 import Footer from "@/components/Footer";
 import Starfield from "@/components/Starfield";
+import ProductCard from "@/components/ProductCard";
 import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
@@ -137,31 +138,34 @@ const UserProfilePage = () => {
     );
   }
 
-  const userData: UserProfile = {
-    id: profile.id,
-    username: profile.username || username!,
-    name: profile.name || profile.username,
-    avatar: profile.avatar || `https://api.dicebear.com/7.x/avataaars/svg?seed=${username}`,
-    verified: profile.roles?.includes('verified') || false,
-    rating: 4.8,
-    totalReviews: 0,
-    memberSince: profile.created_at ? new Date(profile.created_at).toLocaleDateString('en-US', { month: 'long', year: 'numeric' }) : 'Recently',
-    stats: {
-      totalProducts: 0,
-      totalSales: 0,
-      rating: 4.8,
-    },
-    roles: profile.roles,
-  };
-
-  // Fetch user's products if they're a seller
-  const isSeller = userData.roles?.includes('seller');
+  // Check if user is seller first
+  const isSeller = profile.roles?.includes('seller');
   
+  // Fetch user's products if they're a seller
   const { data: userProducts } = useQuery({
     queryKey: ['user-products', username],
     queryFn: () => apiClient.getProductsByUser(username!),
     enabled: !!isSeller && !!username,
   });
+
+  const userData: UserProfile = {
+    id: profile.id,
+    username: profile.username || username!,
+    name: profile.name || profile.username,
+    avatar: profile.avatar || `https://api.dicebear.com/7.x/avataaars/svg?seed=${username}`,
+    bio: profile.bio,
+    location: profile.location,
+    verified: profile.roles?.includes('verified') || false,
+    rating: 4.8,
+    totalReviews: 0,
+    memberSince: profile.created_at ? new Date(profile.created_at).toLocaleDateString('en-US', { month: 'long', year: 'numeric' }) : 'Recently',
+    stats: {
+      totalProducts: userProducts?.length || 0,
+      totalSales: 0,
+      rating: 4.8,
+    },
+    roles: profile.roles,
+  };
 
   // SEO metadata
   const canonicalUrl = `https://nxoland.com/@${username}`;
@@ -244,7 +248,9 @@ const UserProfilePage = () => {
                   </div>
 
                   {userData.bio && (
-                    <p className="mt-4 text-foreground/80">{userData.bio}</p>
+                    <div className="mt-4 p-3 bg-muted/20 rounded-lg border border-border/30">
+                      <p className="text-foreground/80 text-sm">{userData.bio}</p>
+                    </div>
                   )}
                 </div>
 
@@ -272,7 +278,7 @@ const UserProfilePage = () => {
                       <Package className="h-5 w-5 text-blue-500" />
                     </div>
                     <div>
-                      <p className="text-2xl font-bold">{userData.stats?.totalProducts || 0}</p>
+                      <p className="text-2xl font-bold">{userProducts?.length || 0}</p>
                       <p className="text-xs text-foreground/60">Products</p>
                     </div>
                   </div>
@@ -327,7 +333,14 @@ const UserProfilePage = () => {
               <TabsContent value="products">
                 {isSeller && userProducts && userProducts.length > 0 ? (
                   <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-6">
-                    {/* Product cards would be rendered here */}
+                    {userProducts.map((product) => (
+                      <ProductCard
+                        key={product.id}
+                        product={product}
+                        variant="default"
+                        showStatus={isOwner}
+                      />
+                    ))}
                   </div>
                 ) : (
                   <Card className="glass-card p-12 text-center">
@@ -336,6 +349,11 @@ const UserProfilePage = () => {
                     <p className="text-foreground/60">
                       {isOwner ? 'Start by listing your first product!' : 'This user hasn\'t listed any products yet.'}
                     </p>
+                    {isOwner && (
+                      <Button asChild className="mt-4">
+                        <a href="/seller/products/create">List Your First Product</a>
+                      </Button>
+                    )}
                   </Card>
                 )}
               </TabsContent>
