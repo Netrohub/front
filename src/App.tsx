@@ -34,6 +34,7 @@ const Wishlist = lazy(() => import("./pages/Wishlist"));
 const Compare = lazy(() => import("./pages/Compare"));
 const HelpCenter = lazy(() => import("./pages/HelpCenter"));
 const SellerProfile = lazy(() => import("./pages/SellerProfile"));
+const UserProfilePage = lazy(() => import("./pages/UserProfilePage"));
 const CategoryLanding = lazy(() => import("./pages/CategoryLanding"));
 const SocialMediaComingSoon = lazy(() => import("./pages/SocialMediaComingSoon"));
 const Terms = lazy(() => import("./pages/Terms"));
@@ -167,7 +168,11 @@ const App = () => {
           <Route path="/wishlist" element={<Wishlist />} />
           <Route path="/compare" element={<Compare />} />
           <Route path="/help" element={<HelpCenter />} />
+          
+          {/* User profile routes */}
+          <Route path="/@:username" element={<UserProfilePage />} />
           <Route path="/seller/:seller" element={<SellerProfile />} />
+          
           <Route path="/login" element={<Login />} />
           <Route path="/register" element={<Register />} />
           <Route path="/forgot-password" element={<ForgotPassword />} />

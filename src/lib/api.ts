@@ -355,6 +355,11 @@ class ApiClient {
     return apiResponse as User;
   }
 
+  async getProductsByUser(username: string): Promise<Product[]> {
+    const response = await this.request<Product[]>(`/users/${username}/listings`);
+    return response;
+  }
+
   async getMembers(): Promise<User[]> {
     const response = await this.request<User[]>('/users/members');
     return response;
