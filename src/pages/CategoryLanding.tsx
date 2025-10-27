@@ -1,4 +1,4 @@
-import { useParams } from "react-router-dom";
+import { useParams, useNavigate, useEffect } from "react-router-dom";
 import Navbar from "@/components/Navbar";
 import MobileNav from "@/components/MobileNav";
 import Footer from "@/components/Footer";
@@ -94,6 +94,21 @@ const products = [
 const CategoryLanding = () => {
   const { t } = useLanguage();
   const { category } = useParams<{ category: string }>();
+  const navigate = useNavigate();
+
+  // List of social media platforms that should redirect to coming soon
+  const socialMediaPlatforms = [
+    'instagram', 'twitter', 'facebook', 'youtube', 'tiktok', 'snapchat', 
+    'linkedin', 'pinterest', 'reddit', 'telegram', 'discord', 'twitch',
+    'social-media' // Also handle the general social-media category
+  ];
+
+  // Check if current category is a social media platform and redirect
+  useEffect(() => {
+    if (category && socialMediaPlatforms.includes(category.toLowerCase())) {
+      navigate('/social-media-coming-soon', { replace: true });
+    }
+  }, [category, navigate]);
   
   const categoryData = {
     "social-media": {

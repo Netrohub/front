@@ -49,6 +49,7 @@ const translations = {
     previous: "Previous",
     required: "Required",
     optional: "Optional",
+    comingSoon: "Coming Soon",
 
     // KYC Verification
     kyc: {
@@ -522,6 +523,7 @@ next: "التالي ➡️",
 previous: "السابق ⏮️",
 required: "إلزامي ⚠️",
 optional: "اختياري 🪶",
+comingSoon: "قريبًا ⏰",
 
 
     // KYC Verification

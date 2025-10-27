@@ -35,6 +35,7 @@ const Compare = lazy(() => import("./pages/Compare"));
 const HelpCenter = lazy(() => import("./pages/HelpCenter"));
 const SellerProfile = lazy(() => import("./pages/SellerProfile"));
 const CategoryLanding = lazy(() => import("./pages/CategoryLanding"));
+const SocialMediaComingSoon = lazy(() => import("./pages/SocialMediaComingSoon"));
 const Terms = lazy(() => import("./pages/Terms"));
 const Privacy = lazy(() => import("./pages/Privacy"));
 
@@ -60,7 +61,7 @@ const SellerBilling = lazy(() => import("./pages/seller/Billing"));
 const SellerNotifications = lazy(() => import("./pages/seller/Notifications"));
 const SellerOnboarding = lazy(() => import("./pages/seller/SellerOnboarding"));
 const ListGamingAccount = lazy(() => import("./pages/seller/ListGamingAccount"));
-const ListSocialAccount = lazy(() => import("./pages/seller/ListSocialAccount"));
+const ListSocialAccountComingSoon = lazy(() => import("./pages/seller/ListSocialAccountComingSoon"));
 
 // Dispute pages (lazy loaded)
 const DisputeList = lazy(() => import("./pages/disputes/DisputeList"));
@@ -155,7 +156,9 @@ const App = () => {
           <Route path="/members" element={<Members />} />
           <Route path="/products" element={<Products />} />
           <Route path="/products/:id" element={<ProductDetail />} />
+          <Route path="/products/category/:category" element={<CategoryLanding />} />
           <Route path="/category/:category" element={<CategoryLanding />} />
+          <Route path="/social-media-coming-soon" element={<SocialMediaComingSoon />} />
           <Route path="/pricing" element={<Pricing />} />
           <Route path="/wishlist" element={<Wishlist />} />
           <Route path="/compare" element={<Compare />} />
@@ -188,7 +191,7 @@ const App = () => {
           <Route path="/seller/profile" element={<RequireAuth><SellerProfilePage /></RequireAuth>} />
           <Route path="/seller/products" element={<RequireAuth><SellerProducts /></RequireAuth>} />
           <Route path="/seller/products/create" element={<RequireAuth><CreateProduct /></RequireAuth>} />
-          <Route path="/seller/list/social" element={<RequireAuth><ListSocialAccount /></RequireAuth>} />
+          <Route path="/seller/list/social" element={<RequireAuth><ListSocialAccountComingSoon /></RequireAuth>} />
           <Route path="/seller/list/gaming" element={<RequireAuth><ListGamingAccount /></RequireAuth>} />
           <Route path="/seller/orders" element={<RequireAuth><SellerOrders /></RequireAuth>} />
           <Route path="/seller/billing" element={<RequireAuth><SellerBilling /></RequireAuth>} />

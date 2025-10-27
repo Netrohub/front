@@ -1,5 +1,6 @@
 import { Card } from "@/components/ui/card";
-import { Instagram, Twitter, Facebook, Youtube, Twitch, MessageCircle, Music, Camera, Linkedin, Pin, MessageSquare, Send } from "lucide-react";
+import { Badge } from "@/components/ui/badge";
+import { Instagram, Twitter, Facebook, Youtube, Twitch, MessageCircle, Music, Camera, Linkedin, Pin, MessageSquare, Send, Clock } from "lucide-react";
 import { useLanguage } from "@/contexts/LanguageContext";
 import { Link } from "react-router-dom";
 
@@ -11,18 +12,18 @@ const DiscordIcon = ({ className }: { className?: string }) => (
 );
 
 const platforms = [
-  { name: "Instagram", icon: Instagram, count: 245, link: "/products/category/instagram" },
-  { name: "Twitter", icon: Twitter, count: 189, link: "/products/category/twitter" },
-  { name: "Facebook", icon: Facebook, count: 127, link: "/products/category/facebook" },
-  { name: "YouTube", icon: Youtube, count: 156, link: "/products/category/youtube" },
-  { name: "Twitch", icon: Twitch, count: 98, link: "/products/category/twitch" },
-  { name: "Discord", icon: DiscordIcon, count: 213, link: "/products/category/discord" },
-  { name: "TikTok", icon: Music, count: 167, link: "/products/category/tiktok" },
-  { name: "Snapchat", icon: Camera, count: 134, link: "/products/category/snapchat" },
-  { name: "LinkedIn", icon: Linkedin, count: 89, link: "/products/category/linkedin" },
-  { name: "Pinterest", icon: Pin, count: 76, link: "/products/category/pinterest" },
-  { name: "Reddit", icon: MessageSquare, count: 112, link: "/products/category/reddit" },
-  { name: "Telegram", icon: Send, count: 45, link: "/products/category/telegram" },
+  { name: "Instagram", icon: Instagram, count: 245, link: "/products/category/instagram", isSocialMedia: true },
+  { name: "Twitter", icon: Twitter, count: 189, link: "/products/category/twitter", isSocialMedia: true },
+  { name: "Facebook", icon: Facebook, count: 127, link: "/products/category/facebook", isSocialMedia: true },
+  { name: "YouTube", icon: Youtube, count: 156, link: "/products/category/youtube", isSocialMedia: true },
+  { name: "Twitch", icon: Twitch, count: 98, link: "/products/category/twitch", isSocialMedia: true },
+  { name: "Discord", icon: DiscordIcon, count: 213, link: "/products/category/discord", isSocialMedia: true },
+  { name: "TikTok", icon: Music, count: 167, link: "/products/category/tiktok", isSocialMedia: true },
+  { name: "Snapchat", icon: Camera, count: 134, link: "/products/category/snapchat", isSocialMedia: true },
+  { name: "LinkedIn", icon: Linkedin, count: 89, link: "/products/category/linkedin", isSocialMedia: true },
+  { name: "Pinterest", icon: Pin, count: 76, link: "/products/category/pinterest", isSocialMedia: true },
+  { name: "Reddit", icon: MessageSquare, count: 112, link: "/products/category/reddit", isSocialMedia: true },
+  { name: "Telegram", icon: Send, count: 45, link: "/products/category/telegram", isSocialMedia: true },
 ];
 
 const CategoryGrid = () => {
@@ -41,16 +42,48 @@ const CategoryGrid = () => {
         <div className="grid grid-cols-2 gap-3 sm:gap-4 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-6">
           {platforms.map((platform) => {
             const Icon = platform.icon;
+            const isComingSoon = platform.isSocialMedia;
             return (
               <Link key={platform.name} to={platform.link}>
-                <Card className="glass-card cursor-pointer p-4 sm:p-6 text-center group hover:scale-105 transition-all duration-300">
+                <Card className={`glass-card cursor-pointer p-4 sm:p-6 text-center group transition-all duration-300 relative ${
+                  isComingSoon 
+                    ? 'opacity-70 hover:opacity-80' 
+                    : 'hover:scale-105'
+                }`}>
+                  {/* Coming Soon Badge */}
+                  {isComingSoon && (
+                    <div className="absolute -top-2 -right-2 z-10">
+                      <Badge className="bg-gradient-to-r from-primary to-accent text-white border-0 text-xs px-2 py-1">
+                        <Clock className="h-3 w-3 mr-1" />
+                        {t('comingSoon') || 'Coming Soon'}
+                      </Badge>
+                    </div>
+                  )}
                   <div className="mb-3 sm:mb-4 flex justify-center">
-                    <div className="flex h-10 w-10 sm:h-14 sm:w-14 items-center justify-center rounded-xl bg-gradient-to-br from-primary/20 to-accent/20 border border-primary/30 group-hover:border-primary/50 group-hover:scale-110 transition-all duration-300">
-                      <Icon className="h-5 w-5 sm:h-7 sm:w-7 text-primary group-hover:text-accent transition-colors" />
+                    <div className={`flex h-10 w-10 sm:h-14 sm:w-14 items-center justify-center rounded-xl border transition-all duration-300 ${
+                      isComingSoon
+                        ? 'bg-gradient-to-br from-foreground/10 to-foreground/20 border-foreground/20'
+                        : 'bg-gradient-to-br from-primary/20 to-accent/20 border-primary/30 group-hover:border-primary/50 group-hover:scale-110'
+                    }`}>
+                      <Icon className={`h-5 w-5 sm:h-7 sm:w-7 transition-colors ${
+                        isComingSoon 
+                          ? 'text-foreground/50' 
+                          : 'text-primary group-hover:text-accent'
+                      }`} />
                     </div>
                   </div>
-                  <h3 className="mb-1 sm:mb-2 font-bold text-sm sm:text-base text-foreground group-hover:text-primary transition-colors">{platform.name}</h3>
-                  <p className="text-xs sm:text-sm text-muted-foreground font-medium">{platform.count} accounts</p>
+                  <h3 className={`mb-1 sm:mb-2 font-bold text-sm sm:text-base transition-colors ${
+                    isComingSoon 
+                      ? 'text-foreground/70' 
+                      : 'text-foreground group-hover:text-primary'
+                  }`}>{platform.name}</h3>
+                  <p className={`text-xs sm:text-sm font-medium ${
+                    isComingSoon 
+                      ? 'text-muted-foreground/50' 
+                      : 'text-muted-foreground'
+                  }`}>
+                    {isComingSoon ? t('comingSoon') || 'Coming Soon' : `${platform.count} accounts`}
+                  </p>
                 </Card>
               </Link>
             );
