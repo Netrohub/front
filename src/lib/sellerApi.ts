@@ -1,4 +1,5 @@
-import { QueryClient } from '@tanstack/react-query';
+import { QueryClient, useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
+import { toast } from 'sonner';
 
 // API Configuration
 const API_BASE_URL = import.meta.env.VITE_API_BASE_URL || 'https://api.nxoland.com/api';
@@ -205,6 +206,95 @@ export const sellerQueryKeys = {
   payouts: () => [...sellerQueryKeys.all, 'payouts'] as const,
   notifications: () => [...sellerQueryKeys.all, 'notifications'] as const,
 } as const;
+
+// React Query Hooks for Seller API
+
+// Query Hooks
+export const useSellerDashboard = () => {
+  return useQuery({
+    queryKey: sellerQueryKeys.dashboard(),
+    queryFn: () => sellerApiClient.getDashboard(),
+    staleTime: 2 * 60 * 1000, // 2 minutes
+  });
+};
+
+export const useSellerProducts = () => {
+  return useQuery({
+    queryKey: sellerQueryKeys.products(),
+    queryFn: () => sellerApiClient.getProducts(),
+    staleTime: 2 * 60 * 1000, // 2 minutes
+  });
+};
+
+export const useSellerOrders = () => {
+  return useQuery({
+    queryKey: sellerQueryKeys.orders(),
+    queryFn: () => sellerApiClient.getOrders(),
+    staleTime: 2 * 60 * 1000, // 2 minutes
+  });
+};
+
+export const useSellerPayouts = () => {
+  return useQuery({
+    queryKey: sellerQueryKeys.payouts(),
+    queryFn: () => sellerApiClient.getPayouts(),
+    staleTime: 5 * 60 * 1000, // 5 minutes
+  });
+};
+
+export const useSellerNotifications = () => {
+  return useQuery({
+    queryKey: sellerQueryKeys.notifications(),
+    queryFn: () => sellerApiClient.getNotifications(),
+    staleTime: 1 * 60 * 1000, // 1 minute
+  });
+};
+
+// Mutation Hooks
+export const useCreateProduct = () => {
+  const queryClient = useQueryClient();
+  
+  return useMutation({
+    mutationFn: (data: FormData) => sellerApiClient.createProduct(data),
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: sellerQueryKeys.products() });
+      toast.success('Product created successfully!');
+    },
+    onError: (error: any) => {
+      toast.error(error.message || 'Failed to create product');
+    },
+  });
+};
+
+export const useUpdateProduct = () => {
+  const queryClient = useQueryClient();
+  
+  return useMutation({
+    mutationFn: ({ id, data }: { id: number; data: FormData }) => sellerApiClient.updateProduct(id, data),
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: sellerQueryKeys.products() });
+      toast.success('Product updated successfully!');
+    },
+    onError: (error: any) => {
+      toast.error(error.message || 'Failed to update product');
+    },
+  });
+};
+
+export const useDeleteProduct = () => {
+  const queryClient = useQueryClient();
+  
+  return useMutation({
+    mutationFn: (id: number) => sellerApiClient.deleteProduct(id),
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: sellerQueryKeys.products() });
+      toast.success('Product deleted successfully!');
+    },
+    onError: (error: any) => {
+      toast.error(error.message || 'Failed to delete product');
+    },
+  });
+};
 
 // Export query client for React Query
 export const queryClient = new QueryClient({

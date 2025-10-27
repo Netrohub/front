@@ -14,7 +14,7 @@ import {
 import { Upload, X, Plus, Save, Copy, Check, Shield } from "lucide-react";
 import { useState, useRef } from "react";
 import { useToast } from "@/hooks/use-toast";
-import { useCreateProduct } from "@/hooks/useApi";
+import { useCreateProduct } from "@/lib/sellerApi";
 
 const CreateProduct = () => {
   const { toast } = useToast();
