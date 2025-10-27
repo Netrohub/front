@@ -14,13 +14,12 @@ import {
 import { Card } from "@/components/ui/card";
 
 const menuItems = [
-  { path: "/seller/dashboard", icon: LayoutDashboard, label: "Dashboard" },
+  { path: "/dashboard?tab=seller", icon: LayoutDashboard, label: "Dashboard" },
   { path: "/seller/profile", icon: User, label: "Profile" },
   { path: "/seller/products", icon: Package, label: "Products" },
   { path: "/seller/orders", icon: ShoppingBag, label: "Orders" },
   { path: "/seller/billing", icon: CreditCard, label: "Billing" },
   { path: "/seller/notifications", icon: Bell, label: "Notifications" },
-  { path: "/seller/analytics", icon: BarChart3, label: "Analytics" },
 ];
 
 interface SellerLayoutProps {

@@ -1,0 +1,219 @@
+import { QueryClient } from '@tanstack/react-query';
+
+// API Configuration
+const API_BASE_URL = import.meta.env.VITE_API_BASE_URL || 'https://api.nxoland.com/api';
+
+// Types
+interface ApiResponse<T = any> {
+  data: T;
+  message?: string;
+  status: 'success' | 'error';
+  errors?: Record<string, string[]>;
+}
+
+// Seller-specific Types
+export interface SellerDashboard {
+  stats: {
+    totalRevenue: number;
+    totalOrders: number;
+    activeListings: number;
+    pendingPayouts: number;
+  };
+  recentOrders: SellerOrder[];
+  recentPayouts: SellerPayout[];
+}
+
+export interface SellerOrder {
+  id: number;
+  buyer: {
+    id: number;
+    name: string;
+    email: string;
+  };
+  product: {
+    id: number;
+    title: string;
+    price: number;
+  };
+  status: 'pending' | 'processing' | 'completed' | 'cancelled';
+  total: number;
+  created_at: string;
+}
+
+export interface SellerPayout {
+  id: number;
+  amount: number;
+  status: 'pending' | 'processing' | 'completed' | 'failed';
+  method: string;
+  reference: string;
+  created_at: string;
+  processed_at?: string;
+}
+
+export interface Product {
+  id: number;
+  title: string;
+  description: string;
+  price: number;
+  discount_price?: number;
+  category: string;
+  subcategory: string;
+  platform?: string;
+  level?: string;
+  type?: string;
+  images: string[];
+  tags: string[];
+  status: 'active' | 'inactive' | 'pending' | 'sold';
+  seller_id: number;
+  created_at: string;
+  updated_at: string;
+}
+
+// Seller API Client Class
+class SellerApiClient {
+  private baseURL: string;
+
+  constructor(baseURL: string) {
+    this.baseURL = baseURL;
+  }
+
+  async request<T>(
+    endpoint: string,
+    options: RequestInit = {}
+  ): Promise<ApiResponse<T>> {
+    const url = `${this.baseURL}${endpoint}`;
+    
+    // Always get fresh token from localStorage
+    const token = localStorage.getItem('auth_token');
+    
+    console.log('🏪 Seller API Request:', {
+      url,
+      method: options.method || 'GET',
+      endpoint,
+      hasToken: !!token
+    });
+    
+    const headers = {
+      'Content-Type': 'application/json',
+      'Accept': 'application/json',
+      ...(token && { Authorization: `Bearer ${token}` }),
+      ...options.headers,
+    };
+
+    const response = await fetch(url, {
+      ...options,
+      headers,
+    });
+
+    if (!response.ok) {
+      const errorData = await response.json().catch(() => ({}));
+      console.error('❌ Seller API Error:', {
+        status: response.status,
+        statusText: response.statusText,
+        error: errorData
+      });
+      throw new Error(errorData.message || `HTTP ${response.status}: ${response.statusText}`);
+    }
+
+    const data = await response.json();
+    console.log('✅ Seller API Success:', { endpoint, data });
+    
+    return data;
+  }
+
+  // Seller Dashboard
+  async getDashboard(): Promise<SellerDashboard> {
+    const response = await this.request<SellerDashboard>('/seller/dashboard');
+    return response.data;
+  }
+
+  // Seller Products
+  async getProducts(): Promise<Product[]> {
+    const response = await this.request<Product[]>('/seller/products');
+    return response.data;
+  }
+
+  async createProduct(data: FormData): Promise<Product> {
+    const response = await this.request<Product>('/seller/products', {
+      method: 'POST',
+      headers: {}, // Let browser set Content-Type for FormData
+      body: data,
+    });
+    return response.data;
+  }
+
+  async updateProduct(id: number, data: FormData): Promise<Product> {
+    const response = await this.request<Product>(`/seller/products/${id}`, {
+      method: 'PUT',
+      headers: {}, // Let browser set Content-Type for FormData
+      body: data,
+    });
+    return response.data;
+  }
+
+  async deleteProduct(id: number): Promise<void> {
+    await this.request(`/seller/products/${id}`, { method: 'DELETE' });
+  }
+
+  // Seller Orders
+  async getOrders(): Promise<SellerOrder[]> {
+    const response = await this.request<SellerOrder[]>('/seller/orders');
+    return response.data;
+  }
+
+  // Seller Payouts
+  async getPayouts(): Promise<SellerPayout[]> {
+    const response = await this.request<SellerPayout[]>('/seller/payouts');
+    return response.data;
+  }
+
+  // Seller Notifications
+  async getNotifications(): Promise<any[]> {
+    const response = await this.request<any[]>('/seller/notifications');
+    return response.data;
+  }
+
+  // Product Listing
+  async listGamingAccount(data: FormData): Promise<Product> {
+    const response = await this.request<Product>('/seller/listing/gaming-account', {
+      method: 'POST',
+      headers: {},
+      body: data,
+    });
+    return response.data;
+  }
+
+  async listSocialAccount(data: FormData): Promise<Product> {
+    const response = await this.request<Product>('/seller/listing/social-account', {
+      method: 'POST',
+      headers: {},
+      body: data,
+    });
+    return response.data;
+  }
+}
+
+// Create and export seller API client instance
+export const sellerApiClient = new SellerApiClient(API_BASE_URL);
+
+// Seller Query Keys - standardized for React Query
+export const sellerQueryKeys = {
+  all: ['seller'] as const,
+  dashboard: () => [...sellerQueryKeys.all, 'dashboard'] as const,
+  products: () => [...sellerQueryKeys.all, 'products'] as const,
+  orders: () => [...sellerQueryKeys.all, 'orders'] as const,
+  payouts: () => [...sellerQueryKeys.all, 'payouts'] as const,
+  notifications: () => [...sellerQueryKeys.all, 'notifications'] as const,
+} as const;
+
+// Export query client for React Query
+export const queryClient = new QueryClient({
+  defaultOptions: {
+    queries: {
+      staleTime: 5 * 60 * 1000, // 5 minutes
+      refetchOnWindowFocus: false,
+    },
+  },
+});
+
+export default sellerApiClient;

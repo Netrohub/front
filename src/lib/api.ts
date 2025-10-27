@@ -192,41 +192,6 @@ export interface CreateDisputeRequest {
   description: string;
 }
 
-// Seller Types
-export interface SellerDashboard {
-  total_revenue: number;
-  total_orders: number;
-  total_products: number;
-  average_rating: number;
-  pending_orders: number;
-  active_products: number;
-  monthly_revenue: Array<{
-    month: string;
-    revenue: number;
-  }>;
-  recent_orders: Order[];
-  top_products: Product[];
-}
-
-export interface SellerOrder {
-  id: number;
-  order_number: string;
-  status: string;
-  total: number;
-  buyer: User;
-  items: OrderItem[];
-  created_at: string;
-}
-
-export interface SellerPayout {
-  id: number;
-  amount: number;
-  status: 'pending' | 'processing' | 'completed' | 'failed';
-  method: string;
-  reference: string;
-  created_at: string;
-  processed_at?: string;
-}
 
 // API Client Class
 class ApiClient {
@@ -547,71 +512,6 @@ class ApiClient {
     return response;
   }
 
-  // Seller Methods
-  async getSellerDashboard(): Promise<SellerDashboard> {
-    const response = await this.request<SellerDashboard>('/seller/dashboard');
-    return response;
-  }
-
-  async getSellerProducts(): Promise<Product[]> {
-    const response = await this.request<Product[]>('/seller/products');
-    return response;
-  }
-
-  async createProduct(data: FormData): Promise<Product> {
-    const response = await this.request<Product>('/seller/products', {
-      method: 'POST',
-      headers: {}, // Let browser set Content-Type for FormData
-      body: data,
-    });
-    return response;
-  }
-
-  async updateProduct(id: number, data: FormData): Promise<Product> {
-    const response = await this.request<Product>(`/seller/products/${id}`, {
-      method: 'PUT',
-      headers: {}, // Let browser set Content-Type for FormData
-      body: data,
-    });
-    return response;
-  }
-
-  async deleteProduct(id: number): Promise<void> {
-    await this.request(`/seller/products/${id}`, { method: 'DELETE' });
-  }
-
-  async getSellerOrders(): Promise<SellerOrder[]> {
-    const response = await this.request<SellerOrder[]>('/seller/orders');
-    return response;
-  }
-
-  async getSellerPayouts(): Promise<SellerPayout[]> {
-    const response = await this.request<SellerPayout[]>('/seller/payouts');
-    return response;
-  }
-
-  async getSellerNotifications(): Promise<any[]> {
-    const response = await this.request<any[]>('/seller/notifications');
-    return response;
-  }
-
-  async listGamingAccount(data: FormData): Promise<Product> {
-    const response = await this.request<Product>('/seller/listing/gaming-account', {
-      method: 'POST',
-      headers: {}, // Let browser set Content-Type for FormData
-      body: data,
-    });
-    return response;
-  }
-
-  async listSocialAccount(data: FormData): Promise<Product> {
-    const response = await this.request<Product>('/seller/listing/social-account', {
-      method: 'POST',
-      headers: {}, // Let browser set Content-Type for FormData
-      body: data,
-    });
-    return response;
-  }
 
 
   // Utility Methods
@@ -647,44 +547,38 @@ class ApiClient {
 // Create and export API client instance
 export const apiClient = new ApiClient(API_BASE_URL);
 
-// React Query keys for consistent caching
+// React Query keys for consistent caching - User scope
 export const queryKeys = {
   // Auth
   auth: ['auth'] as const,
   currentUser: () => [...queryKeys.auth, 'me'] as const,
   
-  // Products
+  // Products (public)
   products: ['products'] as const,
   product: (id: number) => [...queryKeys.products, id] as const,
   featuredProducts: () => [...queryKeys.products, 'featured'] as const,
   
-  // Cart
-  cart: ['cart'] as const,
-  
-  // Orders
-  orders: ['orders'] as const,
-  order: (id: number) => [...queryKeys.orders, id] as const,
-  
-  // Wishlist
-  wishlist: ['wishlist'] as const,
+  // User-specific data
+  user: {
+    orders: ['user:orders'] as const,
+    order: (id: number) => ['user:orders', id] as const,
+    wallet: ['user:wallet'] as const,
+    kyc: ['user:kyc'] as const,
+    wishlist: ['user:wishlist'] as const,
+    cart: ['user:cart'] as const,
+    notifications: ['user:notifications'] as const,
+    billing: ['user:billing'] as const,
+  },
   
   // Disputes
   disputes: ['disputes'] as const,
   dispute: (id: number) => [...queryKeys.disputes, id] as const,
   adminDisputes: () => [...queryKeys.disputes, 'admin'] as const,
   
-  // Seller
-  seller: ['seller'] as const,
-  sellerDashboard: () => [...queryKeys.seller, 'dashboard'] as const,
-  sellerProducts: () => [...queryKeys.seller, 'products'] as const,
-  sellerOrders: () => [...queryKeys.seller, 'orders'] as const,
-  sellerPayouts: () => [...queryKeys.seller, 'payouts'] as const,
-  sellerNotifications: () => [...queryKeys.seller, 'notifications'] as const,
-  
-  // Members
+  // Members (public)
   members: ['members'] as const,
   
-  // Users
+  // Users (public)
   users: ['users'] as const,
   userByUsername: (username: string) => [...queryKeys.users, username] as const,
 };

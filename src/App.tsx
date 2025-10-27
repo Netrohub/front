@@ -39,8 +39,10 @@ const SocialMediaComingSoon = lazy(() => import("./pages/SocialMediaComingSoon")
 const Terms = lazy(() => import("./pages/Terms"));
 const Privacy = lazy(() => import("./pages/Privacy"));
 
+// Unified Dashboard (lazy loaded)
+const UnifiedDashboard = lazy(() => import("./pages/Dashboard"));
+
 // Account pages (lazy loaded)
-const Dashboard = lazy(() => import("./pages/account/Dashboard"));
 const Profile = lazy(() => import("./pages/account/Profile"));
 const Wallet = lazy(() => import("./pages/account/Wallet"));
 const Orders = lazy(() => import("./pages/account/Orders"));
@@ -51,8 +53,6 @@ const AccountWishlist = lazy(() => import("./pages/account/Wishlist"));
 const KYC = lazy(() => import("./pages/account/KYC"));
 
 // Seller pages (lazy loaded)
-const SellerDashboard = lazy(() => import("./pages/seller/Dashboard"));
-const SellerAnalytics = lazy(() => import("./pages/seller/Analytics"));
 const SellerProducts = lazy(() => import("./pages/seller/Products"));
 const CreateProduct = lazy(() => import("./pages/seller/CreateProduct"));
 const SellerOrders = lazy(() => import("./pages/seller/Orders"));
@@ -62,6 +62,10 @@ const SellerNotifications = lazy(() => import("./pages/seller/Notifications"));
 const SellerOnboarding = lazy(() => import("./pages/seller/SellerOnboarding"));
 const ListGamingAccount = lazy(() => import("./pages/seller/ListGamingAccount"));
 const ListSocialAccountComingSoon = lazy(() => import("./pages/seller/ListSocialAccountComingSoon"));
+
+// Redirect components (not lazy loaded as they're simple redirects)
+const AccountDashboardRedirect = lazy(() => import("./components/redirects/AccountDashboardRedirect"));
+const SellerDashboardRedirect = lazy(() => import("./components/redirects/SellerDashboardRedirect"));
 
 // Dispute pages (lazy loaded)
 const DisputeList = lazy(() => import("./pages/disputes/DisputeList"));
@@ -174,8 +178,12 @@ const App = () => {
           <Route path="/terms" element={<Terms />} />
           <Route path="/privacy" element={<Privacy />} />
           <Route path="/unauthorized" element={<Unauthorized />} />
-          <Route path="/account" element={<RequireAuth><Dashboard /></RequireAuth>} />
-          <Route path="/account/dashboard" element={<RequireAuth><Dashboard /></RequireAuth>} />
+          {/* New unified dashboard route */}
+          <Route path="/dashboard" element={<RequireAuth><UnifiedDashboard /></RequireAuth>} />
+          
+          {/* Legacy redirects for old dashboard routes */}
+          <Route path="/account" element={<RequireAuth><AccountDashboardRedirect /></RequireAuth>} />
+          <Route path="/account/dashboard" element={<RequireAuth><AccountDashboardRedirect /></RequireAuth>} />
           <Route path="/account/profile" element={<RequireAuth><Profile /></RequireAuth>} />
           <Route path="/account/wallet" element={<RequireAuth><Wallet /></RequireAuth>} />
           <Route path="/account/wishlist" element={<RequireAuth><AccountWishlist /></RequireAuth>} />
@@ -185,8 +193,8 @@ const App = () => {
           <Route path="/account/billing" element={<RequireAuth><Billing /></RequireAuth>} />
           <Route path="/account/kyc" element={<RequireAuth><KYC /></RequireAuth>} />
           <Route path="/account/kyc/:step" element={<RequireAuth><KYC /></RequireAuth>} />
-          <Route path="/seller/dashboard" element={<RequireAuth><RequireKYC><SellerDashboard /></RequireKYC></RequireAuth>} />
-          <Route path="/seller/analytics" element={<RequireAuth><RequireKYC><SellerAnalytics /></RequireKYC></RequireAuth>} />
+          {/* Legacy redirect for old seller dashboard route */}
+          <Route path="/seller/dashboard" element={<RequireAuth><RequireKYC><SellerDashboardRedirect /></RequireKYC></RequireAuth>} />
           <Route path="/seller/onboarding" element={<RequireAuth><SellerOnboarding /></RequireAuth>} />
           <Route path="/seller/profile" element={<RequireAuth><SellerProfilePage /></RequireAuth>} />
           <Route path="/seller/products" element={<RequireAuth><SellerProducts /></RequireAuth>} />

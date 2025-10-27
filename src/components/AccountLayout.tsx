@@ -19,7 +19,7 @@ import { Button } from "@/components/ui/button";
 import { Sheet, SheetContent, SheetTrigger } from "@/components/ui/sheet";
 
 const baseMenuItems = [
-  { path: "/account", icon: LayoutDashboard, label: "Dashboard" },
+  { path: "/dashboard?tab=buyer", icon: LayoutDashboard, label: "Dashboard" },
   { path: "/account/profile", icon: User, label: "Profile" },
   { path: "/account/orders", icon: ShoppingBag, label: "Orders" },
   { path: "/account/wallet", icon: Wallet, label: "Wallet" },
