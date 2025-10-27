@@ -47,7 +47,7 @@ export const useRegister = () => {
       password: string;
       passwordConfirmation: string;
       phone?: string;
-    }) => apiClient.register({ username, name, email, password, password_confirmation: passwordConfirmation, phone }),
+    }) => apiClient.register({ username, name, email, password, phone }),
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: queryKeys.currentUser() });
       toast.success('Registration successful!');
