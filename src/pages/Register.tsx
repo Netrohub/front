@@ -87,7 +87,6 @@ const Register = () => {
         data.name,
         data.email,
         data.password,
-        data.passwordConfirmation,
         data.phone
       );
       

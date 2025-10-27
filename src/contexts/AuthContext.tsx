@@ -89,7 +89,6 @@ function AuthProvider({ children }: AuthProviderProps) {
     name: string,
     email: string,
     password: string,
-    passwordConfirmation: string,
     phone?: string
   ) => {
     try {
@@ -99,7 +98,6 @@ function AuthProvider({ children }: AuthProviderProps) {
         name,
         email,
         password,
-        password_confirmation: passwordConfirmation,
         phone,
       });
       setUser(response.user);
