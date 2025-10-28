@@ -3,7 +3,7 @@ import { useParams, Link, useNavigate } from "react-router-dom";
 import Navbar from "@/components/Navbar";
 import MobileNav from "@/components/MobileNav";
 import Footer from "@/components/Footer";
-import Starfield from "@/components/Starfield";
+import { ConditionalStarfield } from "@/components/ConditionalStarfield";
 import { useLanguage } from "@/contexts/LanguageContext";
 import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
@@ -12,7 +12,7 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { useToast } from "@/hooks/use-toast";
 import { useAddToCart, useAddToWishlist, useRemoveFromWishlist } from "@/hooks/useApi";
-import { 
+import {  
   Star, 
   ShoppingCart, 
   Heart, 
@@ -27,6 +27,8 @@ import {
   ThumbsUp,
   MessageSquare
 } from "lucide-react";
+import { OptimizedImage } from "@/components/OptimizedImage";
+import { MobileIconButton } from "@/components/ui/mobile-icon-button";
 
 const ProductDetail = () => {
   const { t } = useLanguage();
@@ -184,7 +186,7 @@ const ProductDetail = () => {
 
   return (
     <div className="min-h-screen flex flex-col relative pb-20">
-      <Starfield />
+      <ConditionalStarfield />
       <Navbar />
       
       <main className="flex-1 relative z-10">
@@ -213,9 +215,11 @@ const ProductDetail = () => {
               <div className="space-y-4">
                 <Card className="glass-card p-4 overflow-hidden">
                   <div className="aspect-square relative rounded-lg overflow-hidden mb-4 group">
-                    <img
+                    <OptimizedImage
                       src={product.images[selectedImage]}
                       alt={product.name}
+                      width={800}
+                      height={800}
                       className="w-full h-full object-cover"
                     />
                     {product.discount > 0 && (
@@ -225,13 +229,15 @@ const ProductDetail = () => {
                     )}
                     <button
                       onClick={() => setSelectedImage((selectedImage - 1 + product.images.length) % product.images.length)}
-                      className="absolute left-2 top-1/2 -translate-y-1/2 p-2 glass-card rounded-full opacity-0 group-hover:opacity-100 transition-opacity"
+                      className="absolute left-2 top-1/2 -translate-y-1/2 p-2 glass-card rounded-full opacity-100 md:opacity-0 md:group-hover:opacity-100 transition-opacity z-10"
+                      aria-label="Previous image"
                     >
                       <ChevronLeft className="h-5 w-5" />
                     </button>
                     <button
                       onClick={() => setSelectedImage((selectedImage + 1) % product.images.length)}
-                      className="absolute right-2 top-1/2 -translate-y-1/2 p-2 glass-card rounded-full opacity-0 group-hover:opacity-100 transition-opacity"
+                      className="absolute right-2 top-1/2 -translate-y-1/2 p-2 glass-card rounded-full opacity-100 md:opacity-0 md:group-hover:opacity-100 transition-opacity z-10"
+                      aria-label="Next image"
                     >
                       <ChevronRight className="h-5 w-5" />
                     </button>
@@ -314,23 +320,23 @@ const ProductDetail = () => {
                     <ShoppingCart className="h-5 w-5 mr-2" />
                     {addToCart.isPending ? "Adding..." : "Add to Cart"}
                   </Button>
-                  <Button
-                    size="lg"
+                  <MobileIconButton
                     variant="outline"
                     className={`glass-card ${isWishlisted ? "border-destructive text-destructive" : "border-primary/30"}`}
                     onClick={handleToggleWishlist}
                     disabled={addToWishlist.isPending || removeFromWishlist.isPending}
+                    aria-label={isWishlisted ? "Remove from wishlist" : "Add to wishlist"}
                   >
                     <Heart className={`h-5 w-5 ${isWishlisted ? "fill-destructive" : ""}`} />
-                  </Button>
-                  <Button 
-                    size="lg" 
+                  </MobileIconButton>
+                  <MobileIconButton 
                     variant="outline" 
                     className="glass-card border-primary/30"
                     onClick={handleShare}
+                    aria-label="Share product"
                   >
                     <Share2 className="h-5 w-5" />
-                  </Button>
+                  </MobileIconButton>
                 </div>
 
                 {/* Trust Badges */}

@@ -2,7 +2,7 @@ import { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import Navbar from "@/components/Navbar";
 import Footer from "@/components/Footer";
-import Starfield from "@/components/Starfield";
+import { ConditionalStarfield } from "@/components/ConditionalStarfield";
 import { Card } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -91,8 +91,8 @@ const Sell = () => {
   };
 
   return (
-    <div className="min-h-screen flex flex-col relative">
-      <Starfield />
+    <div className="min-h-screen flex flex-col relative pb-20 md:pb-0">
+        <ConditionalStarfield />
       <Navbar />
       
       <main className="flex-1 relative z-10 py-8">

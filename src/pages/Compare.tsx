@@ -1,11 +1,12 @@
 import { useState } from "react";
 import Navbar from "@/components/Navbar";
 import Footer from "@/components/Footer";
-import Starfield from "@/components/Starfield";
+import { ConditionalStarfield } from "@/components/ConditionalStarfield";
 import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { getCategoryImage } from "@/lib/categoryImages";
+import { ComparisonMobile } from "@/components/ComparisonMobile";
 import { 
   GitCompare, 
   X, 
@@ -87,8 +88,8 @@ const Compare = () => {
   );
 
   return (
-    <div className="min-h-screen flex flex-col relative">
-      <Starfield />
+    <div className="min-h-screen flex flex-col relative pb-20 md:pb-0">
+        <ConditionalStarfield />
       <Navbar />
       
       <main className="flex-1 relative z-10">
@@ -115,8 +116,16 @@ const Compare = () => {
         <section className="py-8">
           <div className="container mx-auto px-4">
             {products.length > 0 ? (
-              <div className="overflow-x-auto">
-                <div className="min-w-[800px]">
+              <>
+                {/* Mobile View */}
+                <ComparisonMobile 
+                  products={products} 
+                  removeProduct={removeProduct} 
+                />
+
+                {/* Desktop View */}
+                <div className="hidden md:block overflow-x-auto">
+                  <div className="min-w-[800px]">
                   <div className="grid gap-4" style={{ gridTemplateColumns: `200px repeat(${products.length}, 1fr)` }}>
                     {/* Header Row - Product Images */}
                     <div className="sticky left-0 bg-background/95 backdrop-blur-sm z-10"></div>
@@ -201,7 +210,8 @@ const Compare = () => {
                     ))}
                   </div>
                 </div>
-              </div>
+                </div>
+              </>
             ) : (
               <Card className="glass-card p-12 text-center max-w-2xl mx-auto">
                 <div className="inline-flex p-4 rounded-xl bg-primary/10 border border-primary/20 mb-6">

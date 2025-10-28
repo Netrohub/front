@@ -4,12 +4,12 @@ import Hero from "@/components/Hero";
 import CategoryGrid from "@/components/CategoryGrid";
 import FeaturedProducts from "@/components/FeaturedProducts";
 import Footer from "@/components/Footer";
-import Starfield from "@/components/Starfield";
+import { ConditionalStarfield } from "@/components/ConditionalStarfield";
 
 const Index = () => {
   return (
     <div className="min-h-screen flex flex-col relative pb-20">
-      <Starfield />
+      <ConditionalStarfield />
       <Navbar />
       <main className="flex-1 relative z-10">
         <Hero />

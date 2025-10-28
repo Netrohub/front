@@ -5,7 +5,7 @@ import { Link } from "react-router-dom";
 import { useLanguage } from "@/contexts/LanguageContext";
 import Navbar from "@/components/Navbar";
 import Footer from "@/components/Footer";
-import Starfield from "@/components/Starfield";
+import { ConditionalStarfield } from "@/components/ConditionalStarfield";
 import { 
   Clock, 
   ArrowLeft, 
@@ -36,8 +36,8 @@ const SocialMediaComingSoon = () => {
   ];
 
   return (
-    <div className="min-h-screen flex flex-col relative">
-      <Starfield />
+    <div className="min-h-screen flex flex-col relative pb-20 md:pb-0">
+        <ConditionalStarfield />
       <Navbar />
       
       <main className="flex-1 relative z-10 flex items-center justify-center py-16">

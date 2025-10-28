@@ -1,7 +1,7 @@
 import Navbar from "@/components/Navbar";
 import MobileNav from "@/components/MobileNav";
 import Footer from "@/components/Footer";
-import Starfield from "@/components/Starfield";
+import { ConditionalStarfield } from "@/components/ConditionalStarfield";
 import TurnstileWidget, { TurnstileWidgetRef } from "@/components/TurnstileWidget";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -242,7 +242,7 @@ const Login = () => {
   
   return (
     <div className="min-h-screen flex flex-col relative pb-20">
-      <Starfield />
+      <ConditionalStarfield />
       <Navbar />
       
       <main className="flex-1 relative z-10 flex items-center justify-center py-16">

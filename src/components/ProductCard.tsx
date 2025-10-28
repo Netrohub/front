@@ -4,6 +4,8 @@ import { Badge } from "@/components/ui/badge";
 import { Star, Eye, Heart } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { useState } from "react";
+import { OptimizedImage } from "@/components/OptimizedImage";
+import { MobileIconButton } from "@/components/ui/mobile-icon-button";
 
 interface Product {
   id: number;
@@ -88,11 +90,13 @@ const ProductCard = ({ product, variant = "default", showStatus = false }: Produ
       <Card className={`glass-card overflow-hidden ${cardClasses[variant]} relative`}>
         {/* Product Image */}
         <div className={`relative ${imageClasses[variant]} overflow-hidden`}>
-          <img
+          <OptimizedImage
             src={productImage}
             alt={product.title}
+            fallback={fallbackImage}
+            width={400}
+            height={400}
             className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-500"
-            onError={() => setImageError(true)}
           />
           
           {/* Discount Badge */}
@@ -110,14 +114,14 @@ const ProductCard = ({ product, variant = "default", showStatus = false }: Produ
           )}
 
           {/* Wishlist Button */}
-          <Button
-            size="icon"
+          <MobileIconButton
             variant="ghost"
-            className="absolute top-2 right-2 h-8 w-8 rounded-full bg-background/80 hover:bg-background opacity-0 group-hover:opacity-100 transition-opacity"
+            className="absolute top-2 right-2 rounded-full bg-background/80 hover:bg-background opacity-0 group-hover:opacity-100 md:opacity-0 md:group-hover:opacity-100 transition-opacity"
             onClick={handleWishlistToggle}
+            aria-label={isWishlisted ? "Remove from wishlist" : "Add to wishlist"}
           >
             <Heart className={`h-4 w-4 ${isWishlisted ? 'fill-red-500 text-red-500' : 'text-foreground/60'}`} />
-          </Button>
+          </MobileIconButton>
 
           {/* Platform/Type Badge */}
           {product.platform && (

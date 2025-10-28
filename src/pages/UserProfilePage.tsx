@@ -4,7 +4,7 @@ import { useQuery } from "@tanstack/react-query";
 import { Helmet } from "react-helmet-async";
 import Navbar from "@/components/Navbar";
 import Footer from "@/components/Footer";
-import Starfield from "@/components/Starfield";
+import { ConditionalStarfield } from "@/components/ConditionalStarfield";
 import ProductCard from "@/components/ProductCard";
 import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
@@ -74,8 +74,8 @@ const UserProfilePage = () => {
   if (isLoading) {
     return (
       <>
-        <div className="min-h-screen flex flex-col relative">
-          <Starfield />
+        <div className="min-h-screen flex flex-col relative pb-20 md:pb-0">
+          <ConditionalStarfield />
           <Navbar />
           
           <main className="flex-1 relative z-10 py-8">
@@ -113,8 +113,8 @@ const UserProfilePage = () => {
         <Helmet>
           <title>User Not Found - NXOLand</title>
         </Helmet>
-        <div className="min-h-screen flex flex-col relative">
-          <Starfield />
+        <div className="min-h-screen flex flex-col relative pb-20 md:pb-0">
+          <ConditionalStarfield />
           <Navbar />
           
           <main className="flex-1 relative z-10 py-8">
@@ -193,8 +193,8 @@ const UserProfilePage = () => {
         <meta name="twitter:image" content={ogImage} />
       </Helmet>
 
-      <div className="min-h-screen flex flex-col relative">
-        <Starfield />
+      <div className="min-h-screen flex flex-col relative pb-20 md:pb-0">
+        <ConditionalStarfield />
         <Navbar />
         
         <main className="flex-1 relative z-10 py-8">

@@ -1,6 +1,6 @@
 import Navbar from "@/components/Navbar";
 import Footer from "@/components/Footer";
-import Starfield from "@/components/Starfield";
+import { ConditionalStarfield } from "@/components/ConditionalStarfield";
 import { Link, useLocation } from "react-router-dom";
 import { useAuth } from "@/contexts/AuthContext";
 import { 
@@ -54,7 +54,7 @@ const AccountLayout = ({ children }: AccountLayoutProps) => {
 
   return (
     <div className="min-h-screen flex flex-col relative">
-      <Starfield />
+      <ConditionalStarfield />
       <Navbar />
       
       <main className="flex-1 relative z-10 py-4 sm:py-8">

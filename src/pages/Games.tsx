@@ -2,7 +2,7 @@ import { useState, useMemo } from "react";
 import Navbar from "@/components/Navbar";
 import MobileNav from "@/components/MobileNav";
 import Footer from "@/components/Footer";
-import Starfield from "@/components/Starfield";
+import { ConditionalStarfield } from "@/components/ConditionalStarfield";
 import ProductCard from "@/components/ProductCard";
 import { Card } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
@@ -139,7 +139,7 @@ const Games = () => {
 
   return (
     <div className="min-h-screen flex flex-col relative pb-20">
-      <Starfield />
+      <ConditionalStarfield />
       <Navbar />
       
       <main className="flex-1 relative z-10">

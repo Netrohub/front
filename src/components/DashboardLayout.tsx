@@ -1,6 +1,6 @@
 import Navbar from "@/components/Navbar";
 import Footer from "@/components/Footer";
-import Starfield from "@/components/Starfield";
+import { ConditionalStarfield } from "@/components/ConditionalStarfield";
 import { useAuth } from "@/contexts/AuthContext";
 import { useLocation, useNavigate, useSearchParams } from "react-router-dom";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
@@ -125,7 +125,7 @@ const DashboardLayout = ({ children }: DashboardLayoutProps) => {
 
   return (
     <div className="min-h-screen flex flex-col relative">
-      <Starfield />
+      <ConditionalStarfield />
       <Navbar />
       
       <main className="flex-1 relative z-10 py-4 sm:py-8">
@@ -149,21 +149,23 @@ const DashboardLayout = ({ children }: DashboardLayoutProps) => {
 
           {/* Tabs Navigation */}
           <Tabs value={currentTab} onValueChange={handleTabChange} className="space-y-6">
-            <TabsList className="inline-flex w-auto glass-card p-1.5 h-auto rounded-xl gap-1">
-              {tabs.map((tab) => {
-                const Icon = tab.icon;
-                return (
-                  <TabsTrigger
-                    key={tab.id}
-                    value={tab.id}
-                    className="flex flex-col sm:flex-row items-center gap-1 sm:gap-2 py-2.5 px-3 sm:px-4 data-[state=active]:bg-primary data-[state=active]:text-white text-xs sm:text-sm font-medium min-w-[70px] sm:min-w-[100px] rounded-lg transition-all"
-                  >
-                    <Icon className="h-4 w-4 flex-shrink-0" />
-                    <span className="text-[10px] sm:text-sm">{tab.label}</span>
-                  </TabsTrigger>
-                );
-              })}
-            </TabsList>
+            <div className="w-full md:w-auto overflow-x-auto scrollbar-hide">
+              <TabsList className="inline-flex w-auto min-w-full md:min-w-0 glass-card p-1.5 h-auto rounded-xl gap-1">
+                {tabs.map((tab) => {
+                  const Icon = tab.icon;
+                  return (
+                    <TabsTrigger
+                      key={tab.id}
+                      value={tab.id}
+                      className="flex flex-col sm:flex-row items-center gap-1 sm:gap-2 py-2.5 px-3 sm:px-4 data-[state=active]:bg-primary data-[state=active]:text-white text-xs sm:text-sm font-medium min-w-[70px] sm:min-w-[100px] rounded-lg transition-all whitespace-nowrap"
+                    >
+                      <Icon className="h-4 w-4 flex-shrink-0" />
+                      <span className="text-[10px] sm:text-sm">{tab.label}</span>
+                    </TabsTrigger>
+                  );
+                })}
+              </TabsList>
+            </div>
 
             {/* Tab Content */}
             <div className="space-y-6">

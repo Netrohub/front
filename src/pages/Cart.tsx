@@ -2,7 +2,7 @@ import { useState } from "react";
 import Navbar from "@/components/Navbar";
 import MobileNav from "@/components/MobileNav";
 import Footer from "@/components/Footer";
-import Starfield from "@/components/Starfield";
+import { ConditionalStarfield } from "@/components/ConditionalStarfield";
 import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
@@ -13,6 +13,8 @@ import { useLanguage } from "@/contexts/LanguageContext";
 import { useCart, useRemoveFromCart } from "@/hooks/useApi";
 import { useToast } from "@/hooks/use-toast";
 import { formatPrice } from "@/lib/utils";
+import { OptimizedImage } from "@/components/OptimizedImage";
+import { MobileIconButton } from "@/components/ui/mobile-icon-button";
 
 // Removed hardcoded cart items - now using real cart data
 
@@ -80,7 +82,7 @@ const Cart = () => {
 
   return (
     <div className="min-h-screen flex flex-col relative pb-20">
-      <Starfield />
+        <ConditionalStarfield />
       <Navbar />
       
       <main className="flex-1 relative z-10 py-16">
@@ -117,9 +119,11 @@ const Cart = () => {
                     <div className="flex gap-4">
                       {/* Image */}
                       <div className="flex-shrink-0 w-24 h-24 rounded-lg overflow-hidden border border-border/50">
-                        <img
+                        <OptimizedImage
                           src={item.product?.images?.[0] || item.product?.image || 'https://images.unsplash.com/photo-1550745165-9bc0b252726f?w=400&q=80'}
                           alt={item.product?.title || item.product?.name || 'Product'}
+                          width={96}
+                          height={96}
                           className="w-full h-full object-cover"
                         />
                       </div>
@@ -138,15 +142,15 @@ const Cart = () => {
                               {typeof item.product?.category === 'string' ? item.product.category : 'Category'}
                             </Badge>
                           </div>
-                          <Button
-                            size="icon"
+                          <MobileIconButton
                             variant="ghost"
                             className="text-destructive hover:text-destructive hover:bg-destructive/10"
                             onClick={() => handleRemoveItem(item.id)}
                             disabled={removeFromCart.isPending}
+                            aria-label="Remove item from cart"
                           >
                             <Trash2 className="h-4 w-4" />
-                          </Button>
+                          </MobileIconButton>
                         </div>
 
                         {/* Price and Quantity */}
