@@ -8,36 +8,80 @@ import { Card } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { CheckCircle2, Package, CreditCard, Mail, Calendar, ArrowRight } from "lucide-react";
 import { useLanguage } from "@/contexts/LanguageContext";
+import { apiClient } from "@/lib/api";
+import { useToast } from "@/hooks/use-toast";
 
 const OrderConfirmation = () => {
   const { t } = useLanguage();
   const navigate = useNavigate();
   const [searchParams] = useSearchParams();
   const [orderDetails, setOrderDetails] = useState<any>(null);
+  const [loading, setLoading] = useState(true);
+  const { toast } = useToast();
 
-  // Get order details from URL params or localStorage
+  // ✅ FIXED: Fetch order details from API
   useEffect(() => {
-    const orderId = searchParams.get('order_id');
-    const orderData = localStorage.getItem('last_order');
-    
-    if (orderData) {
-      setOrderDetails(JSON.parse(orderData));
-    } else if (orderId) {
-      // TODO: Fetch actual order details from API
-      // const response = await fetch(`/api/orders/${orderId}`);
-      // const orderData = await response.json();
-      // setOrderDetails(orderData);
-      setOrderDetails(null); // No data for now
-    }
-  }, [searchParams]);
+    const fetchOrderDetails = async () => {
+      try {
+        setLoading(true);
+        const orderId = searchParams.get('order_id');
+        
+        // First try to get from URL parameter
+        if (orderId) {
+          const order = await apiClient.request<any>(`/orders/${orderId}`);
+          setOrderDetails({
+            id: order.id,
+            order_number: order.order_number,
+            status: order.status,
+            total: order.total_amount,
+            items: order.items || [],
+            paymentMethod: order.payment_method || 'Credit Card',
+            orderDate: order.created_at,
+            estimatedDelivery: new Date(Date.now() + 24 * 60 * 60 * 1000).toISOString()
+          });
+        } else {
+          // Fallback to localStorage for just-completed orders
+          const orderData = localStorage.getItem('last_order');
+          if (orderData) {
+            setOrderDetails(JSON.parse(orderData));
+          } else {
+            // No order found, redirect to orders page
+            toast({
+              title: "No order found",
+              description: "Redirecting to your orders...",
+              variant: "destructive",
+            });
+            setTimeout(() => navigate('/dashboard?tab=orders'), 2000);
+          }
+        }
+      } catch (error: any) {
+        console.error('Failed to fetch order details:', error);
+        toast({
+          title: "Error loading order",
+          description: error.message || "Failed to load order details",
+          variant: "destructive",
+        });
+        // Try localStorage as fallback
+        const orderData = localStorage.getItem('last_order');
+        if (orderData) {
+          setOrderDetails(JSON.parse(orderData));
+        }
+      } finally {
+        setLoading(false);
+      }
+    };
 
-  if (!orderDetails) {
+    fetchOrderDetails();
+  }, [searchParams, navigate, toast]);
+
+  if (loading || !orderDetails) {
     return (
       <div className="min-h-screen flex flex-col relative pb-20 md:pb-0">
         <ConditionalStarfield />
         <Navbar />
         <main className="flex-1 relative z-10 flex items-center justify-center">
           <div className="text-center">
+            <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-primary mx-auto mb-4"></div>
             <h1 className="text-2xl font-bold text-foreground mb-4">Loading order details...</h1>
           </div>
         </main>
@@ -47,8 +91,8 @@ const OrderConfirmation = () => {
   }
 
   return (
-    <div className="min-h-screen flex flex-col relative">
-      <Starfield />
+    <div className="min-h-screen flex flex-col relative pb-20 md:pb-0">
+      <ConditionalStarfield />
       <Navbar />
       
       <main className="flex-1 relative z-10 py-16">

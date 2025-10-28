@@ -2,8 +2,9 @@ import { useState, useEffect, useRef } from "react";
 import { Input } from "@/components/ui/input";
 import { Card } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
-import { Search, TrendingUp, Clock, X } from "lucide-react";
+import { Search, TrendingUp, Clock, X, Loader2 } from "lucide-react";
 import { Link } from "react-router-dom";
+import { apiClient } from "@/lib/api";
 
 interface SearchResult {
   id: string;
@@ -13,8 +14,6 @@ interface SearchResult {
   image: string;
   type: "product" | "category" | "seller";
 }
-
-// TODO: Replace with actual API call
 
 const trendingSearches = [
   "Instagram accounts",
@@ -38,9 +37,11 @@ const AdvancedSearch = ({ onClose }: AdvancedSearchProps) => {
   const [query, setQuery] = useState("");
   const [results, setResults] = useState<SearchResult[]>([]);
   const [isOpen, setIsOpen] = useState(false);
+  const [isLoading, setIsLoading] = useState(false);
   const [recentSearchList, setRecentSearchList] = useState(recentSearches);
   const inputRef = useRef<HTMLInputElement>(null);
   const containerRef = useRef<HTMLDivElement>(null);
+  const searchTimeoutRef = useRef<NodeJS.Timeout | null>(null);
 
   useEffect(() => {
     const handleClickOutside = (event: MouseEvent) => {
@@ -53,17 +54,51 @@ const AdvancedSearch = ({ onClose }: AdvancedSearchProps) => {
     return () => document.removeEventListener("mousedown", handleClickOutside);
   }, []);
 
+  // ✅ FIXED: Implement actual search API call with debouncing
   useEffect(() => {
-    if (query.length > 0) {
+    // Clear previous timeout
+    if (searchTimeoutRef.current) {
+      clearTimeout(searchTimeoutRef.current);
+    }
+
+    if (query.length > 2) {
       setIsOpen(true);
-      // TODO: Implement actual search API call
-      // const searchResults = await fetch(`/api/search?q=${encodeURIComponent(query)}`);
-      // const data = await searchResults.json();
-      // setResults(data);
-      setResults([]); // No results for now
+      setIsLoading(true);
+
+      // Debounce search requests
+      searchTimeoutRef.current = setTimeout(async () => {
+        try {
+          const response = await apiClient.request<any[]>(`/products?search=${encodeURIComponent(query)}&limit=10`);
+          
+          // Transform API response to SearchResult format
+          const searchResults: SearchResult[] = response.map((product: any) => ({
+            id: String(product.id),
+            title: product.name,
+            category: product.category?.name || 'Uncategorized',
+            price: Number(product.price),
+            image: product.images?.[0] || '/placeholder-product.png',
+            type: 'product' as const
+          }));
+
+          setResults(searchResults);
+        } catch (error) {
+          console.error('Search failed:', error);
+          setResults([]);
+        } finally {
+          setIsLoading(false);
+        }
+      }, 300); // 300ms debounce
     } else {
       setResults([]);
+      setIsLoading(false);
     }
+
+    // Cleanup timeout on unmount
+    return () => {
+      if (searchTimeoutRef.current) {
+        clearTimeout(searchTimeoutRef.current);
+      }
+    };
   }, [query]);
 
   const handleSearch = (searchTerm: string) => {
@@ -166,14 +201,22 @@ const AdvancedSearch = ({ onClose }: AdvancedSearchProps) => {
               </>
             ) : (
               <>
-                {/* Search Results */}
-                {results.length > 0 ? (
-                  <div>
-                    <h3 className="text-sm font-semibold text-foreground mb-3">
-                      Results for "{query}"
-                    </h3>
-                    <div className="space-y-2">
-                      {results.map((result) => (
+                {/* Loading State */}
+                {isLoading ? (
+                  <div className="text-center py-8">
+                    <Loader2 className="h-8 w-8 animate-spin text-primary mx-auto mb-2" />
+                    <p className="text-foreground/60">Searching...</p>
+                  </div>
+                ) : (
+                  <>
+                    {/* Search Results */}
+                    {results.length > 0 ? (
+                      <div>
+                        <h3 className="text-sm font-semibold text-foreground mb-3">
+                          Results for "{query}"
+                        </h3>
+                        <div className="space-y-2">
+                          {results.map((result) => (
                         <Link
                           key={result.id}
                           to={`/products/${result.id}`}
@@ -206,16 +249,18 @@ const AdvancedSearch = ({ onClose }: AdvancedSearchProps) => {
                             </div>
                           </div>
                         </Link>
-                      ))}
-                    </div>
-                  </div>
-                ) : (
-                  <div className="text-center py-8">
-                    <p className="text-foreground/60">No results found for "{query}"</p>
-                    <p className="text-sm text-foreground/40 mt-2">
-                      Try different keywords or browse our categories
-                    </p>
-                  </div>
+                          ))}
+                        </div>
+                      </div>
+                    ) : (
+                      <div className="text-center py-8">
+                        <p className="text-foreground/60">No results found for "{query}"</p>
+                        <p className="text-sm text-foreground/40 mt-2">
+                          Try different keywords or browse our categories
+                        </p>
+                      </div>
+                    )}
+                  </>
                 )}
               </>
             )}

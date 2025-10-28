@@ -26,8 +26,9 @@ import {
 const SellerProfile = () => {
   const { seller } = useParams();
 
-  // TODO: Replace with actual API call
-  const [sellerData, setSellerData] = useState(null);
+  // ✅ FIXED: Fetch real seller data and products from API
+  const [sellerData, setSellerData] = useState<any>(null);
+  const [products, setProducts] = useState<any[]>([]);
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
@@ -36,32 +37,40 @@ const SellerProfile = () => {
       
       try {
         setLoading(true);
-        const data = await apiClient.getUserByUsername(seller);
+        
+        // Fetch user data
+        const userData = await apiClient.getUserByUsername(seller);
+        
+        // Fetch seller's products
+        const productsData = await apiClient.request<any[]>(`/products?seller=${userData.id}`);
         
         // Transform API data to match component expectations
-        const sellerData = {
-          name: data.name || data.username,
-          username: data.username,
-          avatar: data.avatar || `https://api.dicebear.com/7.x/avataaars/svg?seed=${data.username}`,
-          verified: data.roles?.includes('seller') || false,
-          rating: 4.8,
-          totalReviews: 145,
+        const transformedData = {
+          id: userData.id,
+          name: userData.name || userData.username,
+          username: userData.username,
+          avatar: userData.avatar || `https://api.dicebear.com/7.x/avataaars/svg?seed=${userData.username}`,
+          verified: userData.roles?.includes('seller') || userData.kyc_status === 'VERIFIED',
+          rating: 4.8, // TODO: Calculate from reviews once review system is implemented
+          totalReviews: 0, // TODO: Get from reviews
           location: 'Global',
-          memberSince: new Date(data.created_at || Date.now()).toLocaleDateString('en-US', { month: 'long', year: 'numeric' }),
-          description: `Welcome to ${data.name}'s profile!`,
+          memberSince: new Date(userData.created_at || Date.now()).toLocaleDateString('en-US', { month: 'long', year: 'numeric' }),
+          description: userData.bio || `Welcome to ${userData.name}'s profile!`,
           banner: 'https://images.unsplash.com/photo-1559027615-cd4628902d4a?w=1200&q=80',
           stats: [
-            { label: 'Products', value: '24', icon: ShoppingBag },
-            { label: 'Sales', value: '156', icon: TrendingUp },
+            { label: 'Products', value: String(productsData.length), icon: ShoppingBag },
+            { label: 'Sales', value: '0', icon: TrendingUp }, // TODO: Get from orders
             { label: 'Rating', value: '4.8', icon: Star },
-            { label: 'Awards', value: '3', icon: Award },
+            { label: 'Awards', value: '0', icon: Award },
           ],
         };
         
-        setSellerData(sellerData);
+        setSellerData(transformedData);
+        setProducts(productsData);
       } catch (error) {
         console.error('Failed to fetch seller data:', error);
         setSellerData(null);
+        setProducts([]);
       } finally {
         setLoading(false);
       }
@@ -69,39 +78,6 @@ const SellerProfile = () => {
 
     fetchSellerData();
   }, [seller]);
-
-  const products = [
-    {
-      id: "sp1",
-      name: "Premium Instagram Account - 50K",
-      price: 299.99,
-      image: "https://images.unsplash.com/photo-1611162617474-5b21e879e113?w=800&q=80",
-      category: "Social Media",
-      rating: 4.9,
-      reviews: 145,
-      featured: true,
-    },
-    {
-      id: "sp2",
-      name: "TikTok Creator Account - Verified",
-      price: 599.99,
-      image: "https://images.unsplash.com/photo-1611162616305-c69b3fa7fbe0?w=800&q=80",
-      category: "Social Media",
-      rating: 4.8,
-      reviews: 189,
-      featured: false,
-    },
-    {
-      id: "sp3",
-      name: "YouTube Channel - 10K Subscribers",
-      price: 799.99,
-      image: "https://images.unsplash.com/photo-1611162616475-46b635cb6868?w=800&q=80",
-      category: "Social Media",
-      rating: 4.7,
-      reviews: 156,
-      featured: false,
-    },
-  ];
 
   const reviews = [
     {

@@ -28,8 +28,7 @@ import {
 import { 
   CreditCard, 
   Plus,
-  Trash2,
-  CheckCircle2
+  Trash2
 } from "lucide-react";
 
 const paymentMethods = [
@@ -185,73 +184,10 @@ const Billing = () => {
         {/* Header */}
         <div>
           <h1 className="text-3xl font-black bg-gradient-to-r from-primary to-accent bg-clip-text text-transparent mb-2">
-            Billing & Subscription
+            Billing & Payments
           </h1>
-          <p className="text-foreground/60">Manage your subscription and payment methods</p>
+          <p className="text-foreground/60">Manage your payment methods and billing history</p>
         </div>
-
-        {/* Current Plan */}
-        <Card className="glass-card p-6 border border-primary/30">
-          <div className="flex items-start justify-between mb-6">
-            <div>
-              <Badge className="badge-glow border-0 mb-3">Current Plan</Badge>
-              <h2 className="text-2xl font-bold text-foreground mb-2">Pro Plan</h2>
-              <p className="text-foreground/60">Unlimited listings, 3% transaction fee</p>
-            </div>
-            <div className="text-right">
-              <p className="text-3xl font-black bg-gradient-to-r from-primary to-accent bg-clip-text text-transparent mb-1">
-                $29
-              </p>
-              <p className="text-sm text-foreground/60">per month</p>
-            </div>
-          </div>
-
-          <div className="flex items-center justify-between p-4 rounded-lg glass-card border border-border/30 mb-4">
-            <div>
-              <p className="font-semibold text-foreground mb-1">Next billing date</p>
-              <p className="text-sm text-foreground/60">February 20, 2024</p>
-            </div>
-            <Badge variant="secondary" className="bg-primary/10 text-primary border-primary/20">
-              <CheckCircle2 className="h-3 w-3 mr-1" />
-              Active
-            </Badge>
-          </div>
-
-          <div className="flex gap-3">
-            <Button asChild variant="outline" className="glass-card border-border/50">
-              <Link to="/pricing">
-                Change Plan
-              </Link>
-            </Button>
-            <Button 
-              variant="ghost" 
-              className="text-destructive hover:text-destructive"
-              onClick={handleCancelSubscription}
-            >
-              Cancel Subscription
-            </Button>
-          </div>
-        </Card>
-
-        {/* Cancel Subscription Dialog */}
-        <AlertDialog open={cancelDialogOpen} onOpenChange={setCancelDialogOpen}>
-          <AlertDialogContent>
-            <AlertDialogHeader>
-              <AlertDialogTitle>Cancel Subscription</AlertDialogTitle>
-              <AlertDialogDescription>
-                Are you sure you want to cancel your subscription? You'll have access to all premium features until the end of your current billing period. After that, your account will be downgraded to the free plan.
-              </AlertDialogDescription>
-            </AlertDialogHeader>
-            <AlertDialogFooter>
-              <AlertDialogCancel onClick={() => setCancelDialogOpen(false)}>
-                Keep Subscription
-              </AlertDialogCancel>
-              <AlertDialogAction onClick={handleCancelConfirm} className="bg-destructive text-destructive-foreground hover:bg-destructive/90">
-                Cancel Subscription
-              </AlertDialogAction>
-            </AlertDialogFooter>
-          </AlertDialogContent>
-        </AlertDialog>
 
         {/* Payment Methods */}
         <Card className="glass-card p-6">
