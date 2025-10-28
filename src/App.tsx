@@ -46,21 +46,11 @@ const UnifiedDashboard = lazy(() => import("./pages/Dashboard"));
 const OrderDetail = lazy(() => import("./pages/account/OrderDetail"));
 const AccountWishlist = lazy(() => import("./pages/account/Wishlist"));
 
-// Seller pages (lazy loaded)
-const SellerProducts = lazy(() => import("./pages/seller/Products"));
-const CreateProduct = lazy(() => import("./pages/seller/CreateProduct"));
-const SellerOrders = lazy(() => import("./pages/seller/Orders"));
-const SellerProfilePage = lazy(() => import("./pages/seller/Profile"));
-const SellerBilling = lazy(() => import("./pages/seller/Billing"));
-const SellerNotifications = lazy(() => import("./pages/seller/Notifications"));
-const SellerOnboarding = lazy(() => import("./pages/seller/SellerOnboarding"));
-const ListGamingAccount = lazy(() => import("./pages/seller/ListGamingAccount"));
-const ListSocialAccountComingSoon = lazy(() => import("./pages/seller/ListSocialAccountComingSoon"));
+// Sell page (product listing)
+const SellPage = lazy(() => import("./pages/Sell"));
 
 // Redirect components (lazy loaded for code splitting)
 const AccountDashboardRedirect = lazy(() => import("./components/redirects/AccountDashboardRedirect"));
-const SellerDashboardRedirect = lazy(() => import("./components/redirects/SellerDashboardRedirect"));
-const SellerProfileRedirect = lazy(() => import("./components/redirects/SellerProfileRedirect"));
 // Account page redirects (moved to unified dashboard)
 const AccountProfileRedirect = lazy(() => import("./components/redirects/AccountRedirects").then(m => ({ default: m.AccountProfileRedirect })));
 const AccountOrdersRedirect = lazy(() => import("./components/redirects/AccountRedirects").then(m => ({ default: m.AccountOrdersRedirect })));
@@ -173,8 +163,6 @@ const App = () => {
           
           {/* User profile routes */}
           <Route path="/@:username" element={<UserProfilePage />} />
-          {/* Redirect old seller profile URLs to new unified profile */}
-          <Route path="/seller/:seller" element={<SellerProfileRedirect />} />
           
           <Route path="/login" element={<Login />} />
           <Route path="/register" element={<Register />} />
@@ -202,17 +190,9 @@ const App = () => {
           {/* Standalone account pages (detail/secondary pages) */}
           <Route path="/account/wishlist" element={<RequireAuth><AccountWishlist /></RequireAuth>} />
           <Route path="/account/orders/:id" element={<RequireAuth><OrderDetail /></RequireAuth>} />
-          {/* Legacy redirect for old seller dashboard route */}
-          <Route path="/seller/dashboard" element={<RequireAuth><RequireKYC><SellerDashboardRedirect /></RequireKYC></RequireAuth>} />
-          <Route path="/seller/onboarding" element={<RequireAuth><SellerOnboarding /></RequireAuth>} />
-          <Route path="/seller/profile" element={<RequireAuth><SellerProfilePage /></RequireAuth>} />
-          <Route path="/seller/products" element={<RequireAuth><SellerProducts /></RequireAuth>} />
-          <Route path="/seller/products/create" element={<RequireAuth><CreateProduct /></RequireAuth>} />
-          <Route path="/seller/list/social" element={<RequireAuth><ListSocialAccountComingSoon /></RequireAuth>} />
-          <Route path="/seller/list/gaming" element={<RequireAuth><ListGamingAccount /></RequireAuth>} />
-          <Route path="/seller/orders" element={<RequireAuth><SellerOrders /></RequireAuth>} />
-          <Route path="/seller/billing" element={<RequireAuth><SellerBilling /></RequireAuth>} />
-          <Route path="/seller/notifications" element={<RequireAuth><SellerNotifications /></RequireAuth>} />
+          
+          {/* Sell page - Product listing */}
+          <Route path="/sell" element={<RequireAuth><SellPage /></RequireAuth>} />
           <Route path="/disputes" element={<RequireAuth><DisputeList /></RequireAuth>} />
           <Route path="/disputes/create" element={<RequireAuth><CreateDispute /></RequireAuth>} />
           <Route path="/disputes/:id" element={<RequireAuth><DisputeDetail /></RequireAuth>} />

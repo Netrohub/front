@@ -1,5 +1,5 @@
 import { useState, useEffect } from "react";
-import { Search, ShoppingCart, User, LogOut, Heart, Menu, X } from "lucide-react";
+import { Search, ShoppingCart, User, LogOut, Heart, Menu, X, Store } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Link, useNavigate } from "react-router-dom";
@@ -431,8 +431,8 @@ const Navbar = () => {
                       </DropdownMenuItem>
                       {user?.roles?.includes('seller') && (
                         <DropdownMenuItem asChild>
-                          <Link to="/seller/dashboard" className="cursor-pointer">
-                            <User className="mr-2 h-4 w-4" />
+                          <Link to="/dashboard?tab=seller" className="cursor-pointer">
+                            <Store className="mr-2 h-4 w-4" />
                             <span>{t('sellerDashboard')}</span>
                           </Link>
                         </DropdownMenuItem>

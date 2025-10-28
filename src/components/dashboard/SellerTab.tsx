@@ -166,11 +166,11 @@ const SellerTab = () => {
           <SectionHeader 
             title="Your Products"
             description="Manage your listings"
-            action={{
-              label: "Add Product",
-              href: "/seller/products/create",
-              variant: "default"
-            }}
+              action={{
+                label: "Add Product",
+                href: "/sell",
+                variant: "default"
+              }}
           />
           
           <div className="mt-4">
@@ -204,7 +204,7 @@ const SellerTab = () => {
                 ))}
                 {products.length > 5 && (
                   <Link 
-                    to="/seller/products"
+                    to="/dashboard?tab=seller"
                     className="block text-center text-sm text-primary hover:text-primary/80 py-2"
                   >
                     View All Products ({products.length})
@@ -218,7 +218,7 @@ const SellerTab = () => {
                 description="Start selling by creating your first product listing."
                 action={{
                   label: "Create Product",
-                  href: "/seller/products/create"
+                  href: "/sell"
                 }}
                 showBackground={false}
               />
@@ -233,7 +233,7 @@ const SellerTab = () => {
             description="Your latest sales"
             action={{
               label: "View All Orders",
-              href: "/seller/orders",
+              href: "/dashboard?tab=orders",
               variant: "outline"
             }}
           />
@@ -294,7 +294,7 @@ const SellerTab = () => {
         />
         
         <div className="mt-4 grid md:grid-cols-3 gap-4">
-          <Link to="/seller/products/create">
+          <Link to="/sell">
             <Card className="p-4 hover:bg-muted/50 transition-colors cursor-pointer">
               <div className="flex items-center gap-3">
                 <div className="p-2 rounded-lg bg-green-500/10">
@@ -308,7 +308,7 @@ const SellerTab = () => {
             </Card>
           </Link>
           
-          <Link to="/seller/orders">
+          <Link to="/dashboard?tab=orders">
             <Card className="p-4 hover:bg-muted/50 transition-colors cursor-pointer">
               <div className="flex items-center gap-3">
                 <div className="p-2 rounded-lg bg-blue-500/10">
@@ -322,7 +322,7 @@ const SellerTab = () => {
             </Card>
           </Link>
           
-          <Link to="/seller/billing">
+          <Link to="/dashboard?tab=billing">
             <Card className="p-4 hover:bg-muted/50 transition-colors cursor-pointer">
               <div className="flex items-center gap-3">
                 <div className="p-2 rounded-lg bg-purple-500/10">

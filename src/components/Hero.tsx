@@ -47,7 +47,7 @@ const Hero = () => {
               </Link>
             </Button>
             <Button asChild size="lg" variant="outline" className="gap-2 glass-card border-primary/30 hover:border-primary/50 text-sm md:text-base px-6 md:px-8 py-3 md:py-4 w-full md:w-auto h-12 md:h-12">
-              <Link to="/seller/onboarding">
+              <Link to="/sell">
                 {t('becomeASeller')}
               </Link>
             </Button>
