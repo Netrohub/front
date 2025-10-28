@@ -56,14 +56,39 @@ npm run preview
 
 ### Environment Variables
 
-Create `.env.development` for local development:
-```env
-VITE_API_BASE_URL=https://api.nxoland.com/api
+Create a `.env` file in the frontend directory (use `.env.example` as a template):
+
+```bash
+# API Configuration
+VITE_API_URL=http://localhost:3001
+VITE_API_TIMEOUT=30000
+
+# Analytics & Tracking
+# Google Tag Manager Container ID (format: GTM-XXXXXXX)
+VITE_GTM_ID=GTM-XXXXXXX
+
+# Legacy Google Analytics (optional if using GTM)
+VITE_GA_TRACKING_ID=
+VITE_ENABLE_ANALYTICS=true
+
+# Cloudflare Turnstile (CAPTCHA)
+VITE_TURNSTILE_SITE_KEY=
+
+# Payment Gateway
+VITE_TAP_PAYMENT_PUBLIC_KEY=
+
+# Feature Flags
+VITE_ENABLE_KYC=true
+VITE_ENABLE_DISPUTES=true
+VITE_ENABLE_SOCIAL_LOGIN=false
+
+# Environment
+VITE_APP_ENV=development
 ```
 
-Create `.env.production` for production:
-```env
-VITE_API_BASE_URL=https://api.nxoland.com/api
+**Important:** Copy `.env.example` to `.env` and fill in your values:
+```bash
+cp .env.example .env
 ```
 
 ## 🚀 Deployment
@@ -106,6 +131,7 @@ The included `nginx.conf` provides:
 - **Modern UI** - Glass morphism design
 - **Performance** - Optimized bundle size
 - **Accessibility** - WCAG compliant components
+- **Analytics** - GTM + GA4 integration with comprehensive event tracking
 
 ## 📱 Pages
 
@@ -132,6 +158,49 @@ The included `nginx.conf` provides:
 The frontend connects to the NestJS backend API:
 - **Development**: `https://api.nxoland.com/api`
 - **Production**: `https://api.nxoland.com/api`
+
+## 📊 Analytics & Tracking
+
+NXOLand uses **Google Tag Manager (GTM)** for flexible analytics and marketing tag management. GA4 is configured through GTM.
+
+### Quick Setup
+
+1. Get your GTM Container ID from [Google Tag Manager](https://tagmanager.google.com/)
+2. Add it to your `.env` file:
+   ```bash
+   VITE_GTM_ID=GTM-XXXXXXX
+   ```
+3. Configure GA4 in GTM console (see [GTM_SETUP_GUIDE.md](../GTM_SETUP_GUIDE.md) for detailed instructions)
+
+### Features
+
+- **Automatic Page View Tracking** - Tracks React Router navigation
+- **E-commerce Events** - Product views, cart actions, purchases
+- **User Events** - Login, registration, profile views
+- **Seller Events** - Product listings, seller onboarding
+- **KYC Tracking** - Verification flow tracking
+- **Device Detection** - Mobile vs desktop tracking
+- **Privacy-Compliant** - Cookie consent friendly
+- **Dev Mode Disabled** - Only tracks in production
+
+### Using Analytics in Your Code
+
+```typescript
+import { useGTM } from '@/hooks/useGTM';
+
+function MyComponent() {
+  const { trackCustomEvent } = useGTM();
+  
+  const handleAction = () => {
+    trackCustomEvent('custom_action', {
+      category: 'engagement',
+      value: 123
+    });
+  };
+}
+```
+
+For complete documentation, see [GTM_SETUP_GUIDE.md](../GTM_SETUP_GUIDE.md)
 
 ## 📄 License
 

@@ -1,7 +1,14 @@
 /**
- * Google Analytics Utility
+ * Google Analytics Utility (Legacy)
+ * 
+ * DEPRECATED: This file is kept for backward compatibility.
+ * New implementations should use gtm.ts for GTM-based tracking.
+ * 
  * Track custom events and page views
  */
+
+// Import GTM analytics as the primary tracking method
+import gtmAnalytics from './gtm';
 
 // Extend Window interface for gtag
 declare global {
@@ -15,9 +22,16 @@ const GA_TRACKING_ID = import.meta.env.VITE_GA_TRACKING_ID;
 const IS_ENABLED = import.meta.env.VITE_ENABLE_ANALYTICS === 'true';
 
 /**
- * Track page view
+ * Track page view (now uses GTM)
  */
 export const trackPageView = (url: string, title?: string) => {
+  // Use GTM tracking
+  gtmAnalytics.customEvent('page_view', {
+    page_path: url,
+    page_title: title,
+  });
+
+  // Legacy gtag support (if directly configured in GTM)
   if (!IS_ENABLED || !window.gtag) return;
 
   window.gtag('config', GA_TRACKING_ID, {
@@ -27,23 +41,32 @@ export const trackPageView = (url: string, title?: string) => {
 };
 
 /**
- * Track custom event
+ * Track custom event (now uses GTM)
  */
 export const trackEvent = (
   eventName: string,
   eventParams?: Record<string, any>
 ) => {
+  // Use GTM tracking
+  gtmAnalytics.customEvent(eventName, eventParams);
+
+  // Legacy gtag support (if directly configured in GTM)
   if (!IS_ENABLED || !window.gtag) return;
 
   window.gtag('event', eventName, eventParams);
 };
 
 /**
- * E-commerce tracking events
+ * E-commerce tracking events (now uses GTM)
+ * This maintains backward compatibility while routing through GTM
  */
 export const analytics = {
   // Product events
   viewProduct: (product: { id: number | string; name: string; category: string; price: number }) => {
+    // Use GTM analytics
+    gtmAnalytics.viewProduct(product);
+    
+    // Legacy tracking
     trackEvent('view_item', {
       currency: 'USD',
       value: product.price,
