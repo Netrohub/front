@@ -34,9 +34,12 @@ const Members = () => {
   };
 
   const handleCardClick = (member: any) => {
-    // Use username from member data
-    const username = member.username || `user${member.id}`;
-    navigate(`/seller/${username}`);
+    // Navigate to unified user profile using @username format
+    if (member.username) {
+      navigate(`/@${member.username}`);
+    } else {
+      console.warn('Member has no username:', member);
+    }
   };
 
   const filteredMembers = members?.filter((member) => {
@@ -118,7 +121,7 @@ const Members = () => {
               <Card 
                 key={member.id} 
                 onClick={() => handleCardClick(member)}
-                className="overflow-hidden border-2 border-primary/20 hover:border-primary/60 hover:shadow-xl hover:shadow-primary/20 transition-all duration-300 cursor-pointer group"
+                className={`overflow-hidden border-2 border-primary/20 transition-all duration-300 ${member.username ? 'hover:border-primary/60 hover:shadow-xl hover:shadow-primary/20 cursor-pointer group' : 'opacity-60'}`}
               >
                 {/* Banner Image */}
                 <div 
@@ -151,9 +154,15 @@ const Members = () => {
 
                   {/* Username */}
                   <div className="text-center mb-2">
-                    <h3 className="font-bold text-lg text-primary group-hover:text-primary/80 transition-colors">
-                      @{member.username || `user${member.id}`}
-                    </h3>
+                    {member.username ? (
+                      <h3 className="font-bold text-lg text-primary group-hover:text-primary/80 transition-colors">
+                        @{member.username}
+                      </h3>
+                    ) : (
+                      <h3 className="font-bold text-lg text-muted-foreground">
+                        No username set
+                      </h3>
+                    )}
                     {member.name && member.name !== member.username && (
                       <p className="text-sm text-muted-foreground">{member.name}</p>
                     )}
