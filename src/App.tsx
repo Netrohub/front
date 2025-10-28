@@ -25,7 +25,6 @@ const Leaderboard = lazy(() => import("./pages/Leaderboard"));
 const Games = lazy(() => import("./pages/Games"));
 const Members = lazy(() => import("./pages/Members"));
 const ProductDetail = lazy(() => import("./pages/ProductDetail"));
-const Pricing = lazy(() => import("./pages/Pricing"));
 const About = lazy(() => import("./pages/About"));
 const Cart = lazy(() => import("./pages/Cart"));
 const Checkout = lazy(() => import("./pages/Checkout"));
@@ -156,7 +155,6 @@ const App = () => {
           <Route path="/products/category/:category" element={<CategoryLanding />} />
           <Route path="/category/:category" element={<CategoryLanding />} />
           <Route path="/social-media-coming-soon" element={<SocialMediaComingSoon />} />
-          <Route path="/pricing" element={<Pricing />} />
           <Route path="/wishlist" element={<Wishlist />} />
           <Route path="/compare" element={<Compare />} />
           <Route path="/help" element={<HelpCenter />} />

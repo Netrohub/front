@@ -6,24 +6,30 @@ import { Button } from "@/components/ui/button";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { DisputeCard, Dispute } from "@/components/disputes/DisputeCard";
 import { Plus, AlertCircle, Clock, CheckCircle } from "lucide-react";
+import { apiClient } from "@/lib/api";
+import { useToast } from "@/hooks/use-toast";
 
 const DisputeList = () => {
-  // TODO: Replace with actual API call
+  // ✅ FIXED: Connect to real API
   const [disputes, setDisputes] = useState<Dispute[]>([]);
   const [loading, setLoading] = useState(true);
+  const { toast } = useToast();
 
   // Fetch disputes from API
   useEffect(() => {
     const fetchDisputes = async () => {
       try {
         setLoading(true);
-        // TODO: Implement actual API call
-        // const response = await fetch('/api/disputes');
-        // const data = await response.json();
-        // setDisputes(data);
-        setDisputes([]); // Empty array for now
-      } catch (error) {
+        // ✅ FIXED: Actual API call
+        const data = await apiClient.getDisputes();
+        setDisputes(data);
+      } catch (error: any) {
         console.error('Failed to fetch disputes:', error);
+        toast({
+          title: "Failed to load disputes",
+          description: error.message || "Please try again later",
+          variant: "destructive",
+        });
         setDisputes([]);
       } finally {
         setLoading(false);
@@ -31,7 +37,7 @@ const DisputeList = () => {
     };
 
     fetchDisputes();
-  }, []);
+  }, [toast]);
 
   const getStatusCounts = () => {
     return {

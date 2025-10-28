@@ -8,17 +8,17 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
+import { ImageUpload } from "@/components/ImageUpload";
 import { useToast } from "@/hooks/use-toast";
 import { 
   Package, 
   DollarSign, 
-  Image as ImageIcon, 
   Tag,
-  Upload,
   ArrowRight,
   Store
 } from "lucide-react";
 import { useAuth } from "@/contexts/AuthContext";
+import { apiClient } from "@/lib/api";
 
 const Sell = () => {
   const { user } = useAuth();
@@ -32,26 +32,18 @@ const Sell = () => {
     price: "",
     category: "",
     platform: "",
-    images: [] as File[],
+    stock_quantity: "1",
   });
+
+  const [imageUrls, setImageUrls] = useState<string[]>([]);
 
   const handleInputChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement | HTMLSelectElement>) => {
     const { name, value } = e.target;
     setFormData(prev => ({ ...prev, [name]: value }));
   };
 
-  const handleImageUpload = (e: React.ChangeEvent<HTMLInputElement>) => {
-    if (e.target.files) {
-      const files = Array.from(e.target.files);
-      setFormData(prev => ({ ...prev, images: [...prev.images, ...files] }));
-    }
-  };
-
-  const handleRemoveImage = (index: number) => {
-    setFormData(prev => ({
-      ...prev,
-      images: prev.images.filter((_, i) => i !== index)
-    }));
+  const handleImageChange = (urls: string[]) => {
+    setImageUrls(urls);
   };
 
   const handleSubmit = async (e: React.FormEvent) => {
@@ -69,20 +61,33 @@ const Sell = () => {
     setIsSubmitting(true);
 
     try {
-      // TODO: Implement actual API call to create product
-      await new Promise(resolve => setTimeout(resolve, 1500));
+      // ✅ FIXED: Implement actual API call to create product with uploaded images
+      const productData = {
+        name: formData.title,
+        description: formData.description,
+        price: parseFloat(formData.price),
+        category_id: parseInt(formData.category) || 1, // Default category
+        stock_quantity: parseInt(formData.stock_quantity) || 1,
+        specifications: {
+          platform: formData.platform,
+        },
+        images: imageUrls, // ✅ Now using real uploaded image URLs
+      };
+
+      const product = await apiClient.createProduct(productData);
 
       toast({
         title: "Product Listed Successfully!",
-        description: "Your product has been submitted for review",
+        description: `Your product "${product.name}" has been created and is now live`,
       });
 
       // Redirect to seller dashboard
       navigate("/dashboard?tab=seller");
-    } catch (error) {
+    } catch (error: any) {
+      console.error('Failed to create product:', error);
       toast({
         title: "Submission Failed",
-        description: "There was an error submitting your product. Please try again.",
+        description: error.message || "There was an error submitting your product. Please try again.",
         variant: "destructive",
       });
     } finally {
@@ -209,56 +214,16 @@ const Sell = () => {
               {/* Images */}
               <div>
                 <h2 className="text-xl font-bold mb-4 flex items-center gap-2">
-                  <ImageIcon className="h-5 w-5 text-primary" />
+                  <Tag className="h-5 w-5 text-primary" />
                   Product Images
                 </h2>
 
-                <div className="space-y-4">
-                  {/* Upload Button */}
-                  <div className="flex items-center gap-4">
-                    <input
-                      type="file"
-                      id="images"
-                      accept="image/*"
-                      multiple
-                      onChange={handleImageUpload}
-                      className="hidden"
-                    />
-                    <Button
-                      type="button"
-                      variant="outline"
-                      onClick={() => document.getElementById("images")?.click()}
-                    >
-                      <Upload className="h-4 w-4 mr-2" />
-                      Upload Images
-                    </Button>
-                    <p className="text-sm text-foreground/60">
-                      Add up to 5 images (PNG, JPG, max 5MB each)
-                    </p>
-                  </div>
-
-                  {/* Image Preview */}
-                  {formData.images.length > 0 && (
-                    <div className="grid grid-cols-2 md:grid-cols-3 gap-4">
-                      {formData.images.map((image, index) => (
-                        <div key={index} className="relative group">
-                          <img
-                            src={URL.createObjectURL(image)}
-                            alt={`Preview ${index + 1}`}
-                            className="w-full h-32 object-cover rounded-lg"
-                          />
-                          <button
-                            type="button"
-                            onClick={() => handleRemoveImage(index)}
-                            className="absolute top-2 right-2 bg-red-500 text-white p-1 rounded-full opacity-0 group-hover:opacity-100 transition-opacity"
-                          >
-                            ✕
-                          </button>
-                        </div>
-                      ))}
-                    </div>
-                  )}
-                </div>
+                <ImageUpload
+                  maxFiles={5}
+                  value={imageUrls}
+                  onChange={handleImageChange}
+                  disabled={isSubmitting}
+                />
               </div>
 
               {/* Submit Button */}

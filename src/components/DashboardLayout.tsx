@@ -4,6 +4,7 @@ import { ConditionalStarfield } from "@/components/ConditionalStarfield";
 import { useAuth } from "@/contexts/AuthContext";
 import { useLocation, useNavigate, useSearchParams } from "react-router-dom";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
+import { isValidTab, VALID_TAB_IDS, type DashboardTab } from "@/lib/dashboardUtils";
 import { 
   LayoutDashboard, 
   ShoppingBag, 
@@ -14,7 +15,7 @@ import {
   CreditCard,
   Shield
 } from "lucide-react";
-import { useEffect } from "react";
+import { useEffect, useMemo } from "react";
 
 interface DashboardLayoutProps {
   children: React.ReactNode;
@@ -27,7 +28,7 @@ const DashboardLayout = ({ children }: DashboardLayoutProps) => {
   const [searchParams] = useSearchParams();
   
   // Get current tab from URL params, default to 'overview'
-  const currentTab = searchParams.get('tab') || 'overview';
+  const currentTab = (searchParams.get('tab') || 'overview') as DashboardTab;
   
   // Check if user has seller role (has any active or pending listings)
   const hasSellingsRole = user?.roles?.includes('seller') || false;
@@ -35,78 +36,83 @@ const DashboardLayout = ({ children }: DashboardLayoutProps) => {
   // Check if user has active products - this would come from API but for now using role
   const hasActiveListings = hasSellingsRole;
   
-  // Available tabs - organized by category
-  const tabs = [
-    // Main Dashboard Tabs
-    {
-      id: 'overview',
-      label: 'Overview',
-      icon: LayoutDashboard,
-      description: 'Dashboard summary',
-      category: 'main'
-    },
-    {
-      id: 'buyer',
-      label: 'Buyer',
-      icon: ShoppingBag,
-      description: 'Orders and purchases',
-      category: 'main'
-    },
-    // Account Management Tabs
-    {
-      id: 'profile',
-      label: 'Profile',
-      icon: User,
-      description: 'Account settings',
-      category: 'account'
-    },
-    {
-      id: 'orders',
-      label: 'Orders',
-      icon: ShoppingBag,
-      description: 'Order history',
-      category: 'account'
-    },
-    {
-      id: 'wallet',
-      label: 'Wallet',
-      icon: Wallet,
-      description: 'Balance & transactions',
-      category: 'account'
-    },
-    {
-      id: 'notifications',
-      label: 'Notifications',
-      icon: Bell,
-      description: 'Alerts & messages',
-      category: 'account'
-    },
-    {
-      id: 'billing',
-      label: 'Billing',
-      icon: CreditCard,
-      description: 'Payment methods',
-      category: 'account'
-    },
-    {
-      id: 'kyc',
-      label: 'KYC',
-      icon: Shield,
-      description: 'Verification',
-      category: 'account'
+  // Memoize tabs array to prevent unnecessary re-renders
+  // Only recreate when hasActiveListings changes
+  const tabs = useMemo(() => {
+    const baseTabs = [
+      // Main Dashboard Tabs
+      {
+        id: 'overview' as const,
+        label: 'Overview',
+        icon: LayoutDashboard,
+        description: 'Dashboard summary',
+        category: 'main'
+      },
+      {
+        id: 'buyer' as const,
+        label: 'Buyer',
+        icon: ShoppingBag,
+        description: 'Orders and purchases',
+        category: 'main'
+      },
+      // Account Management Tabs
+      {
+        id: 'profile' as const,
+        label: 'Profile',
+        icon: User,
+        description: 'Account settings',
+        category: 'account'
+      },
+      {
+        id: 'orders' as const,
+        label: 'Orders',
+        icon: ShoppingBag,
+        description: 'Order history',
+        category: 'account'
+      },
+      {
+        id: 'wallet' as const,
+        label: 'Wallet',
+        icon: Wallet,
+        description: 'Balance & transactions',
+        category: 'account'
+      },
+      {
+        id: 'notifications' as const,
+        label: 'Notifications',
+        icon: Bell,
+        description: 'Alerts & messages',
+        category: 'account'
+      },
+      {
+        id: 'billing' as const,
+        label: 'Billing',
+        icon: CreditCard,
+        description: 'Payment methods',
+        category: 'account'
+      },
+      {
+        id: 'kyc' as const,
+        label: 'KYC',
+        icon: Shield,
+        description: 'Verification',
+        category: 'account'
+      }
+    ];
+    
+    // Add seller tab only if user has listings
+    if (hasActiveListings) {
+      baseTabs.splice(2, 0, {
+        id: 'seller' as const,
+        label: 'Seller',
+        icon: Store,
+        description: 'Manage your listings',
+        category: 'main'
+      });
     }
-  ];
-  
-  // Add seller tab only if user has listings
-  if (hasActiveListings) {
-    tabs.splice(2, 0, {
-      id: 'seller',
-      label: 'Seller',
-      icon: Store,
-      description: 'Manage your listings',
-      category: 'main'
-    });
-  }
+    
+    return baseTabs;
+  }, [hasActiveListings]);
 
   const handleTabChange = (value: string) => {
     // Update URL with new tab
@@ -117,11 +123,14 @@ const DashboardLayout = ({ children }: DashboardLayoutProps) => {
 
   // Redirect to valid tab if current tab is invalid
   useEffect(() => {
-    const validTabs = tabs.map(t => t.id);
-    if (!validTabs.includes(currentTab)) {
+    if (!isValidTab(currentTab)) {
       navigate('/dashboard?tab=overview', { replace: true });
     }
-  }, [currentTab, tabs, navigate]);
+    // Also check if seller tab is accessed without proper role
+    if (currentTab === 'seller' && !hasActiveListings) {
+      navigate('/dashboard?tab=overview', { replace: true });
+    }
+  }, [currentTab, hasActiveListings, navigate]);
 
   return (
     <div className="min-h-screen flex flex-col relative">
@@ -149,17 +158,26 @@ const DashboardLayout = ({ children }: DashboardLayoutProps) => {
 
           {/* Tabs Navigation */}
           <Tabs value={currentTab} onValueChange={handleTabChange} className="space-y-6">
-            <div className="w-full md:w-auto overflow-x-auto scrollbar-hide">
-              <TabsList className="inline-flex w-auto min-w-full md:min-w-0 glass-card p-1.5 h-auto rounded-xl gap-1">
+            <div className="w-full md:w-auto overflow-x-auto scrollbar-hide relative">
+              {/* Scroll Indicator for Mobile */}
+              <div className="md:hidden absolute right-0 top-0 bottom-0 w-8 bg-gradient-to-l from-background to-transparent pointer-events-none z-10" 
+                   aria-hidden="true" />
+              
+              <TabsList 
+                className="inline-flex w-auto min-w-full md:min-w-0 glass-card p-1.5 h-auto rounded-xl gap-1"
+                aria-label="Dashboard navigation tabs"
+              >
                 {tabs.map((tab) => {
                   const Icon = tab.icon;
                   return (
                     <TabsTrigger
                       key={tab.id}
                       value={tab.id}
-                      className="flex flex-col sm:flex-row items-center gap-1 sm:gap-2 py-2.5 px-3 sm:px-4 data-[state=active]:bg-primary data-[state=active]:text-white text-xs sm:text-sm font-medium min-w-[70px] sm:min-w-[100px] rounded-lg transition-all whitespace-nowrap"
+                      className="flex flex-col sm:flex-row items-center gap-1 sm:gap-2 py-2.5 px-3 sm:px-4 data-[state=active]:bg-primary data-[state=active]:text-white text-xs sm:text-sm font-medium min-w-[70px] sm:min-w-[100px] rounded-lg transition-all whitespace-nowrap active:scale-95"
+                      aria-label={`${tab.label} tab - ${tab.description}`}
+                      title={tab.description}
                     >
-                      <Icon className="h-4 w-4 flex-shrink-0" />
+                      <Icon className="h-4 w-4 flex-shrink-0" aria-hidden="true" />
                       <span className="text-[10px] sm:text-sm">{tab.label}</span>
                     </TabsTrigger>
                   );

@@ -5,6 +5,7 @@ import { sellerApiClient, sellerQueryKeys } from "@/lib/sellerApi";
 import StatCard from "./shared/StatCard";
 import SectionHeader from "./shared/SectionHeader";
 import EmptyState from "./shared/EmptyState";
+import ErrorState from "./shared/ErrorState";
 import { Card } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
@@ -12,6 +13,14 @@ import KYCStatusComponent from "@/components/KYCStatus";
 import { getText } from "./shared/FeatureFlags";
 import { Link } from "react-router-dom";
 import { OverviewTabSkeleton } from "./shared/DashboardSkeleton";
+import { 
+  formatDate, 
+  formatCurrency, 
+  getOrderStatusColor,
+  safeGet,
+  DASHBOARD_LIMITS 
+} from "@/lib/dashboardUtils";
+import { useState } from "react";
 import { 
   ShoppingBag, 
   DollarSign, 
@@ -23,11 +32,15 @@ import {
   LayoutDashboard,
   Clock,
   ArrowRight,
-  XCircle
+  XCircle,
+  X
 } from "lucide-react";
 
 const OverviewTab = () => {
   const { user } = useAuth();
+  const [kycBannerDismissed, setKycBannerDismissed] = useState(
+    localStorage.getItem('kycBannerDismissed') === 'true'
+  );
   
   // Check if user has seller role
   const hasSellingsRole = user?.roles?.includes('seller') || false;
@@ -35,40 +48,85 @@ const OverviewTab = () => {
   // Check if KYC is completed
   const isKYCVerified = user?.emailVerified && user?.phoneVerified && user?.kycStatus === 'verified';
   
-  // Fetch user data (orders, wallet)
-  const { data: userOrders, isLoading: ordersLoading } = useQuery({
+  // Fetch user data (orders, wallet) with error handling
+  const { 
+    data: userOrders, 
+    isLoading: ordersLoading,
+    error: ordersError,
+    refetch: refetchOrders 
+  } = useQuery({
     queryKey: queryKeys.user.orders,
-    queryFn: () => apiClient.getOrders(),
+    queryFn: () => apiClient.getOrders({ limit: DASHBOARD_LIMITS.ORDERS_PER_PAGE }),
     enabled: !!user,
+    retry: 2,
+    retryDelay: 1000,
   });
 
-  const { data: userWallet, isLoading: walletLoading } = useQuery({
+  const { 
+    data: userWallet, 
+    isLoading: walletLoading,
+    error: walletError,
+    refetch: refetchWallet 
+  } = useQuery({
     queryKey: queryKeys.user.wallet,
     queryFn: () => apiClient.getWallet(),
     enabled: !!user,
+    retry: 2,
+    retryDelay: 1000,
   });
 
   // Fetch seller data if user has seller role
-  const { data: sellerDashboard, isLoading: sellerLoading } = useQuery({
+  const { 
+    data: sellerDashboard, 
+    isLoading: sellerLoading,
+    error: sellerError,
+    refetch: refetchSeller 
+  } = useQuery({
     queryKey: sellerQueryKeys.dashboard(),
     queryFn: () => sellerApiClient.getDashboard(),
     enabled: !!user && hasSellingsRole,
+    retry: 2,
+    retryDelay: 1000,
   });
 
   // Check if still loading
-  const isLoading = ordersLoading || walletLoading || (hasSellingsRole && sellerLoading);
+  const isLoading = ordersLoading || walletLoading || (hasSellingsRole ? sellerLoading : false);
+  
+  // Check if any errors occurred
+  const hasError = ordersError || walletError || (hasSellingsRole && sellerError);
 
   // Show loading skeleton
   if (isLoading) {
     return <OverviewTabSkeleton />;
   }
 
-  // Calculate shared KPIs
-  const totalOrders = userOrders?.length || 0;
-  const completedOrders = userOrders?.filter(order => order.status === 'completed' || order.status === 'delivered').length || 0;
-  const walletBalance = userWallet?.balance || 0;
-  const totalRevenue = sellerDashboard?.stats?.totalRevenue || 0;
-  const activeListings = sellerDashboard?.stats?.activeListings || 0;
+  // Show error state if any API failed
+  if (hasError) {
+    const errorMessage = ordersError ? "Failed to load orders" : 
+                        walletError ? "Failed to load wallet" : 
+                        "Failed to load dashboard data";
+    
+    return (
+      <ErrorState 
+        message={errorMessage}
+        description="Please check your internet connection and try again."
+        retry={() => {
+          if (ordersError) refetchOrders();
+          if (walletError) refetchWallet();
+          if (sellerError) refetchSeller();
+        }}
+      />
+    );
+  }
+
+  // Calculate shared KPIs with safe data access
+  const totalOrders = safeGet(userOrders?.length, 0);
+  const completedOrders = userOrders?.filter(order => 
+    order?.status === 'completed' || order?.status === 'delivered'
+  ).length || 0;
+  const walletBalance = safeGet(userWallet?.balance, 0);
+  const totalRevenue = safeGet(sellerDashboard?.stats?.totalRevenue, 0);
+  const activeListings = safeGet(sellerDashboard?.stats?.activeListings, 0);
 
   const overviewStats = [
     {
@@ -80,7 +138,7 @@ const OverviewTab = () => {
     },
     {
       label: "Wallet Balance",
-      value: `$${walletBalance.toFixed(2)}`,
+      value: formatCurrency(walletBalance),
       change: "Available funds",
       icon: DollarSign,
       color: "from-primary to-accent",
@@ -99,7 +157,7 @@ const OverviewTab = () => {
       },
       {
         label: "Total Revenue",
-        value: `$${totalRevenue.toFixed(2)}`,
+        value: formatCurrency(totalRevenue),
         change: "All time earnings",
         icon: TrendingUp,
         color: "from-purple-500 to-purple-700",
@@ -109,12 +167,22 @@ const OverviewTab = () => {
 
   return (
     <div className="space-y-6">
-      {/* KYC Status Banner */}
-      {!isKYCVerified && (
-        <Card className="glass-card p-4 border-orange-500/30 bg-orange-500/5">
+      {/* KYC Status Banner - Dismissible */}
+      {!isKYCVerified && !kycBannerDismissed && (
+        <Card className="glass-card p-4 border-orange-500/30 bg-orange-500/5 relative">
+          <button
+            onClick={() => {
+              setKycBannerDismissed(true);
+              localStorage.setItem('kycBannerDismissed', 'true');
+            }}
+            className="absolute top-2 right-2 p-1 rounded-lg hover:bg-orange-500/10 transition-colors"
+            aria-label="Dismiss KYC reminder"
+          >
+            <X className="h-4 w-4 text-orange-600" />
+          </button>
           <div className="flex items-start gap-3">
             <AlertTriangle className="h-5 w-5 text-orange-500 mt-0.5" />
-            <div className="flex-1">
+            <div className="flex-1 pr-6">
               <h3 className="text-sm font-semibold text-orange-700 dark:text-orange-400 mb-1">
                 {getText('IDENTITY_VERIFICATION_REQUIRED')}
               </h3>
@@ -158,7 +226,7 @@ const OverviewTab = () => {
         />
         
         <div className="mt-4 grid md:grid-cols-2 lg:grid-cols-3 gap-4">
-          <Link to="/dashboard?tab=buyer" className="block">
+          <Link to="/dashboard?tab=buyer" className="block" aria-label="View your orders">
             <Card className="p-4 hover:bg-muted/50 transition-colors cursor-pointer hover:border-blue-500/50">
               <div className="flex items-center gap-3">
                 <div className="p-2 rounded-lg bg-blue-500/10">
@@ -172,7 +240,7 @@ const OverviewTab = () => {
             </Card>
           </Link>
           
-          <Link to="/dashboard?tab=wallet" className="block">
+          <Link to="/dashboard?tab=wallet" className="block" aria-label="Manage your wallet">
             <Card className="p-4 hover:bg-muted/50 transition-colors cursor-pointer hover:border-green-500/50">
               <div className="flex items-center gap-3">
                 <div className="p-2 rounded-lg bg-green-500/10">
@@ -187,7 +255,7 @@ const OverviewTab = () => {
           </Link>
           
           {hasSellingsRole && (
-            <Link to="/dashboard?tab=seller" className="block">
+            <Link to="/dashboard?tab=seller" className="block" aria-label="Manage your product listings">
               <Card className="p-4 hover:bg-muted/50 transition-colors cursor-pointer hover:border-purple-500/50">
                 <div className="flex items-center gap-3">
                   <div className="p-2 rounded-lg bg-purple-500/10">
@@ -212,7 +280,7 @@ const OverviewTab = () => {
               title="Recent Orders"
               description="Your latest purchases"
             />
-            <Link to="/dashboard?tab=buyer">
+            <Link to="/dashboard?tab=buyer" aria-label="View all orders">
               <Button variant="ghost" size="sm" className="gap-2">
                 View All
                 <ArrowRight className="h-4 w-4" />
@@ -221,7 +289,9 @@ const OverviewTab = () => {
           </div>
           
           <div className="space-y-3">
-            {userOrders?.slice(0, 3).map((order) => {
+            {userOrders?.slice(0, DASHBOARD_LIMITS.QUICK_VIEW).map((order) => {
+              if (!order) return null;
+              
               const getStatusIcon = (status: string) => {
                 switch (status) {
                   case 'completed':
@@ -237,47 +307,38 @@ const OverviewTab = () => {
                 }
               };
 
-              const getStatusColor = (status: string) => {
-                switch (status) {
-                  case 'completed':
-                  case 'delivered':
-                    return 'bg-green-500/10 text-green-700 border-green-500/20';
-                  case 'processing':
-                    return 'bg-blue-500/10 text-blue-700 border-blue-500/20';
-                  case 'pending':
-                    return 'bg-orange-500/10 text-orange-700 border-orange-500/20';
-                  case 'cancelled':
-                    return 'bg-red-500/10 text-red-700 border-red-500/20';
-                  default:
-                    return 'bg-gray-500/10 text-gray-700 border-gray-500/20';
-                }
-              };
-
               return (
-                <Link key={order.id} to={`/account/orders/${order.id}`}>
+                <Link 
+                  key={order.id || Math.random()} 
+                  to={`/account/orders/${order.id}`}
+                  aria-label={`View order ${order.order_number || order.id}`}
+                >
                   <Card className="p-4 hover:bg-muted/50 transition-colors">
                     <div className="flex items-center justify-between gap-4">
                       <div className="flex items-center gap-3 flex-1 min-w-0">
                         <div className="p-2 rounded-lg bg-primary/10 flex-shrink-0">
-                          {getStatusIcon(order.status)}
+                          {getStatusIcon(order?.status || 'pending')}
                         </div>
                         <div className="flex-1 min-w-0">
                           <h4 className="font-medium text-sm truncate">
-                            Order #{order.order_number || order.id}
+                            Order #{order.order_number || order.id || 'N/A'}
                           </h4>
                           <p className="text-xs text-foreground/60">
-                            {new Date(order.created_at).toLocaleDateString()} • ${order.total?.toFixed(2) || '0.00'}
+                            {formatDate(order.created_at)} • {formatCurrency(order.total)}
                           </p>
                         </div>
                       </div>
-                      <Badge className={`text-xs whitespace-nowrap ${getStatusColor(order.status)}`}>
-                        {order.status}
+                      <Badge 
+                        className={`text-xs whitespace-nowrap ${getOrderStatusColor(order?.status || 'pending')}`}
+                        aria-label={`Order status: ${order?.status || 'unknown'}`}
+                      >
+                        {order.status || 'Unknown'}
                       </Badge>
                     </div>
                   </Card>
                 </Link>
               );
-            })}
+            }).filter(Boolean)}
           </div>
         </Card>
       )}

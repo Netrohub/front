@@ -12,24 +12,17 @@ import { Checkbox } from "@/components/ui/checkbox";
 import { useToast } from "@/hooks/use-toast";
 import { useAuth } from "@/contexts/AuthContext";
 import { tapPayment } from "@/lib/tapPayment";
+import { useCart } from "@/hooks/useApi";
+import { apiClient } from "@/lib/api";
+import { formatPrice } from "@/lib/utils";
 import { 
   CreditCard, 
   Wallet, 
   Lock,
   CheckCircle2,
-  AlertCircle
+  AlertCircle,
+  ShoppingCart
 } from "lucide-react";
-
-const cartItems = [
-  {
-    name: "Steam Account - 200+ Games",
-    price: 449.99,
-  },
-  {
-    name: "Instagram Account - 50K Followers",
-    price: 299.99,
-  },
-];
 
 const Checkout = () => {
   const navigate = useNavigate();
@@ -38,6 +31,9 @@ const Checkout = () => {
   const [isProcessing, setIsProcessing] = useState(false);
   const [agreeToTerms, setAgreeToTerms] = useState(false);
   
+  // ✅ FIXED: Use real cart data from API
+  const { data: cart, isLoading: isLoadingCart, error: cartError } = useCart();
+  
   // Form state
   const [cardNumber, setCardNumber] = useState("");
   const [cardName, setCardName] = useState("");
@@ -45,12 +41,26 @@ const Checkout = () => {
   const [cvv, setCvv] = useState("");
   const [email, setEmail] = useState(user?.email || "");
   
-  const subtotal = cartItems.reduce((sum, item) => sum + item.price, 0);
-  const serviceFee = subtotal * 0.03;
-  const total = subtotal + serviceFee;
+  // ✅ FIXED: Calculate totals from real cart data
+  const cartItems = cart?.items || [];
+  const subtotal = cart?.subtotal || 0;
+  const serviceFee = cart?.service_fee || 0;
+  const total = cart?.total || 0;
 
   // Get test cards if in sandbox
   const testCards = tapPayment.isSandboxMode() ? tapPayment.getTestCards() : [];
+
+  // ✅ Redirect if cart is empty
+  useEffect(() => {
+    if (!isLoadingCart && cartItems.length === 0) {
+      toast({
+        title: "Cart is empty",
+        description: "Add some items to your cart before checking out.",
+        variant: "destructive",
+      });
+      navigate('/products');
+    }
+  }, [isLoadingCart, cartItems, navigate, toast]);
 
   const handleCompletePurchase = async () => {
     // Validation
@@ -89,6 +99,19 @@ const Checkout = () => {
         description: "Please wait while we process your payment securely.",
       });
 
+      // ✅ FIXED: Create order through API with real cart items
+      const orderData = {
+        items: cartItems.map(item => ({
+          product_id: item.product_id,
+          quantity: item.quantity,
+        })),
+        payment_method: 'CREDIT_CARD',
+        shipping_address: {}, // Can be extended with real address data
+      };
+
+      // Create order in backend
+      const order = await apiClient.createOrder(orderData);
+
       // Process payment through Tap
       const paymentResult = await tapPayment.processCardPayment(
         {
@@ -102,24 +125,29 @@ const Checkout = () => {
       );
 
       console.log('✅ Payment successful:', paymentResult);
+      console.log('✅ Order created:', order);
 
       toast({
         title: "Payment successful! 🎉",
-        description: `Your order has been placed. Transaction ID: ${paymentResult.id}`,
+        description: `Your order has been placed. Order #${order.order_number}`,
       });
 
       // Store order details for confirmation page
       const orderDetails = {
-        id: paymentResult.id,
-        status: 'completed',
-        total: total,
-        items: cartItems,
+        id: order.id,
+        order_number: order.order_number,
+        status: order.status,
+        total: order.total_amount,
+        items: order.items,
         paymentMethod: 'Credit Card',
-        orderDate: new Date().toISOString(),
+        orderDate: order.created_at,
         estimatedDelivery: new Date(Date.now() + 24 * 60 * 60 * 1000).toISOString()
       };
       localStorage.setItem('last_order', JSON.stringify(orderDetails));
 
+      // Clear cart after successful order
+      // Note: Backend should handle this, but we can also invalidate the query
+      
       // Redirect to order confirmation page
       setTimeout(() => {
         navigate('/order-confirmation');
@@ -321,14 +349,26 @@ const Checkout = () => {
 
                 {/* Items */}
                 <div className="space-y-3 mb-6 pb-6 border-b border-border/30">
-                  {cartItems.map((item, index) => (
-                    <div key={index} className="flex justify-between text-sm">
-                      <span className="text-foreground/70 line-clamp-1">{item.name}</span>
-                      <span className="font-semibold text-foreground whitespace-nowrap ml-2">
-                        ${item.price.toFixed(2)}
-                      </span>
+                  {isLoadingCart ? (
+                    <div className="text-sm text-foreground/60">Loading cart...</div>
+                  ) : cartItems.length === 0 ? (
+                    <div className="flex flex-col items-center justify-center py-8 text-center">
+                      <ShoppingCart className="h-12 w-12 text-foreground/20 mb-2" />
+                      <p className="text-sm text-foreground/60">Your cart is empty</p>
                     </div>
-                  ))}
+                  ) : (
+                    cartItems.map((item) => (
+                      <div key={item.id} className="flex justify-between text-sm">
+                        <div className="flex-1 min-w-0">
+                          <p className="text-foreground/70 line-clamp-1">{item.product?.name || 'Product'}</p>
+                          <p className="text-xs text-foreground/50">Qty: {item.quantity}</p>
+                        </div>
+                        <span className="font-semibold text-foreground whitespace-nowrap ml-2">
+                          ${((item.product?.price || 0) * item.quantity).toFixed(2)}
+                        </span>
+                      </div>
+                    ))
+                  )}
                 </div>
 
                 {/* Totals */}

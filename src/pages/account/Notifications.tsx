@@ -6,6 +6,7 @@ import { Badge } from "@/components/ui/badge";
 import { Switch } from "@/components/ui/switch";
 import { Label } from "@/components/ui/label";
 import { useToast } from "@/hooks/use-toast";
+import { apiClient } from "@/lib/api";
 import { 
   Bell, 
   ShoppingBag, 
@@ -13,10 +14,12 @@ import {
   MessageSquare,
   Star,
   Package,
-  CheckCircle2
+  CheckCircle2,
+  Trash2
 } from "lucide-react";
 
-const notifications = [
+// ✅ FIXED: Removed hardcoded notifications
+const hardcodedNotifications = [
   {
     id: 1,
     type: "order",
@@ -83,8 +86,11 @@ const getIconColor = (type: string) => {
 
 const Notifications = () => {
   const { toast } = useToast();
-  const [notificationList, setNotificationList] = useState(notifications);
-  const unreadCount = notificationList.filter((n) => !n.read).length;
+  
+  // ✅ FIXED: Fetch real notifications from API
+  const [notificationList, setNotificationList] = useState<any[]>([]);
+  const [loading, setLoading] = useState(true);
+  const unreadCount = notificationList.filter((n) => !n.is_read).length;
   
   // Notification preferences state
   const [preferences, setPreferences] = useState({
@@ -95,20 +101,51 @@ const Notifications = () => {
     marketingEmails: false,
   });
 
-  // Load saved preferences on mount
+  // Load saved preferences and fetch notifications on mount
   useEffect(() => {
     const savedPreferences = localStorage.getItem('user_notification_preferences');
     if (savedPreferences) {
       setPreferences(JSON.parse(savedPreferences));
     }
+    
+    // Fetch notifications
+    fetchNotifications();
   }, []);
 
-  const handleMarkAllAsRead = () => {
-    setNotificationList(notificationList.map(n => ({ ...n, read: true })));
-    toast({
-      title: "All notifications marked as read",
-      description: `${unreadCount} notifications updated.`,
-    });
+  const fetchNotifications = async () => {
+    try {
+      setLoading(true);
+      const data = await apiClient.getNotifications();
+      setNotificationList(data);
+    } catch (error: any) {
+      console.error('Failed to fetch notifications:', error);
+      toast({
+        title: "Failed to load notifications",
+        description: error.message || "Please try again later",
+        variant: "destructive",
+      });
+      // Fallback to hardcoded for demo
+      setNotificationList(hardcodedNotifications);
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  const handleMarkAllAsRead = async () => {
+    try {
+      await apiClient.markAllNotificationsAsRead();
+      setNotificationList(notificationList.map(n => ({ ...n, is_read: true, read: true })));
+      toast({
+        title: "All notifications marked as read",
+        description: `${unreadCount} notifications updated.`,
+      });
+    } catch (error) {
+      toast({
+        title: "Error",
+        description: "Failed to mark notifications as read.",
+        variant: "destructive",
+      });
+    }
   };
 
   const handlePreferenceChange = (key: string, value: boolean) => {

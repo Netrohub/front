@@ -529,7 +529,35 @@ class ApiClient {
     return response;
   }
 
+  // ✅ NEW: Notification Methods
+  async getNotifications(unreadOnly: boolean = false): Promise<any[]> {
+    const params = unreadOnly ? '?unread=true' : '';
+    const response = await this.request<any[]>(`/notifications${params}`);
+    return response;
+  }
 
+  async getUnreadNotificationCount(): Promise<number> {
+    const response = await this.request<{ count: number }>('/notifications/unread-count');
+    return response.count;
+  }
+
+  async markNotificationAsRead(notificationId: number): Promise<void> {
+    await this.request(`/notifications/${notificationId}/read`, {
+      method: 'POST',
+    });
+  }
+
+  async markAllNotificationsAsRead(): Promise<void> {
+    await this.request('/notifications/read-all', {
+      method: 'POST',
+    });
+  }
+
+  async deleteNotification(notificationId: number): Promise<void> {
+    await this.request(`/notifications/${notificationId}`, {
+      method: 'DELETE',
+    });
+  }
 
   // Utility Methods
   setToken(token: string): void {

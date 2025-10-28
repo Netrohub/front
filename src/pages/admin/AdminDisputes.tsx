@@ -1,7 +1,8 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import Navbar from "@/components/Navbar";
 import Footer from "@/components/Footer";
 import { ConditionalStarfield } from "@/components/ConditionalStarfield";
+import { apiClient } from "@/lib/api";
 import { Card } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
@@ -72,10 +73,29 @@ const AdminDisputes = () => {
     }
   };
 
-  // TODO: Replace with real API call
-  const disputes = [];
-  const loading = false;
-  const error = null;
+  // ✅ FIXED: Use real API data
+  const [disputes, setDisputes] = useState<any[]>([]);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState<string | null>(null);
+
+  // Fetch admin disputes
+  useEffect(() => {
+    const fetchDisputes = async () => {
+      try {
+        setLoading(true);
+        setError(null);
+        const data = await apiClient.getAdminDisputes();
+        setDisputes(data);
+      } catch (err: any) {
+        console.error('Failed to fetch admin disputes:', err);
+        setError(err.message || 'Failed to load disputes');
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    fetchDisputes();
+  }, []);
 
   const filteredDisputes = disputes.filter((dispute) => {
     const matchesSearch =

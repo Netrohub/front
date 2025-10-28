@@ -12,6 +12,7 @@ import KYCPage from "@/pages/account/KYC";
 import { useAuth } from "@/contexts/AuthContext";
 import { useSearchParams } from "react-router-dom";
 import { Tabs, TabsContent } from "@/components/ui/tabs";
+import { Helmet } from "react-helmet-async";
 
 const Dashboard = () => {
   const { user } = useAuth();
@@ -25,9 +26,43 @@ const Dashboard = () => {
   
   // Check if user has active products - this would come from API but for now using role
   const hasActiveListings = hasSellingsRole;
+  
+  // Dynamic page titles based on current tab
+  const tabTitles: Record<string, string> = {
+    overview: 'Dashboard Overview',
+    buyer: 'Buyer Dashboard',
+    seller: 'Seller Dashboard',
+    profile: 'Profile Settings',
+    orders: 'Order History',
+    wallet: 'Wallet',
+    notifications: 'Notifications',
+    billing: 'Billing & Payments',
+    kyc: 'KYC Verification'
+  };
+  
+  const currentTabTitle = tabTitles[currentTab] || 'Dashboard';
 
   return (
-    <DashboardLayout>
+    <>
+      <Helmet>
+        <title>{currentTabTitle} - NXOLand</title>
+        <meta name="description" content={`Manage your NXOLand account - ${currentTabTitle}. View orders, manage wallet, update profile, and more.`} />
+        <meta name="robots" content="noindex, nofollow" />
+        <link rel="canonical" href={`https://nxoland.com/dashboard?tab=${currentTab}`} />
+        
+        {/* Open Graph */}
+        <meta property="og:title" content={`${currentTabTitle} - NXOLand`} />
+        <meta property="og:description" content={`Manage your NXOLand account - ${currentTabTitle}`} />
+        <meta property="og:type" content="website" />
+        <meta property="og:url" content={`https://nxoland.com/dashboard?tab=${currentTab}`} />
+        
+        {/* Twitter Card */}
+        <meta name="twitter:card" content="summary" />
+        <meta name="twitter:title" content={`${currentTabTitle} - NXOLand`} />
+        <meta name="twitter:description" content={`Manage your NXOLand account - ${currentTabTitle}`} />
+      </Helmet>
+      
+      <DashboardLayout>
       <Tabs value={currentTab} className="space-y-6">
         {/* Main Dashboard Tabs */}
         <TabsContent value="overview" className="mt-0">
@@ -83,6 +118,7 @@ const Dashboard = () => {
         </TabsContent>
       </Tabs>
     </DashboardLayout>
+    </>
   );
 };
 

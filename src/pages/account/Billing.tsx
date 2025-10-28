@@ -86,21 +86,6 @@ const Billing = () => {
   const [expiryDate, setExpiryDate] = useState("");
   const [cvv, setCvv] = useState("");
 
-  const [cancelDialogOpen, setCancelDialogOpen] = useState(false);
-
-  const handleCancelSubscription = () => {
-    setCancelDialogOpen(true);
-  };
-
-  const handleCancelConfirm = async () => {
-    // TODO: Call API to cancel subscription
-    toast({
-      title: "Subscription Cancelled",
-      description: "Your subscription has been cancelled. You'll have access until the end of your billing period.",
-      variant: "default",
-    });
-    setCancelDialogOpen(false);
-  };
 
   const handleAddCard = async () => {
     if (!cardNumber || !cardName || !expiryDate || !cvv) {
