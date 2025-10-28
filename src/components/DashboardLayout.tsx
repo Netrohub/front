@@ -98,17 +98,17 @@ const DashboardLayout = ({ children }: DashboardLayoutProps) => {
 
           {/* Tabs Navigation */}
           <Tabs value={currentTab} onValueChange={handleTabChange} className="space-y-6">
-            <TabsList className="grid w-full max-w-md grid-cols-2 lg:grid-cols-3 glass-card p-1 h-auto">
+            <TabsList className="inline-flex w-auto glass-card p-1.5 h-auto rounded-xl gap-1">
               {tabs.map((tab) => {
                 const Icon = tab.icon;
                 return (
                   <TabsTrigger
                     key={tab.id}
                     value={tab.id}
-                    className="flex items-center gap-2 py-3 px-4 data-[state=active]:bg-primary data-[state=active]:text-white text-sm font-medium"
+                    className="flex flex-col sm:flex-row items-center gap-1 sm:gap-2 py-2.5 px-3 sm:px-4 data-[state=active]:bg-primary data-[state=active]:text-white text-xs sm:text-sm font-medium min-w-[70px] sm:min-w-[100px] rounded-lg transition-all"
                   >
-                    <Icon className="h-4 w-4" />
-                    <span className="hidden sm:inline">{tab.label}</span>
+                    <Icon className="h-4 w-4 flex-shrink-0" />
+                    <span className="text-[10px] sm:text-sm">{tab.label}</span>
                   </TabsTrigger>
                 );
               })}
