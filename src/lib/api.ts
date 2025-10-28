@@ -356,8 +356,20 @@ class ApiClient {
   }
 
   async getProductsByUser(username: string): Promise<Product[]> {
-    const response = await this.request<Product[]>(`/users/${username}/listings`);
-    return response;
+    const response = await this.request<any>(`/users/${username}/listings`);
+    
+    // Backend returns { data: Product[], meta: {...} }
+    if (response && 'data' in response && Array.isArray(response.data)) {
+      return response.data;
+    }
+    
+    // Fallback: if response is already an array
+    if (Array.isArray(response)) {
+      return response;
+    }
+    
+    console.warn('Unexpected response format from getProductsByUser:', response);
+    return [];
   }
 
   async getMembers(): Promise<User[]> {

@@ -33,13 +33,19 @@ const ProductCard = ({ product, variant = "default", showStatus = false }: Produ
   const [isWishlisted, setIsWishlisted] = useState(false);
   const [imageError, setImageError] = useState(false);
 
+  // Safety check: if product is undefined or null, return null
+  if (!product) {
+    console.warn('ProductCard: product is undefined or null');
+    return null;
+  }
+
   const displayPrice = product.discount_price || product.price;
   const hasDiscount = product.discount_price && product.discount_price < product.price;
   const discountPercentage = hasDiscount 
     ? Math.round(((product.price - product.discount_price!) / product.price) * 100)
     : 0;
 
-  const fallbackImage = `https://api.dicebear.com/7.x/shapes/svg?seed=${product.title}`;
+  const fallbackImage = `https://api.dicebear.com/7.x/shapes/svg?seed=${product.title || 'product'}`;
   const productImage = product.images && product.images.length > 0 && !imageError 
     ? product.images[0] 
     : fallbackImage;
