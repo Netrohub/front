@@ -5,25 +5,25 @@
  * All analytics events are pushed to GTM's dataLayer for flexible tag management.
  * 
  * Features:
- * - Non-blocking script loading
- * - Environment-based enabling (disabled in dev)
+ * - GTM container GTM-THXQ6Q9V hardcoded (embedded in index.html)
  * - Device type tracking (mobile/desktop)
  * - Privacy-compliant (cookie consent friendly)
  * - Type-safe event tracking
+ * 
+ * Note: GTM script is loaded directly in index.html, not via this module.
+ * This module only pushes events to the dataLayer.
  */
 
 // Extend Window interface for GTM dataLayer
 declare global {
   interface Window {
     dataLayer: any[];
-    gtag?: (...args: any[]) => void;
   }
 }
 
-// Environment configuration
-const GTM_ID = import.meta.env.VITE_GTM_ID;
-const IS_PRODUCTION = import.meta.env.PROD;
-const IS_ENABLED = GTM_ID && IS_PRODUCTION;
+// GTM is always enabled since it's embedded in index.html
+const GTM_ID = 'GTM-THXQ6Q9V';
+const IS_ENABLED = true;
 
 /**
  * Device type detection
@@ -47,54 +47,32 @@ export const getUserAgent = (): string => {
 
 /**
  * Initialize GTM
- * Injects GTM script and initializes dataLayer
+ * Note: GTM script is already loaded in index.html
+ * This function only initializes the dataLayer with device context
  */
 export const initGTM = (): void => {
   if (!IS_ENABLED) {
-    console.log('GTM disabled in development mode');
+    console.log('GTM disabled');
     return;
   }
 
-  // Initialize dataLayer
+  // Initialize dataLayer (if not already initialized by script in index.html)
   window.dataLayer = window.dataLayer || [];
   
-  // Push initial configuration
+  // Push initial device context
   window.dataLayer.push({
-    'gtm.start': new Date().getTime(),
-    event: 'gtm.js',
+    event: 'app_initialized',
     deviceType: getDeviceType(),
     userAgent: getUserAgent(),
   });
 
-  // Inject GTM script (non-blocking)
-  const script = document.createElement('script');
-  script.async = true;
-  script.src = `https://www.googletagmanager.com/gtm.js?id=${GTM_ID}`;
-  document.head.appendChild(script);
-
-  // Inject noscript iframe for fallback
-  const noscript = document.createElement('noscript');
-  const iframe = document.createElement('iframe');
-  iframe.src = `https://www.googletagmanager.com/ns.html?id=${GTM_ID}`;
-  iframe.height = '0';
-  iframe.width = '0';
-  iframe.style.display = 'none';
-  iframe.style.visibility = 'hidden';
-  noscript.appendChild(iframe);
-  document.body.insertBefore(noscript, document.body.firstChild);
-
-  console.log('GTM initialized:', GTM_ID);
+  console.log('GTM dataLayer initialized:', GTM_ID);
 };
 
 /**
  * Push event to dataLayer
  */
 export const pushToDataLayer = (data: Record<string, any>): void => {
-  if (!IS_ENABLED) {
-    console.log('GTM Event (dev):', data);
-    return;
-  }
-
   window.dataLayer = window.dataLayer || [];
   
   // Add device context to every event
@@ -103,6 +81,11 @@ export const pushToDataLayer = (data: Record<string, any>): void => {
     deviceType: getDeviceType(),
     timestamp: new Date().toISOString(),
   });
+  
+  // Log in console for debugging
+  if (import.meta.env.DEV) {
+    console.log('GTM Event:', data);
+  }
 };
 
 /**

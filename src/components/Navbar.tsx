@@ -16,7 +16,7 @@ import {
 } from "@/components/ui/dropdown-menu";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { toast } from "sonner";
-import { analytics } from "@/lib/analytics";
+import gtmAnalytics from "@/lib/gtm";
 
 const Navbar = () => {
   const { t } = useLanguage();
@@ -92,7 +92,7 @@ const Navbar = () => {
     e.preventDefault();
     if (searchQuery.trim()) {
       navigate(`/products?search=${encodeURIComponent(searchQuery.trim())}`);
-      analytics.customEvent('search', { query: searchQuery.trim() });
+      gtmAnalytics.search(searchQuery.trim());
     }
   };
 
@@ -110,7 +110,7 @@ const Navbar = () => {
         duration: 2000,
       });
       
-      analytics.customEvent('logout');
+      gtmAnalytics.logout();
     } catch (error) {
       toast.dismiss(loadingToast);
       toast.error('Logout failed');

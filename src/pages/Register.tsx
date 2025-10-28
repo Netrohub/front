@@ -16,7 +16,7 @@ import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { z } from "zod";
 import { useRef, useState } from "react";
-import { analytics } from "@/lib/analytics";
+import gtmAnalytics from "@/lib/gtm";
 import { toast } from "sonner";
 
 // Form validation schema
@@ -102,7 +102,7 @@ const Register = () => {
       });
       
       // Track successful registration
-      analytics.signUp('email');
+      gtmAnalytics.signUp('email');
       
       // Delay for user to see success
       setTimeout(() => {

@@ -16,7 +16,7 @@ import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { z } from "zod";
 import { useRef, useState } from "react";
-import { analytics } from "@/lib/analytics";
+import gtmAnalytics from "@/lib/gtm";
 import { toast } from "sonner";
 import {
   Dialog,
@@ -117,7 +117,7 @@ const Login = () => {
       
       // Track successful login
       const loginType = data.identifier.includes('@') ? 'email' : 'username';
-      analytics.login(loginType);
+      gtmAnalytics.login(loginType);
       
       // Small delay for user to see success message
       setTimeout(() => {
@@ -202,7 +202,7 @@ const Login = () => {
       });
       
       // Track successful login
-      analytics.login('phone');
+      gtmAnalytics.login('phone');
       
       // Close modal and navigate
       setPhoneModalOpen(false);
