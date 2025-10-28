@@ -4,8 +4,10 @@ import { sellerApiClient, sellerQueryKeys } from "@/lib/sellerApi";
 import StatCard from "./shared/StatCard";
 import SectionHeader from "./shared/SectionHeader";
 import EmptyState from "./shared/EmptyState";
+import { SellerTabSkeleton } from "./shared/DashboardSkeleton";
 import { Card } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
+import { Button } from "@/components/ui/button";
 import { Link } from "react-router-dom";
 import { 
   Store, 
@@ -44,6 +46,14 @@ const SellerTab = () => {
     enabled: !!user,
   });
 
+  // Check if still loading
+  const isLoading = dashboardLoading || productsLoading || ordersLoading;
+
+  // Show loading skeleton
+  if (isLoading) {
+    return <SellerTabSkeleton />;
+  }
+
   // Calculate seller stats
   const totalRevenue = dashboard?.stats?.totalRevenue || 0;
   const totalOrders = dashboard?.stats?.totalOrders || 0;
@@ -54,28 +64,28 @@ const SellerTab = () => {
     {
       label: "Total Revenue",
       value: `$${totalRevenue.toFixed(2)}`,
-      change: "+23%",
+      change: "All time earnings",
       icon: DollarSign,
       color: "from-primary to-accent",
     },
     {
       label: "Active Listings",
       value: activeListings.toString(),
-      change: "+3",
+      change: activeListings > 0 ? `${activeListings} products` : "No listings",
       icon: Package,
       color: "from-green-500 to-emerald-600",
     },
     {
       label: "Total Orders",
       value: totalOrders.toString(),
-      change: "+18%",
+      change: totalOrders > 0 ? `${totalOrders} sales` : "No sales yet",
       icon: ShoppingBag,
       color: "from-blue-500 to-blue-700",
     },
     {
       label: "Pending Payouts",
       value: `$${pendingPayouts.toFixed(2)}`,
-      change: "Processing",
+      change: pendingPayouts > 0 ? "Ready to withdraw" : "No pending payouts",
       icon: Clock,
       color: "from-orange-500 to-orange-600",
     },

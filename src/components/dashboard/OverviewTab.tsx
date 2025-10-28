@@ -6,9 +6,12 @@ import StatCard from "./shared/StatCard";
 import SectionHeader from "./shared/SectionHeader";
 import EmptyState from "./shared/EmptyState";
 import { Card } from "@/components/ui/card";
+import { Badge } from "@/components/ui/badge";
+import { Button } from "@/components/ui/button";
 import KYCStatusComponent from "@/components/KYCStatus";
 import { getText } from "./shared/FeatureFlags";
 import { Link } from "react-router-dom";
+import { OverviewTabSkeleton } from "./shared/DashboardSkeleton";
 import { 
   ShoppingBag, 
   DollarSign, 
@@ -17,7 +20,10 @@ import {
   TrendingUp,
   AlertTriangle,
   CheckCircle,
-  LayoutDashboard
+  LayoutDashboard,
+  Clock,
+  ArrowRight,
+  XCircle
 } from "lucide-react";
 
 const OverviewTab = () => {
@@ -30,24 +36,32 @@ const OverviewTab = () => {
   const isKYCVerified = user?.emailVerified && user?.phoneVerified && user?.kycStatus === 'verified';
   
   // Fetch user data (orders, wallet)
-  const { data: userOrders } = useQuery({
+  const { data: userOrders, isLoading: ordersLoading } = useQuery({
     queryKey: queryKeys.user.orders,
     queryFn: () => apiClient.getOrders(),
     enabled: !!user,
   });
 
-  const { data: userWallet } = useQuery({
+  const { data: userWallet, isLoading: walletLoading } = useQuery({
     queryKey: queryKeys.user.wallet,
     queryFn: () => apiClient.getWallet(),
     enabled: !!user,
   });
 
   // Fetch seller data if user has seller role
-  const { data: sellerDashboard } = useQuery({
+  const { data: sellerDashboard, isLoading: sellerLoading } = useQuery({
     queryKey: sellerQueryKeys.dashboard(),
     queryFn: () => sellerApiClient.getDashboard(),
     enabled: !!user && hasSellingsRole,
   });
+
+  // Check if still loading
+  const isLoading = ordersLoading || walletLoading || (hasSellingsRole && sellerLoading);
+
+  // Show loading skeleton
+  if (isLoading) {
+    return <OverviewTabSkeleton />;
+  }
 
   // Calculate shared KPIs
   const totalOrders = userOrders?.length || 0;
@@ -189,6 +203,84 @@ const OverviewTab = () => {
           )}
         </div>
       </Card>
+
+      {/* Recent Orders Preview */}
+      {totalOrders > 0 && (
+        <Card className="glass-card p-6">
+          <div className="flex items-center justify-between mb-4">
+            <SectionHeader 
+              title="Recent Orders"
+              description="Your latest purchases"
+            />
+            <Link to="/dashboard?tab=buyer">
+              <Button variant="ghost" size="sm" className="gap-2">
+                View All
+                <ArrowRight className="h-4 w-4" />
+              </Button>
+            </Link>
+          </div>
+          
+          <div className="space-y-3">
+            {userOrders?.slice(0, 3).map((order) => {
+              const getStatusIcon = (status: string) => {
+                switch (status) {
+                  case 'completed':
+                  case 'delivered':
+                    return <CheckCircle className="h-4 w-4 text-green-600" />;
+                  case 'processing':
+                  case 'pending':
+                    return <Clock className="h-4 w-4 text-orange-600" />;
+                  case 'cancelled':
+                    return <XCircle className="h-4 w-4 text-red-600" />;
+                  default:
+                    return <Package className="h-4 w-4 text-gray-600" />;
+                }
+              };
+
+              const getStatusColor = (status: string) => {
+                switch (status) {
+                  case 'completed':
+                  case 'delivered':
+                    return 'bg-green-500/10 text-green-700 border-green-500/20';
+                  case 'processing':
+                    return 'bg-blue-500/10 text-blue-700 border-blue-500/20';
+                  case 'pending':
+                    return 'bg-orange-500/10 text-orange-700 border-orange-500/20';
+                  case 'cancelled':
+                    return 'bg-red-500/10 text-red-700 border-red-500/20';
+                  default:
+                    return 'bg-gray-500/10 text-gray-700 border-gray-500/20';
+                }
+              };
+
+              return (
+                <Link key={order.id} to={`/account/orders/${order.id}`}>
+                  <Card className="p-4 hover:bg-muted/50 transition-colors">
+                    <div className="flex items-center justify-between gap-4">
+                      <div className="flex items-center gap-3 flex-1 min-w-0">
+                        <div className="p-2 rounded-lg bg-primary/10 flex-shrink-0">
+                          {getStatusIcon(order.status)}
+                        </div>
+                        <div className="flex-1 min-w-0">
+                          <h4 className="font-medium text-sm truncate">
+                            Order #{order.order_number || order.id}
+                          </h4>
+                          <p className="text-xs text-foreground/60">
+                            {new Date(order.created_at).toLocaleDateString()} • ${order.total?.toFixed(2) || '0.00'}
+                          </p>
+                        </div>
+                      </div>
+                      <Badge className={`text-xs whitespace-nowrap ${getStatusColor(order.status)}`}>
+                        {order.status}
+                      </Badge>
+                    </div>
+                  </Card>
+                </Link>
+              );
+            })}
+          </div>
+        </Card>
+      )}
     </div>
   );
 };

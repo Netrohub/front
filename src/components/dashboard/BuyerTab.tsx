@@ -4,8 +4,10 @@ import { apiClient, queryKeys } from "@/lib/api";
 import StatCard from "./shared/StatCard";
 import SectionHeader from "./shared/SectionHeader";
 import EmptyState from "./shared/EmptyState";
+import { BuyerTabSkeleton } from "./shared/DashboardSkeleton";
 import { Card } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
+import { Button } from "@/components/ui/button";
 import { Link } from "react-router-dom";
 import { 
   ShoppingBag, 
@@ -29,18 +31,26 @@ const BuyerTab = () => {
   });
 
   // Fetch wallet data
-  const { data: wallet } = useQuery({
+  const { data: wallet, isLoading: walletLoading } = useQuery({
     queryKey: queryKeys.user.wallet,
     queryFn: () => apiClient.getWallet(),
     enabled: !!user,
   });
 
   // Fetch wishlist
-  const { data: wishlist } = useQuery({
+  const { data: wishlist, isLoading: wishlistLoading } = useQuery({
     queryKey: queryKeys.user.wishlist,
     queryFn: () => apiClient.getWishlist(),
     enabled: !!user,
   });
+
+  // Check if still loading
+  const isLoading = ordersLoading || walletLoading || wishlistLoading;
+
+  // Show loading skeleton
+  if (isLoading) {
+    return <BuyerTabSkeleton />;
+  }
 
   // Calculate buyer stats
   const totalOrders = orders?.length || 0;
