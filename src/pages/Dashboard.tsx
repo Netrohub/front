@@ -2,6 +2,13 @@ import DashboardLayout from "@/components/DashboardLayout";
 import OverviewTab from "@/components/dashboard/OverviewTab";
 import BuyerTab from "@/components/dashboard/BuyerTab";
 import SellerTab from "@/components/dashboard/SellerTab";
+// Account page imports (wrapped as tabs)
+import ProfilePage from "@/pages/account/Profile";
+import OrdersPage from "@/pages/account/Orders";
+import WalletPage from "@/pages/account/Wallet";
+import NotificationsPage from "@/pages/account/Notifications";
+import BillingPage from "@/pages/account/Billing";
+import KYCPage from "@/pages/account/KYC";
 import { useAuth } from "@/contexts/AuthContext";
 import { useSearchParams } from "react-router-dom";
 import { Tabs, TabsContent } from "@/components/ui/tabs";
@@ -22,12 +29,11 @@ const Dashboard = () => {
   return (
     <DashboardLayout>
       <Tabs value={currentTab} className="space-y-6">
-        {/* Overview Tab */}
+        {/* Main Dashboard Tabs */}
         <TabsContent value="overview" className="mt-0">
           <OverviewTab />
         </TabsContent>
 
-        {/* Buyer Tab */}
         <TabsContent value="buyer" className="mt-0">
           <BuyerTab />
         </TabsContent>
@@ -38,6 +44,43 @@ const Dashboard = () => {
             <SellerTab />
           </TabsContent>
         )}
+
+        {/* Account Management Tabs */}
+        <TabsContent value="profile" className="mt-0">
+          <div className="max-w-5xl">
+            <ProfilePage />
+          </div>
+        </TabsContent>
+
+        <TabsContent value="orders" className="mt-0">
+          <div className="max-w-6xl">
+            <OrdersPage />
+          </div>
+        </TabsContent>
+
+        <TabsContent value="wallet" className="mt-0">
+          <div className="max-w-5xl">
+            <WalletPage />
+          </div>
+        </TabsContent>
+
+        <TabsContent value="notifications" className="mt-0">
+          <div className="max-w-4xl">
+            <NotificationsPage />
+          </div>
+        </TabsContent>
+
+        <TabsContent value="billing" className="mt-0">
+          <div className="max-w-5xl">
+            <BillingPage />
+          </div>
+        </TabsContent>
+
+        <TabsContent value="kyc" className="mt-0">
+          <div className="max-w-5xl">
+            <KYCPage />
+          </div>
+        </TabsContent>
       </Tabs>
     </DashboardLayout>
   );

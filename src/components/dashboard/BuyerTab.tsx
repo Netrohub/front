@@ -148,11 +148,11 @@ const BuyerTab = () => {
         <SectionHeader 
           title="Recent Orders"
           description="Your latest purchases and their status"
-          action={{
-            label: "View All Orders",
-            href: "/account/orders",
-            variant: "outline"
-          }}
+            action={{
+              label: "View All Orders",
+              href: "/dashboard?tab=orders",
+              variant: "outline"
+            }}
         />
         
         <div className="mt-4">
@@ -212,11 +212,11 @@ const BuyerTab = () => {
           <SectionHeader 
             title="Wallet & Billing"
             description="Manage your funds and payment methods"
-            action={{
-              label: "Manage Wallet",
-              href: "/account/wallet",
-              variant: "outline"
-            }}
+              action={{
+                label: "Manage Wallet",
+                href: "/dashboard?tab=wallet",
+                variant: "outline"
+              }}
           />
           
           <div className="mt-4">
@@ -229,7 +229,7 @@ const BuyerTab = () => {
                 </div>
               </div>
               <Link 
-                to="/account/wallet"
+                to="/dashboard?tab=wallet"
                 className="text-primary hover:text-primary/80 text-sm font-medium"
               >
                 Add Funds →
@@ -242,11 +242,11 @@ const BuyerTab = () => {
           <SectionHeader 
             title="Wishlist"
             description="Items you're interested in"
-            action={{
-              label: "View Wishlist",
-              href: "/account/wishlist",
-              variant: "outline"
-            }}
+              action={{
+                label: "View Wishlist",
+                href: "/account/wishlist",  
+                variant: "outline"
+              }}
           />
           
           <div className="mt-4">

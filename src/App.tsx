@@ -42,15 +42,9 @@ const Privacy = lazy(() => import("./pages/Privacy"));
 // Unified Dashboard (lazy loaded)
 const UnifiedDashboard = lazy(() => import("./pages/Dashboard"));
 
-// Account pages (lazy loaded)
-const Profile = lazy(() => import("./pages/account/Profile"));
-const Wallet = lazy(() => import("./pages/account/Wallet"));
-const Orders = lazy(() => import("./pages/account/Orders"));
+// Account pages (lazy loaded) - Only detail/standalone pages remain
 const OrderDetail = lazy(() => import("./pages/account/OrderDetail"));
-const Notifications = lazy(() => import("./pages/account/Notifications"));
-const Billing = lazy(() => import("./pages/account/Billing"));
 const AccountWishlist = lazy(() => import("./pages/account/Wishlist"));
-const KYC = lazy(() => import("./pages/account/KYC"));
 
 // Seller pages (lazy loaded)
 const SellerProducts = lazy(() => import("./pages/seller/Products"));
@@ -63,10 +57,18 @@ const SellerOnboarding = lazy(() => import("./pages/seller/SellerOnboarding"));
 const ListGamingAccount = lazy(() => import("./pages/seller/ListGamingAccount"));
 const ListSocialAccountComingSoon = lazy(() => import("./pages/seller/ListSocialAccountComingSoon"));
 
-// Redirect components (not lazy loaded as they're simple redirects)
+// Redirect components (lazy loaded for code splitting)
 const AccountDashboardRedirect = lazy(() => import("./components/redirects/AccountDashboardRedirect"));
 const SellerDashboardRedirect = lazy(() => import("./components/redirects/SellerDashboardRedirect"));
 const SellerProfileRedirect = lazy(() => import("./components/redirects/SellerProfileRedirect"));
+// Account page redirects (moved to unified dashboard)
+const AccountProfileRedirect = lazy(() => import("./components/redirects/AccountRedirects").then(m => ({ default: m.AccountProfileRedirect })));
+const AccountOrdersRedirect = lazy(() => import("./components/redirects/AccountRedirects").then(m => ({ default: m.AccountOrdersRedirect })));
+const AccountWalletRedirect = lazy(() => import("./components/redirects/AccountRedirects").then(m => ({ default: m.AccountWalletRedirect })));
+const AccountNotificationsRedirect = lazy(() => import("./components/redirects/AccountRedirects").then(m => ({ default: m.AccountNotificationsRedirect })));
+const AccountBillingRedirect = lazy(() => import("./components/redirects/AccountRedirects").then(m => ({ default: m.AccountBillingRedirect })));
+const AccountKYCRedirect = lazy(() => import("./components/redirects/AccountRedirects").then(m => ({ default: m.AccountKYCRedirect })));
+const AccountDashboardGenericRedirect = lazy(() => import("./components/redirects/AccountRedirects").then(m => ({ default: m.AccountDashboardGenericRedirect })));
 
 // Dispute pages (lazy loaded)
 const DisputeList = lazy(() => import("./pages/disputes/DisputeList"));
@@ -187,18 +189,19 @@ const App = () => {
           {/* New unified dashboard route */}
           <Route path="/dashboard" element={<RequireAuth><UnifiedDashboard /></RequireAuth>} />
           
-          {/* Legacy redirects for old dashboard routes */}
-          <Route path="/account" element={<RequireAuth><AccountDashboardRedirect /></RequireAuth>} />
+          {/* Legacy redirects for old account routes - now redirecting to unified dashboard */}
+          <Route path="/account" element={<RequireAuth><AccountDashboardGenericRedirect /></RequireAuth>} />
           <Route path="/account/dashboard" element={<RequireAuth><AccountDashboardRedirect /></RequireAuth>} />
-          <Route path="/account/profile" element={<RequireAuth><Profile /></RequireAuth>} />
-          <Route path="/account/wallet" element={<RequireAuth><Wallet /></RequireAuth>} />
+          <Route path="/account/profile" element={<RequireAuth><AccountProfileRedirect /></RequireAuth>} />
+          <Route path="/account/wallet" element={<RequireAuth><AccountWalletRedirect /></RequireAuth>} />
+          <Route path="/account/orders" element={<RequireAuth><AccountOrdersRedirect /></RequireAuth>} />
+          <Route path="/account/notifications" element={<RequireAuth><AccountNotificationsRedirect /></RequireAuth>} />
+          <Route path="/account/billing" element={<RequireAuth><AccountBillingRedirect /></RequireAuth>} />
+          <Route path="/account/kyc" element={<RequireAuth><AccountKYCRedirect /></RequireAuth>} />
+          <Route path="/account/kyc/:step" element={<RequireAuth><AccountKYCRedirect /></RequireAuth>} />
+          {/* Standalone account pages (detail/secondary pages) */}
           <Route path="/account/wishlist" element={<RequireAuth><AccountWishlist /></RequireAuth>} />
-          <Route path="/account/orders" element={<RequireAuth><Orders /></RequireAuth>} />
           <Route path="/account/orders/:id" element={<RequireAuth><OrderDetail /></RequireAuth>} />
-          <Route path="/account/notifications" element={<RequireAuth><Notifications /></RequireAuth>} />
-          <Route path="/account/billing" element={<RequireAuth><Billing /></RequireAuth>} />
-          <Route path="/account/kyc" element={<RequireAuth><KYC /></RequireAuth>} />
-          <Route path="/account/kyc/:step" element={<RequireAuth><KYC /></RequireAuth>} />
           {/* Legacy redirect for old seller dashboard route */}
           <Route path="/seller/dashboard" element={<RequireAuth><RequireKYC><SellerDashboardRedirect /></RequireKYC></RequireAuth>} />
           <Route path="/seller/onboarding" element={<RequireAuth><SellerOnboarding /></RequireAuth>} />

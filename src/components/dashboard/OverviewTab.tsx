@@ -172,7 +172,7 @@ const OverviewTab = () => {
             </Card>
           </Link>
           
-          <Link to="/account/wallet" className="block">
+          <Link to="/dashboard?tab=wallet" className="block">
             <Card className="p-4 hover:bg-muted/50 transition-colors cursor-pointer hover:border-green-500/50">
               <div className="flex items-center gap-3">
                 <div className="p-2 rounded-lg bg-green-500/10">

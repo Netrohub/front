@@ -8,7 +8,11 @@ import {
   LayoutDashboard, 
   ShoppingBag, 
   Store,
-  Crown
+  User,
+  Wallet,
+  Bell,
+  CreditCard,
+  Shield
 } from "lucide-react";
 import { useEffect } from "react";
 
@@ -31,29 +35,76 @@ const DashboardLayout = ({ children }: DashboardLayoutProps) => {
   // Check if user has active products - this would come from API but for now using role
   const hasActiveListings = hasSellingsRole;
   
-  // Available tabs
+  // Available tabs - organized by category
   const tabs = [
+    // Main Dashboard Tabs
     {
       id: 'overview',
       label: 'Overview',
       icon: LayoutDashboard,
-      description: 'Dashboard summary'
+      description: 'Dashboard summary',
+      category: 'main'
     },
     {
       id: 'buyer',
       label: 'Buyer',
       icon: ShoppingBag,
-      description: 'Orders and purchases'
+      description: 'Orders and purchases',
+      category: 'main'
+    },
+    // Account Management Tabs
+    {
+      id: 'profile',
+      label: 'Profile',
+      icon: User,
+      description: 'Account settings',
+      category: 'account'
+    },
+    {
+      id: 'orders',
+      label: 'Orders',
+      icon: ShoppingBag,
+      description: 'Order history',
+      category: 'account'
+    },
+    {
+      id: 'wallet',
+      label: 'Wallet',
+      icon: Wallet,
+      description: 'Balance & transactions',
+      category: 'account'
+    },
+    {
+      id: 'notifications',
+      label: 'Notifications',
+      icon: Bell,
+      description: 'Alerts & messages',
+      category: 'account'
+    },
+    {
+      id: 'billing',
+      label: 'Billing',
+      icon: CreditCard,
+      description: 'Payment methods',
+      category: 'account'
+    },
+    {
+      id: 'kyc',
+      label: 'KYC',
+      icon: Shield,
+      description: 'Verification',
+      category: 'account'
     }
   ];
   
   // Add seller tab only if user has listings
   if (hasActiveListings) {
-    tabs.push({
+    tabs.splice(2, 0, {
       id: 'seller',
       label: 'Seller',
       icon: Store,
-      description: 'Manage your listings'
+      description: 'Manage your listings',
+      category: 'main'
     });
   }
 

@@ -19,12 +19,12 @@ import { Button } from "@/components/ui/button";
 import { Sheet, SheetContent, SheetTrigger } from "@/components/ui/sheet";
 
 const baseMenuItems = [
-  { path: "/dashboard?tab=buyer", icon: LayoutDashboard, label: "Dashboard" },
-  { path: "/account/profile", icon: User, label: "Profile" },
-  { path: "/account/orders", icon: ShoppingBag, label: "Orders" },
-  { path: "/account/wallet", icon: Wallet, label: "Wallet" },
-  { path: "/account/notifications", icon: Bell, label: "Notifications" },
-  { path: "/account/billing", icon: CreditCard, label: "Billing" },
+  { path: "/dashboard?tab=overview", icon: LayoutDashboard, label: "Dashboard" },
+  { path: "/dashboard?tab=profile", icon: User, label: "Profile" },
+  { path: "/dashboard?tab=orders", icon: ShoppingBag, label: "Orders" },
+  { path: "/dashboard?tab=wallet", icon: Wallet, label: "Wallet" },
+  { path: "/dashboard?tab=notifications", icon: Bell, label: "Notifications" },
+  { path: "/dashboard?tab=billing", icon: CreditCard, label: "Billing" },
 ];
 
 interface AccountLayoutProps {
@@ -43,8 +43,14 @@ const AccountLayout = ({ children }: AccountLayoutProps) => {
   
   // Only show KYC verification if not completed
   if (!isKYCCompleted) {
-    menuItems.push({ path: "/account/kyc", icon: ShieldCheck, label: "KYC Verification" });
+    menuItems.push({ path: "/dashboard?tab=kyc", icon: ShieldCheck, label: "KYC Verification" });
   }
+
+  // Helper to check if menu item is active (checks both pathname and search params)
+  const isMenuItemActive = (itemPath: string) => {
+    const currentPath = location.pathname + location.search;
+    return currentPath === itemPath || location.pathname + location.search === itemPath;
+  };
 
   return (
     <div className="min-h-screen flex flex-col relative">
@@ -60,7 +66,7 @@ const AccountLayout = ({ children }: AccountLayoutProps) => {
                 <nav className="space-y-1">
                   {menuItems.map((item) => {
                     const Icon = item.icon;
-                    const isActive = location.pathname === item.path;
+                    const isActive = isMenuItemActive(item.path);
                     
                     return (
                       <Link
@@ -96,7 +102,7 @@ const AccountLayout = ({ children }: AccountLayoutProps) => {
                     <nav className="space-y-1">
                       {menuItems.map((item) => {
                         const Icon = item.icon;
-                        const isActive = location.pathname === item.path;
+                        const isActive = isMenuItemActive(item.path);
                         
                         return (
                           <Link
