@@ -6,6 +6,7 @@ import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
 import { toast } from 'sonner';
 import { format } from 'date-fns';
+import { safeFormatDate } from '@/utils/dateHelpers';
 import { AlertTriangle, User, CheckCircle, MessageSquare } from 'lucide-react';
 import { useAdminList } from '@/hooks/useAdminList';
 import { useAdminMutation } from '@/hooks/useAdminMutation';
@@ -155,7 +156,7 @@ function DisputesList() {
       key: 'created_at',
       title: 'Created',
       dataIndex: 'created_at',
-      render: (value) => format(new Date(value), 'MMM dd, yyyy'),
+      render: (value) => safeFormatDate(value),
     },
   ];
 

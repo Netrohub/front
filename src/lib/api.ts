@@ -255,10 +255,19 @@ class ApiClient {
         if (response.status === 401) {
           console.warn('🔄 Token expired or invalid, clearing authentication');
           this.clearToken();
-          // Redirect to login page
+          
+          // ✅ FIX: Only redirect to login if not on login/register pages
+          // This prevents "session expired" message immediately after login on mobile
           if (typeof window !== 'undefined') {
-            window.location.href = '/login';
+            const currentPath = window.location.pathname;
+            const isAuthPage = currentPath === '/login' || currentPath === '/register' || currentPath === '/admin/login';
+            
+            if (!isAuthPage) {
+              // Only redirect if user is not already on an auth page
+              window.location.href = '/login';
+            }
           }
+          
           throw new Error('Session expired. Please login again.');
         }
         // Handle standardized error format

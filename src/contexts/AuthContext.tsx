@@ -44,9 +44,20 @@ function AuthProvider({ children }: AuthProviderProps) {
         } else {
           console.log('ℹ️ AuthContext: No token found, user not authenticated');
         }
-      } catch (error) {
+      } catch (error: any) {
         console.error('❌ AuthContext: Failed to initialize auth:', error);
-        apiClient.clearToken();
+        
+        // ✅ FIX: Only clear token if it's truly expired (401)
+        // Don't show error to user during initialization
+        if (error.message?.includes('Session expired')) {
+          console.warn('⚠️ AuthContext: Silent token expiration during init, clearing token');
+          apiClient.clearToken();
+          // Don't redirect or show error - just clear and let user continue
+        } else {
+          // Other errors (network, server error, etc) - just log and clear
+          console.warn('⚠️ AuthContext: Clearing invalid token due to error');
+          apiClient.clearToken();
+        }
       } finally {
         setIsLoading(false);
       }
