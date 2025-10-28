@@ -9,6 +9,7 @@ import { Card } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
+import { ContactSellerModal } from "@/components/ContactSellerModal";
 import { apiClient } from "@/lib/api";
 import { 
   Star, 
@@ -30,6 +31,7 @@ const SellerProfile = () => {
   const [sellerData, setSellerData] = useState<any>(null);
   const [products, setProducts] = useState<any[]>([]);
   const [loading, setLoading] = useState(true);
+  const [contactModalOpen, setContactModalOpen] = useState(false);
 
   useEffect(() => {
     const fetchSellerData = async () => {
@@ -202,7 +204,7 @@ const SellerProfile = () => {
                   </p>
 
                   <div className="flex flex-wrap gap-3">
-                    <Button className="btn-glow">
+                    <Button className="btn-glow" onClick={() => setContactModalOpen(true)}>
                       <MessageCircle className="h-4 w-4 mr-2" />
                       Contact Seller
                     </Button>
@@ -342,6 +344,16 @@ const SellerProfile = () => {
       </main>
       
       <Footer />
+
+      {/* Contact Seller Modal */}
+      {sellerData && (
+        <ContactSellerModal
+          open={contactModalOpen}
+          onOpenChange={setContactModalOpen}
+          sellerId={sellerData.id}
+          sellerName={sellerData.name}
+        />
+      )}
     </div>
   );
 };

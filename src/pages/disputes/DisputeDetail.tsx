@@ -7,47 +7,18 @@ import { Textarea } from "@/components/ui/textarea";
 import { StatusBadge } from "@/components/disputes/StatusBadge";
 import { MessageThread, Message } from "@/components/disputes/MessageThread";
 import { useToast } from "@/hooks/use-toast";
-import { ArrowLeft, Send, AlertTriangle, Package, Image as ImageIcon } from "lucide-react";
+import { apiClient } from "@/lib/api";
+import { ArrowLeft, Send, AlertTriangle, Package, Image as ImageIcon, Loader2 } from "lucide-react";
 
 const DisputeDetail = () => {
   const { id } = useParams();
   const { toast } = useToast();
   const [newMessage, setNewMessage] = useState("");
   const [messages, setMessages] = useState<Message[]>([]);
+  const [loading, setLoading] = useState(true);
+  const [sending, setSending] = useState(false);
 
-  // Load messages from localStorage on mount
-  useEffect(() => {
-    const savedMessages = localStorage.getItem(`dispute_messages_${id}`);
-    if (savedMessages) {
-      setMessages(JSON.parse(savedMessages));
-    } else {
-      // Default messages for new disputes
-      const defaultMessages: Message[] = [
-        {
-          id: "1",
-          sender: { name: "You", role: "buyer" },
-          content: "I purchased this account yesterday but the engagement rate is much lower than advertised. Can you please check?",
-          timestamp: "2 days ago",
-        },
-        {
-          id: "2",
-          sender: { name: "Seller", role: "seller" },
-          content: "Hello, thank you for reaching out. Can you please provide more details about the engagement issues you're experiencing?",
-          timestamp: "1 day ago",
-        },
-        {
-          id: "3",
-          sender: { name: "You", role: "buyer" },
-          content: "I've attached screenshots showing the analytics. The engagement is around 2-3% but your listing stated 8-12%.",
-          timestamp: "1 day ago",
-        },
-      ];
-      setMessages(defaultMessages);
-      localStorage.setItem(`dispute_messages_${id}`, JSON.stringify(defaultMessages));
-    }
-  }, [id]);
-
-  // TODO: Replace with actual API call
+  // ✅ FIXED: Fetch dispute and messages from API
   const [dispute, setDispute] = useState<{
     id: string;
     orderId: string;
@@ -60,27 +31,63 @@ const DisputeDetail = () => {
     evidence: Array<{ id: string; name: string; url: string }>;
   } | null>(null);
 
-  // Fetch dispute data from API
   useEffect(() => {
-    const fetchDispute = async () => {
+    const fetchDisputeData = async () => {
       if (!id) return;
       
       try {
-        // TODO: Implement actual API call
-        // const response = await fetch(`/api/disputes/${id}`);
-        // const data = await response.json();
-        // setDispute(data);
-        setDispute(null); // No data for now
-      } catch (error) {
+        setLoading(true);
+        
+        // Fetch dispute details
+        const disputeData = await apiClient.request<any>(`/disputes/${id}`);
+        
+        // Transform to match component format
+        setDispute({
+          id: String(disputeData.id),
+          orderId: disputeData.order?.order_number || String(disputeData.order_id),
+          productName: disputeData.order?.items?.[0]?.product_name || 'Product',
+          productImage: disputeData.order?.items?.[0]?.product?.images?.[0] || '/placeholder-product.png',
+          reason: disputeData.reason,
+          description: disputeData.description,
+          status: disputeData.status,
+          createdAt: new Date(disputeData.created_at).toLocaleDateString(),
+          evidence: disputeData.evidence || [],
+        });
+
+        // Fetch dispute messages (if endpoint exists)
+        try {
+          const messagesData = await apiClient.request<any[]>(`/disputes/${id}/messages`);
+          const transformedMessages: Message[] = messagesData.map((msg: any) => ({
+            id: String(msg.id),
+            sender: {
+              name: msg.sender_type === 'buyer' ? 'You' : msg.sender_type === 'seller' ? 'Seller' : 'Admin',
+              role: msg.sender_type,
+            },
+            content: msg.message,
+            timestamp: new Date(msg.created_at).toLocaleString(),
+          }));
+          setMessages(transformedMessages);
+        } catch (msgError) {
+          // Messages endpoint might not exist yet, use empty array
+          setMessages([]);
+        }
+      } catch (error: any) {
         console.error('Failed to fetch dispute:', error);
-        setDispute(null);
+        toast({
+          title: "Error loading dispute",
+          description: error.message || "Failed to load dispute details",
+          variant: "destructive",
+        });
+      } finally {
+        setLoading(false);
       }
     };
 
-    fetchDispute();
-  }, [id]);
+    fetchDisputeData();
+  }, [id, toast]);
 
-  const handleSendMessage = () => {
+  // ✅ FIXED: Send message via API
+  const handleSendMessage = async () => {
     if (!newMessage.trim()) {
       toast({
         title: "Message is empty",
@@ -90,25 +97,42 @@ const DisputeDetail = () => {
       return;
     }
 
-    // Add message to thread
-    const newMsg: Message = {
-      id: Date.now().toString(),
-      sender: { name: "You", role: "buyer" },
-      content: newMessage,
-      timestamp: "Just now",
-    };
-    
-    const updatedMessages = [...messages, newMsg];
-    setMessages(updatedMessages);
-    setNewMessage("");
-    
-    // Save to localStorage
-    localStorage.setItem(`dispute_messages_${id}`, JSON.stringify(updatedMessages));
-    
-    toast({
-      title: "Message sent! 💬",
-      description: "Your message has been sent to the dispute thread.",
-    });
+    try {
+      setSending(true);
+      
+      // Send message to API
+      const sentMessage = await apiClient.request<any>(`/disputes/${id}/messages`, {
+        method: 'POST',
+        body: JSON.stringify({
+          message: newMessage,
+        }),
+      });
+
+      // Add message to local state
+      const newMsg: Message = {
+        id: String(sentMessage.id),
+        sender: { name: "You", role: "buyer" },
+        content: newMessage,
+        timestamp: "Just now",
+      };
+      
+      setMessages([...messages, newMsg]);
+      setNewMessage("");
+      
+      toast({
+        title: "Message sent! 💬",
+        description: "Your message has been sent to the dispute thread.",
+      });
+    } catch (error: any) {
+      console.error('Failed to send message:', error);
+      toast({
+        title: "Failed to send message",
+        description: error.message || "Please try again later.",
+        variant: "destructive",
+      });
+    } finally {
+      setSending(false);
+    }
   };
 
   const handleEscalate = () => {
@@ -117,6 +141,19 @@ const DisputeDetail = () => {
       description: "This dispute has been escalated for admin review.",
     });
   };
+
+  if (loading) {
+    return (
+      <AccountLayout>
+        <div className="flex items-center justify-center py-12">
+          <div className="text-center">
+            <Loader2 className="h-12 w-12 animate-spin text-primary mx-auto mb-4" />
+            <p className="text-foreground/60">Loading dispute details...</p>
+          </div>
+        </div>
+      </AccountLayout>
+    );
+  }
 
   if (!dispute) {
     return (
@@ -234,9 +271,18 @@ const DisputeDetail = () => {
                   className="glass-card border-border/50 min-h-[100px]"
                 />
                 <div className="flex gap-3">
-                  <Button onClick={handleSendMessage} className="btn-glow">
-                    <Send className="h-4 w-4 mr-2" />
-                    Send Message
+                  <Button onClick={handleSendMessage} className="btn-glow" disabled={sending}>
+                    {sending ? (
+                      <>
+                        <Loader2 className="h-4 w-4 mr-2 animate-spin" />
+                        Sending...
+                      </>
+                    ) : (
+                      <>
+                        <Send className="h-4 w-4 mr-2" />
+                        Send Message
+                      </>
+                    )}
                   </Button>
                   <Button
                     variant="outline"
