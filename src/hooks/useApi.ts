@@ -102,7 +102,7 @@ export const useFeaturedProducts = () => {
 // Cart Hooks
 export const useCart = () => {
   return useQuery({
-    queryKey: queryKeys.cart,
+    queryKey: queryKeys.user.cart,
     queryFn: () => apiClient.getCart(),
     staleTime: 30 * 1000, // 30 seconds
   });
@@ -115,7 +115,7 @@ export const useAddToCart = () => {
     mutationFn: ({ productId, quantity }: { productId: number; quantity?: number }) =>
       apiClient.addToCart(productId, quantity),
     onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: queryKeys.cart });
+      queryClient.invalidateQueries({ queryKey: queryKeys.user.cart });
       toast.success('Added to cart!');
     },
     onError: (error: any) => {
@@ -131,7 +131,7 @@ export const useUpdateCartItem = () => {
     mutationFn: ({ itemId, quantity }: { itemId: number; quantity: number }) =>
       apiClient.updateCartItem(itemId, quantity),
     onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: queryKeys.cart });
+      queryClient.invalidateQueries({ queryKey: queryKeys.user.cart });
     },
     onError: (error: any) => {
       toast.error(error.message || 'Failed to update cart item');
@@ -145,7 +145,7 @@ export const useRemoveFromCart = () => {
   return useMutation({
     mutationFn: (itemId: number) => apiClient.removeFromCart(itemId),
     onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: queryKeys.cart });
+      queryClient.invalidateQueries({ queryKey: queryKeys.user.cart });
       toast.success('Removed from cart');
     },
     onError: (error: any) => {
@@ -160,7 +160,7 @@ export const useClearCart = () => {
   return useMutation({
     mutationFn: () => apiClient.clearCart(),
     onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: queryKeys.cart });
+      queryClient.invalidateQueries({ queryKey: queryKeys.user.cart });
       toast.success('Cart cleared');
     },
     onError: (error: any) => {
@@ -172,7 +172,7 @@ export const useClearCart = () => {
 // Order Hooks
 export const useOrders = (page = 1) => {
   return useQuery({
-    queryKey: [...queryKeys.orders, page],
+    queryKey: [...queryKeys.user.orders, page] as const,
     queryFn: () => apiClient.getOrders(page),
     staleTime: 2 * 60 * 1000, // 2 minutes
   });
@@ -180,7 +180,7 @@ export const useOrders = (page = 1) => {
 
 export const useOrder = (id: number) => {
   return useQuery({
-    queryKey: queryKeys.order(id),
+    queryKey: queryKeys.user.order(id),
     queryFn: () => apiClient.getOrder(id),
     enabled: !!id,
     staleTime: 5 * 60 * 1000, // 5 minutes
@@ -194,8 +194,8 @@ export const useCreateOrder = () => {
     mutationFn: (data: { items: Array<{ product_id: number; quantity: number }> }) =>
       apiClient.createOrder(data),
     onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: queryKeys.orders });
-      queryClient.invalidateQueries({ queryKey: queryKeys.cart });
+      queryClient.invalidateQueries({ queryKey: queryKeys.user.orders });
+      queryClient.invalidateQueries({ queryKey: queryKeys.user.cart });
       toast.success('Order created successfully!');
     },
     onError: (error: any) => {
@@ -207,7 +207,7 @@ export const useCreateOrder = () => {
 // Wishlist Hooks
 export const useWishlist = () => {
   return useQuery({
-    queryKey: queryKeys.wishlist,
+    queryKey: queryKeys.user.wishlist,
     queryFn: () => apiClient.getWishlist(),
     staleTime: 2 * 60 * 1000, // 2 minutes
   });
@@ -219,7 +219,7 @@ export const useAddToWishlist = () => {
   return useMutation({
     mutationFn: (productId: number) => apiClient.addToWishlist(productId),
     onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: queryKeys.wishlist });
+      queryClient.invalidateQueries({ queryKey: queryKeys.user.wishlist });
       toast.success('Added to wishlist!');
     },
     onError: (error: any) => {
@@ -234,7 +234,7 @@ export const useRemoveFromWishlist = () => {
   return useMutation({
     mutationFn: (productId: number) => apiClient.removeFromWishlist(productId),
     onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: queryKeys.wishlist });
+      queryClient.invalidateQueries({ queryKey: queryKeys.user.wishlist });
       toast.success('Removed from wishlist');
     },
     onError: (error: any) => {
