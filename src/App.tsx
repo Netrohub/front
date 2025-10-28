@@ -33,7 +33,6 @@ const OrderConfirmation = lazy(() => import("./pages/OrderConfirmation"));
 const Wishlist = lazy(() => import("./pages/Wishlist"));
 const Compare = lazy(() => import("./pages/Compare"));
 const HelpCenter = lazy(() => import("./pages/HelpCenter"));
-const SellerProfile = lazy(() => import("./pages/SellerProfile"));
 const UserProfilePage = lazy(() => import("./pages/UserProfilePage"));
 const CategoryLanding = lazy(() => import("./pages/CategoryLanding"));
 const SocialMediaComingSoon = lazy(() => import("./pages/SocialMediaComingSoon"));
@@ -67,6 +66,7 @@ const ListSocialAccountComingSoon = lazy(() => import("./pages/seller/ListSocial
 // Redirect components (not lazy loaded as they're simple redirects)
 const AccountDashboardRedirect = lazy(() => import("./components/redirects/AccountDashboardRedirect"));
 const SellerDashboardRedirect = lazy(() => import("./components/redirects/SellerDashboardRedirect"));
+const SellerProfileRedirect = lazy(() => import("./components/redirects/SellerProfileRedirect"));
 
 // Dispute pages (lazy loaded)
 const DisputeList = lazy(() => import("./pages/disputes/DisputeList"));
@@ -171,7 +171,8 @@ const App = () => {
           
           {/* User profile routes */}
           <Route path="/@:username" element={<UserProfilePage />} />
-          <Route path="/seller/:seller" element={<SellerProfile />} />
+          {/* Redirect old seller profile URLs to new unified profile */}
+          <Route path="/seller/:seller" element={<SellerProfileRedirect />} />
           
           <Route path="/login" element={<Login />} />
           <Route path="/register" element={<Register />} />
