@@ -213,7 +213,7 @@ function DashboardPage() {
   const conversionRate = totalUsers > 0 ? ((totalOrders / totalUsers) * 100).toFixed(2) : '0.00';
   const avgOrderValue = totalOrders > 0 ? (totalRevenue / totalOrders).toFixed(2) : '0.00';
 
-  const stats = [
+  const additionalStats = [
     {
       label: 'Conversion Rate',
       value: `${conversionRate}%`,
@@ -284,7 +284,7 @@ function DashboardPage() {
 
       {/* Additional Stats */}
       <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-        {stats.map((stat, index) => (
+        {additionalStats.map((stat, index) => (
           <Card key={index} className="p-6">
             <div className="flex items-center justify-between mb-4">
               <p className="text-sm font-medium text-muted-foreground">{stat.label}</p>
