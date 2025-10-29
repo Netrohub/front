@@ -37,25 +37,28 @@ function AuthProvider({ children }: AuthProviderProps) {
     const initAuth = async () => {
       try {
         if (apiClient.isAuthenticated()) {
-          console.log('🔄 AuthContext: Initializing auth...');
+          if (import.meta.env.DEV) {
+            console.debug('AuthContext: Initializing auth...');
+          }
           const userData = await apiClient.getCurrentUser();
-          console.log('✅ AuthContext: User loaded', userData);
+          if (import.meta.env.DEV) {
+            console.debug('AuthContext: User loaded', userData.id);
+          }
           setUser(userData);
-        } else {
-          console.log('ℹ️ AuthContext: No token found, user not authenticated');
         }
       } catch (error: any) {
-        console.error('❌ AuthContext: Failed to initialize auth:', error);
+        // Only log in development
+        if (import.meta.env.DEV) {
+          console.warn('AuthContext: Failed to initialize auth:', error.message);
+        }
         
         // ✅ FIX: Only clear token if it's truly expired (401)
         // Don't show error to user during initialization
         if (error.message?.includes('Session expired')) {
-          console.warn('⚠️ AuthContext: Silent token expiration during init, clearing token');
           apiClient.clearToken();
           // Don't redirect or show error - just clear and let user continue
         } else {
-          // Other errors (network, server error, etc) - just log and clear
-          console.warn('⚠️ AuthContext: Clearing invalid token due to error');
+          // Other errors (network, server error, etc) - just clear
           apiClient.clearToken();
         }
       } finally {
@@ -69,26 +72,24 @@ function AuthProvider({ children }: AuthProviderProps) {
   const login = async (email: string, password: string, remember = false) => {
     try {
       setIsLoading(true);
-      console.log('🔑 AuthContext: Logging in...', { email });
       
       const response = await apiClient.login({ email, password, remember });
-      
-      console.log('🔍 AuthContext: Full response:', response);
       
       // Extract user from response - handle both direct and nested data structure
       const user = response.user || (response as any).data?.user || (response as any).user;
       
       if (!user) {
-        console.error('❌ AuthContext: No user in response', response);
+        if (import.meta.env.DEV) {
+          console.error('AuthContext: No user in response', response);
+        }
         throw new Error('Invalid login response: no user data');
       }
       
-      console.log('👤 AuthContext: Setting user', user);
       setUser(user);
-      
-      console.log('✅ AuthContext: Login complete, user authenticated');
     } catch (error) {
-      console.error('❌ AuthContext: Login failed:', error);
+      if (import.meta.env.DEV) {
+        console.error('AuthContext: Login failed:', error);
+      }
       throw error;
     } finally {
       setIsLoading(false);
@@ -113,7 +114,9 @@ function AuthProvider({ children }: AuthProviderProps) {
       });
       setUser(response.user);
     } catch (error) {
-      console.error('Registration failed:', error);
+      if (import.meta.env.DEV) {
+        console.error('Registration failed:', error);
+      }
       throw error;
     } finally {
       setIsLoading(false);
@@ -124,7 +127,9 @@ function AuthProvider({ children }: AuthProviderProps) {
     try {
       await apiClient.logout();
     } catch (error) {
-      console.error('Logout failed:', error);
+      if (import.meta.env.DEV) {
+        console.error('Logout failed:', error);
+      }
     } finally {
       setUser(null);
       apiClient.clearToken();
@@ -138,7 +143,9 @@ function AuthProvider({ children }: AuthProviderProps) {
         setUser(userData);
       }
     } catch (error) {
-      console.error('Failed to refresh user:', error);
+      if (import.meta.env.DEV) {
+        console.error('Failed to refresh user:', error);
+      }
       setUser(null);
       apiClient.clearToken();
     }
@@ -146,7 +153,9 @@ function AuthProvider({ children }: AuthProviderProps) {
 
   const updateKYCStatus = async (step: 'email' | 'phone' | 'identity', verified: boolean) => {
     try {
-      console.log(`🔐 AuthContext: Updating KYC ${step} status to ${verified}`);
+      if (import.meta.env.DEV) {
+        console.debug(`AuthContext: Updating KYC ${step} status to ${verified}`);
+      }
       
       // Update local user state immediately for UI responsiveness
       setUser(prev => {

@@ -1,5 +1,7 @@
 import { QueryClient } from '@tanstack/react-query';
 
+import { storeSecureToken, getSecureToken, removeSecureToken } from './tokenEncryption';
+
 // API Configuration
 const API_BASE_URL = import.meta.env.VITE_API_BASE_URL || 'https://api.nxoland.com/api';
 
@@ -200,7 +202,8 @@ class ApiClient {
 
   constructor(baseURL: string) {
     this.baseURL = baseURL;
-    this.token = localStorage.getItem('auth_token');
+    // Use encrypted token storage
+    this.token = getSecureToken('auth_token');
   }
 
   async request<T>(
@@ -209,17 +212,18 @@ class ApiClient {
   ): Promise<ApiResponse<T>> {
     const url = `${this.baseURL}${endpoint}`;
     
-    // Always get fresh token from localStorage
-    const token = localStorage.getItem('auth_token');
+    // Always get fresh token from encrypted storage
+    const token = getSecureToken('auth_token');
     
-    console.log('🌐 API Request:', {
-      url,
-      method: options.method || 'GET',
-      endpoint,
-      baseURL: this.baseURL,
-      hasToken: !!token,
-      tokenLength: token ? token.length : 0
-    });
+    // Log only in development
+    if (import.meta.env.DEV) {
+      console.debug('API Request:', {
+        url,
+        method: options.method || 'GET',
+        endpoint,
+        hasToken: !!token,
+      });
+    }
     
     const headers = {
       'Content-Type': 'application/json',
@@ -227,12 +231,6 @@ class ApiClient {
       ...(token && { Authorization: `Bearer ${token}` }),
       ...options.headers,
     };
-    
-    console.log('📋 Request headers:', {
-      'Content-Type': headers['Content-Type'],
-      'Accept': headers['Accept'],
-      'Authorization': headers['Authorization'] ? `${headers['Authorization'].substring(0, 30)}...` : 'none'
-    });
     
     const config: RequestInit = {
       headers,
@@ -243,17 +241,21 @@ class ApiClient {
       const response = await fetch(url, config);
       const data = await response.json();
       
-      console.log('📥 API Response:', {
-        url,
-        status: response.status,
-        ok: response.ok,
-        data: data
-      });
+      // Log errors only (not success responses)
+      if (!response.ok && import.meta.env.DEV) {
+        console.warn('API Response Error:', {
+          url,
+          status: response.status,
+          message: data.message,
+        });
+      }
 
       if (!response.ok) {
         // Handle 401 Unauthorized - token expired or invalid
         if (response.status === 401) {
-          console.warn('🔄 Token expired or invalid, clearing authentication');
+          if (import.meta.env.DEV) {
+            console.warn('Token expired or invalid, clearing authentication');
+          }
           this.clearToken();
           
           // ✅ FIX: Only redirect to login if not on login/register pages
@@ -282,11 +284,15 @@ class ApiClient {
     } catch (error: any) {
       // Network errors
       if (error.name === 'TypeError' && error.message.includes('fetch')) {
-        console.error('❌ Network error:', error);
+        // Always log network errors as they're critical
+        console.error('Network error:', error.message);
         throw new Error('Network error. Please check your internet connection.');
       }
       
-      console.error('❌ API request failed:', error);
+      // Log other errors in development
+      if (import.meta.env.DEV) {
+        console.error('API request failed:', error);
+      }
       throw error;
     }
   }
@@ -298,8 +304,6 @@ class ApiClient {
       body: JSON.stringify(credentials),
     });
     
-    console.log('🔍 API Client: Full backend response:', apiResponse);
-    
     // Handle wrapped response from backend: { data: { user, access_token }, message, status }
     let response: AuthResponse;
     
@@ -307,17 +311,17 @@ class ApiClient {
       // Response is wrapped in { data: { ... } }
       response = apiResponse.data as AuthResponse;
     } else {
-      // Response is direct
-      response = apiResponse as any;
+      // Response is direct AuthResponse
+      response = apiResponse as AuthResponse;
     }
     
-    console.log('🔍 API Client: Extracted auth response:', response);
-    
-    if (response && response.access_token) {
+    if (response.access_token) {
       this.setToken(response.access_token);
-      console.log('✅ API Client: Token saved to localStorage');
     } else {
-      console.error('❌ API Client: No access_token in response', response);
+      if (import.meta.env.DEV) {
+        console.error('No access_token in response', response);
+      }
+      throw new Error('Invalid login response: no access token');
     }
     
     return response;
@@ -377,7 +381,9 @@ class ApiClient {
       return response;
     }
     
-    console.warn('Unexpected response format from getProductsByUser:', response);
+      if (import.meta.env.DEV) {
+        console.warn('Unexpected response format from getProductsByUser:', response);
+      }
     return [];
   }
 
@@ -571,11 +577,15 @@ class ApiClient {
   // Utility Methods
   setToken(token: string): void {
     this.token = token;
-    localStorage.setItem('auth_token', token);
+    // Store token with encryption
+    storeSecureToken('auth_token', token);
   }
 
   clearToken(): void {
     this.token = null;
+    // Remove encrypted token
+    removeSecureToken('auth_token');
+    // Also remove legacy plain token if exists
     localStorage.removeItem('auth_token');
   }
 

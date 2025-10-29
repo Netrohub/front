@@ -9,6 +9,7 @@ import { AuthProvider } from "./contexts/AuthContext";
 import AnalyticsProvider from "./components/AnalyticsProvider";
 import RequireAuth from "./components/RequireAuth";
 import RequireKYC from "./components/RequireKYC";
+import ErrorBoundary from "./components/ErrorBoundary";
 import { Loader2 } from "lucide-react";
 
 // Eagerly loaded pages (critical for initial render)
@@ -136,16 +137,18 @@ const App = () => {
   }
 
   return (
-    <QueryClientProvider client={queryClient}>
-      <LanguageProvider>
-        <AuthProvider>
-          <TooltipProvider>
-          <Toaster />
-          <Sonner />
-          <BrowserRouter future={{ v7_startTransition: true, v7_relativeSplatPath: true }}>
-            <AnalyticsProvider>
-              <Suspense fallback={<PageLoader />}>
-                <Routes>
+    <ErrorBoundary>
+      <QueryClientProvider client={queryClient}>
+        <LanguageProvider>
+          <AuthProvider>
+            <TooltipProvider>
+            <Toaster />
+            <Sonner />
+            <BrowserRouter future={{ v7_startTransition: true, v7_relativeSplatPath: true }}>
+              <AnalyticsProvider>
+                <ErrorBoundary>
+                  <Suspense fallback={<PageLoader />}>
+                    <Routes>
           <Route path="/" element={<Index />} />
           <Route path="/leaderboard" element={<Leaderboard />} />
           <Route path="/games" element={<Games />} />
@@ -218,12 +221,14 @@ const App = () => {
           <Route path="*" element={<NotFound />} />
               </Routes>
             </Suspense>
+                </ErrorBoundary>
           </AnalyticsProvider>
         </BrowserRouter>
     </TooltipProvider>
     </AuthProvider>
     </LanguageProvider>
   </QueryClientProvider>
+      </ErrorBoundary>
   );
 };
 
