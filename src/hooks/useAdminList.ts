@@ -80,9 +80,10 @@ export function useAdminList<T extends { id: number }>({
         } else if (response && response.data) {
           rawItems = Array.isArray(response.data) ? response.data : [];
           if (response.pagination) {
+            // ✅ Handle standardized pagination format (now includes both limit and per_page)
             paginationData = {
               total: response.pagination.total || 0,
-              totalPages: response.pagination.total_pages || 0,
+              totalPages: response.pagination.total_pages || response.pagination.totalPages || 0,
             };
           }
         }
