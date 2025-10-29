@@ -124,14 +124,49 @@ class SellerApiClient {
 
   // Seller Dashboard
   async getDashboard(): Promise<SellerDashboard> {
-    const response = await this.request<SellerDashboard>('/seller/dashboard');
-    return response.data;
+    try {
+      const response = await this.request<SellerDashboard>('/seller/dashboard');
+      // Ensure we always return a valid object structure
+      if (!response || !response.data) {
+        return {
+          stats: {
+            totalRevenue: 0,
+            totalOrders: 0,
+            activeListings: 0,
+            pendingPayouts: 0,
+          },
+          recentOrders: [],
+          recentPayouts: [],
+        };
+      }
+      return response.data;
+    } catch (error) {
+      console.error('Error fetching seller dashboard:', error);
+      // Return default structure on error
+      return {
+        stats: {
+          totalRevenue: 0,
+          totalOrders: 0,
+          activeListings: 0,
+          pendingPayouts: 0,
+        },
+        recentOrders: [],
+        recentPayouts: [],
+      };
+    }
   }
 
   // Seller Products
-  async getProducts(): Promise<Product[]> {
-    const response = await this.request<Product[]>('/seller/products');
-    return response.data;
+  async getProducts(options?: { limit?: number }): Promise<Product[]> {
+    try {
+      const params = options?.limit ? `?limit=${options.limit}` : '';
+      const response = await this.request<Product[]>(`/seller/products${params}`);
+      // Ensure we always return an array
+      return Array.isArray(response?.data) ? response.data : [];
+    } catch (error) {
+      console.error('Error fetching seller products:', error);
+      return [];
+    }
   }
 
   async createProduct(data: FormData): Promise<Product> {
@@ -157,21 +192,40 @@ class SellerApiClient {
   }
 
   // Seller Orders
-  async getOrders(): Promise<SellerOrder[]> {
-    const response = await this.request<SellerOrder[]>('/seller/orders');
-    return response.data;
+  async getOrders(options?: { limit?: number }): Promise<SellerOrder[]> {
+    try {
+      const params = options?.limit ? `?limit=${options.limit}` : '';
+      const response = await this.request<SellerOrder[]>(`/seller/orders${params}`);
+      // Ensure we always return an array
+      return Array.isArray(response?.data) ? response.data : [];
+    } catch (error) {
+      console.error('Error fetching seller orders:', error);
+      return [];
+    }
   }
 
   // Seller Payouts
   async getPayouts(): Promise<SellerPayout[]> {
-    const response = await this.request<SellerPayout[]>('/seller/payouts');
-    return response.data;
+    try {
+      const response = await this.request<SellerPayout[]>('/seller/payouts');
+      // Ensure we always return an array
+      return Array.isArray(response?.data) ? response.data : [];
+    } catch (error) {
+      console.error('Error fetching seller payouts:', error);
+      return [];
+    }
   }
 
   // Seller Notifications
   async getNotifications(): Promise<any[]> {
-    const response = await this.request<any[]>('/seller/notifications');
-    return response.data;
+    try {
+      const response = await this.request<any[]>('/seller/notifications');
+      // Ensure we always return an array
+      return Array.isArray(response?.data) ? response.data : [];
+    } catch (error) {
+      console.error('Error fetching seller notifications:', error);
+      return [];
+    }
   }
 
   // Product Listing
