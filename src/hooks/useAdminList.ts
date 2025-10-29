@@ -65,7 +65,6 @@ export function useAdminList<T extends { id: number }>({
         const response = await apiClient.request<any>(`/admin${endpoint}?${params}`);
         
         // Handle both array and wrapped responses
-        let items: T[] = [];
         let paginationData = {
           total: 0,
           totalPages: 0,
