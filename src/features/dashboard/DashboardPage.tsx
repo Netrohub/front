@@ -123,12 +123,12 @@ function DashboardPage() {
     refetchInterval: 60 * 1000, // Refetch every minute
   });
 
-  // Fetch disputes count for open disputes
+  // Fetch disputes count for pending disputes
   const { data: disputesData } = useQuery({
-    queryKey: ['admin-open-disputes'],
+    queryKey: ['admin-pending-disputes'],
     queryFn: async () => {
       try {
-        const response = await apiClient.request<any>('/admin/disputes?status=open&limit=1');
+        const response = await apiClient.request<any>('/admin/disputes?status=pending&limit=1');
         return response.data || [];
       } catch {
         return [];

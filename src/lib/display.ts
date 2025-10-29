@@ -60,8 +60,24 @@ export function display(value: any): string | number | React.ReactElement {
     }
     
     // For Date objects
-    if (value instanceof Date && !isNaN(value.getTime())) {
-      return value.toLocaleDateString();
+    if (value instanceof Date) {
+      if (!isNaN(value.getTime())) {
+        return value.toLocaleDateString();
+      }
+      // Invalid date
+      return '—';
+    }
+    
+    // Handle date-like strings (common in API responses)
+    if (typeof value === 'string' && value.match(/^\d{4}-\d{2}-\d{2}/)) {
+      try {
+        const date = new Date(value);
+        if (!isNaN(date.getTime())) {
+          return date.toLocaleDateString();
+        }
+      } catch {
+        // Invalid date string, fall through
+      }
     }
     
     // For nested objects with common patterns

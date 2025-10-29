@@ -348,19 +348,21 @@ const Products = () => {
               <div className={viewMode === 'grid' 
                 ? "grid gap-6 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4" 
                 : "grid gap-4 grid-cols-1"}>
-                {productsData.data.map((product) => (
-                  <ProductCard 
-                    key={product.id} 
-                    id={product.id}
-                    name={product.title}
-                    price={product.price}
-                    image={product.images?.[0] || "/placeholder.svg"}
-                    category={product.category}
-                    rating={product.rating}
-                    reviews={product.reviews_count}
-                    featured={product.featured}
-                  />
-                ))}
+                {productsData.data
+                  .filter(product => product != null && product.id != null)
+                  .map((product) => (
+                    <ProductCard 
+                      key={product.id} 
+                      id={product.id}
+                      name={product.title}
+                      price={product.price}
+                      image={product.images?.[0] || "/placeholder.svg"}
+                      category={product.category}
+                      rating={product.rating}
+                      reviews={product.reviews_count}
+                      featured={product.featured}
+                    />
+                  ))}
               </div>
             ) : (
               <div className="text-center py-12">

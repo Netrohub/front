@@ -31,19 +31,21 @@ const FeaturedProducts = () => {
           </div>
         ) : productsData && productsData.data.length > 0 ? (
           <div className="grid gap-6 sm:grid-cols-2 lg:grid-cols-3">
-            {productsData.data.map((product) => (
-              <ProductCard 
-                key={product.id}
-                id={product.id}
-                name={product.title}
-                price={product.price}
-                image={product.images?.[0] || "/placeholder.svg"}
-                category={product.category}
-                rating={product.rating}
-                reviews={product.reviews_count}
-                featured={product.featured}
-              />
-            ))}
+            {productsData.data
+              .filter(product => product != null && product.id != null)
+              .map((product) => (
+                <ProductCard 
+                  key={product.id}
+                  id={product.id}
+                  name={product.title}
+                  price={product.price}
+                  image={product.images?.[0] || "/placeholder.svg"}
+                  category={product.category}
+                  rating={product.rating}
+                  reviews={product.reviews_count}
+                  featured={product.featured}
+                />
+              ))}
           </div>
         ) : (
           <div className="text-center py-12">
