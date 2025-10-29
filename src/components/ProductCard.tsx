@@ -65,7 +65,7 @@ const ProductCard = (props: ProductCardProps) => {
       id: props.id,
       title: props.title || props.name || '',
       description: '',
-      price: props.price || 0,
+      price: typeof props.price === 'number' ? props.price : Number(props.price) || 0,
       discount_price: props.discount_price,
       category: categoryString,
       images: props.images || (props.image ? [props.image] : []),
@@ -80,10 +80,16 @@ const ProductCard = (props: ProductCardProps) => {
     return null;
   }
 
-  const displayPrice = product.discount_price || product.price;
-  const hasDiscount = product.discount_price && product.discount_price < product.price;
-  const discountPercentage = hasDiscount 
-    ? Math.round(((product.price - product.discount_price!) / product.price) * 100)
+  // Ensure price values are numbers
+  const productPrice = typeof product.price === 'number' ? product.price : Number(product.price) || 0;
+  const productDiscountPrice = product.discount_price 
+    ? (typeof product.discount_price === 'number' ? product.discount_price : Number(product.discount_price) || 0)
+    : null;
+  
+  const displayPrice = productDiscountPrice || productPrice;
+  const hasDiscount = productDiscountPrice && productDiscountPrice < productPrice;
+  const discountPercentage = hasDiscount && productPrice > 0
+    ? Math.round(((productPrice - productDiscountPrice!) / productPrice) * 100)
     : 0;
 
   const fallbackImage = `https://api.dicebear.com/7.x/shapes/svg?seed=${product.title || 'product'}`;
@@ -204,7 +210,7 @@ const ProductCard = (props: ProductCardProps) => {
               </span>
               {hasDiscount && (
                 <span className="text-xs text-foreground/50 line-through">
-                  ${product.price.toFixed(2)}
+                  ${productPrice.toFixed(2)}
                 </span>
               )}
             </div>
