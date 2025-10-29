@@ -27,39 +27,70 @@ export function display(value: any): string | number | React.ReactElement {
   }
 
   // Handle objects - convert to string in dev, fallback in prod
-  if (typeof value === 'object') {
+  if (typeof value === 'object' && value !== null) {
     // Try to extract meaningful string representation first
-    if (value && typeof value === 'object') {
-      // Common properties to extract (in priority order)
-      if ('title' in value && value.title) return String(value.title);
-      if ('name' in value && value.name) return String(value.name);
-      if ('label' in value && value.label) return String(value.label);
-      if ('email' in value && value.email) return String(value.email);
-      if ('username' in value && value.username) return String(value.username);
-      if ('phone' in value && value.phone) return String(value.phone);
-      if ('address' in value && value.address) return String(value.address);
-      if ('city' in value && value.city) return String(value.city);
-      if ('country' in value && value.country) return String(value.country);
-      if ('method' in value && value.method) return String(value.method);
-      if ('status' in value && value.status) return String(value.status);
-      if ('amount' in value && typeof value.amount === 'number') return String(value.amount.toFixed(2));
-      if ('price' in value && typeof value.price === 'number') return String(value.price.toFixed(2));
-      if ('rating' in value && typeof value.rating === 'number') return String(value.rating);
-      if ('id' in value && value.id != null) return String(value.id);
-      
-      // For nested objects, try to get a summary
-      const keys = Object.keys(value);
-      if (keys.length > 0) {
-        if (import.meta.env.DEV) {
-          console.warn('Display helper: Object has no stringifiable properties:', value);
-          return JSON.stringify(value, null, 2);
+    // Common properties to extract (in priority order)
+    const stringProps = ['title', 'name', 'label', 'email', 'username', 'phone', 'address', 'city', 'country', 'method', 'status', 'description', 'code', 'subject'];
+    
+    for (const prop of stringProps) {
+      if (prop in value && value[prop] != null && value[prop] !== '') {
+        const propValue = value[prop];
+        if (typeof propValue === 'string' || typeof propValue === 'number') {
+          return String(propValue);
         }
-        // In production, return empty string or a safe placeholder
-        return '';
+        // If property itself is an object, recurse
+        if (typeof propValue === 'object') {
+          const nested = display(propValue);
+          if (nested) return nested;
+        }
       }
     }
     
-    // Last resort fallback
+    // Handle numeric properties
+    const numericProps = ['amount', 'price', 'total', 'quantity', 'rating', 'count', 'balance'];
+    for (const prop of numericProps) {
+      if (prop in value && typeof value[prop] === 'number') {
+        return String(Number(value[prop]).toFixed(2));
+      }
+    }
+    
+    // Handle ID as last resort
+    if ('id' in value && value.id != null) {
+      return String(value.id);
+    }
+    
+    // For Date objects
+    if (value instanceof Date && !isNaN(value.getTime())) {
+      return value.toLocaleDateString();
+    }
+    
+    // For nested objects with common patterns
+    // Check if object has a displayable string property
+    const keys = Object.keys(value);
+    if (keys.length > 0) {
+      // Try first value that's a string/number
+      for (const key of keys) {
+        const val = value[key];
+        if (typeof val === 'string' || typeof val === 'number') {
+          return String(val);
+        }
+      }
+      
+      // If in development, show JSON for debugging
+      if (import.meta.env.DEV) {
+        console.warn('Display helper: Could not extract string from object:', value);
+        try {
+          return JSON.stringify(value, null, 2);
+        } catch {
+          return '[Object]';
+        }
+      }
+      
+      // In production, return a safe placeholder
+      return '—'; // Em dash, better than empty string
+    }
+    
+    // Empty object
     return '';
   }
 
@@ -68,8 +99,19 @@ export function display(value: any): string | number | React.ReactElement {
     return '[Function]';
   }
 
-  // Fallback
-  return String(value);
+  // Fallback - NEVER return "[object Object]"
+  const stringValue = String(value);
+  if (stringValue === '[object Object]') {
+    // This means an object was stringified incorrectly
+    // Return a safe placeholder instead
+    if (import.meta.env.DEV) {
+      console.warn('Display helper: Received unhandled type:', typeof value, value);
+      return '[Object]';
+    }
+    return '—'; // Em dash for production
+  }
+  
+  return stringValue;
 }
 
 /**
@@ -90,9 +132,26 @@ export function isSafeToRender(value: any): value is string | number | React.Rea
  * Safely render a value, converting objects to strings if needed
  */
 export function safeRender(value: any): React.ReactNode {
+  // Handle null/undefined
+  if (value === null || value === undefined) {
+    return '';
+  }
+  
+  // If it's already safe to render, return as-is
   if (isSafeToRender(value)) {
     return value;
   }
   
-  return display(value);
+  // Convert to displayable value
+  const displayValue = display(value);
+  
+  // Double-check: if display() somehow returns "[object Object]", replace it
+  if (typeof displayValue === 'string' && displayValue === '[object Object]') {
+    if (import.meta.env.DEV) {
+      console.warn('safeRender: display() returned "[object Object]" for:', value);
+    }
+    return '—';
+  }
+  
+  return displayValue;
 }

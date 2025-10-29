@@ -204,19 +204,31 @@ export function DataTable<T extends { id: string | number }>({
                     </TableCell>
                   )}
                   {columns.map((column) => {
-                    const cellValue = column.render
-                      ? column.render(
-                          column.dataIndex ? record[column.dataIndex] : record,
-                          record,
-                          index
-                        )
-                      : column.dataIndex
-                      ? record[column.dataIndex]
-                      : record[column.key];
+                    let cellValue: any;
+                    
+                    if (column.render) {
+                      // Custom render function
+                      cellValue = column.render(
+                        column.dataIndex ? record[column.dataIndex] : record,
+                        record,
+                        index
+                      );
+                    } else {
+                      // Direct value access
+                      const rawValue = column.dataIndex
+                        ? record[column.dataIndex]
+                        : record[column.key];
+                      
+                      // If raw value is an object and no render function, let safeRender handle it
+                      cellValue = rawValue;
+                    }
+                    
+                    // Always use safeRender to prevent [object Object]
+                    const renderedValue = safeRender(cellValue);
                     
                     return (
                       <TableCell key={column.key}>
-                        {safeRender(cellValue)}
+                        {renderedValue}
                       </TableCell>
                     );
                   })}
