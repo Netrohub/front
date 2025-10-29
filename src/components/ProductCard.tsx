@@ -66,7 +66,9 @@ const ProductCard = (props: ProductCardProps) => {
       title: props.title || props.name || '',
       description: '',
       price: typeof props.price === 'number' ? props.price : Number(props.price) || 0,
-      discount_price: props.discount_price,
+      discount_price: props.discount_price 
+        ? (typeof props.discount_price === 'number' ? props.discount_price : Number(props.discount_price) || 0)
+        : undefined,
       category: categoryString,
       images: props.images || (props.image ? [props.image] : []),
       status: 'active',
