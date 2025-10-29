@@ -35,6 +35,15 @@ const AccountLayout = ({ children }: AccountLayoutProps) => {
   const location = useLocation();
   const { user } = useAuth();
   
+  // Check if we're inside the dashboard tabs (not a standalone account page)
+  const isInsideDashboard = location.pathname === '/dashboard';
+  
+  // If inside dashboard, just render the content without layout wrapper
+  // The DashboardLayout already provides Navbar, Footer, and Starfield
+  if (isInsideDashboard) {
+    return <>{children}</>;
+  }
+  
   // Check if KYC is completed
   const isKYCCompleted = user?.emailVerified && user?.phoneVerified && user?.kycStatus === 'verified';
   

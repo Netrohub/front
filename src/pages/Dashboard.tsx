@@ -11,7 +11,7 @@ import BillingPage from "@/pages/account/Billing";
 import KYCPage from "@/pages/account/KYC";
 import { useAuth } from "@/contexts/AuthContext";
 import { useSearchParams } from "react-router-dom";
-import { Tabs, TabsContent } from "@/components/ui/tabs";
+import { TabsContent } from "@/components/ui/tabs";
 import { Helmet } from "react-helmet-async";
 
 const Dashboard = () => {
@@ -63,7 +63,6 @@ const Dashboard = () => {
       </Helmet>
       
       <DashboardLayout>
-      <Tabs value={currentTab} className="space-y-6">
         {/* Main Dashboard Tabs */}
         <TabsContent value="overview" className="mt-0">
           <OverviewTab />
@@ -116,7 +115,6 @@ const Dashboard = () => {
             <KYCPage />
           </div>
         </TabsContent>
-      </Tabs>
     </DashboardLayout>
     </>
   );
