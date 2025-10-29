@@ -1,15 +1,22 @@
 import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
+import { useQuery } from '@tanstack/react-query';
 import { DataTable, Column } from '@/components/ui/DataTable';
 import { ConfirmDialog } from '@/components/ui/ConfirmDialog';
+import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription, DialogFooter } from '@/components/ui/dialog';
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
+import { Input } from '@/components/ui/input';
+import { Label } from '@/components/ui/label';
+import { Textarea } from '@/components/ui/textarea';
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { toast } from 'sonner';
 import { format } from 'date-fns';
 import { safeFormatDate } from '@/utils/dateHelpers';
 import { AlertTriangle, User, CheckCircle, MessageSquare } from 'lucide-react';
 import { useAdminList } from '@/hooks/useAdminList';
 import { useAdminMutation } from '@/hooks/useAdminMutation';
+import { apiClient } from '@/lib/api';
 
 interface Dispute {
   id: number;
@@ -29,63 +36,105 @@ interface Dispute {
   updated_at: string;
 }
 
+interface AdminUser {
+  id: number;
+  name: string;
+  email: string;
+  username: string;
+}
+
 function DisputesList() {
   const navigate = useNavigate();
   const [assignDialog, setAssignDialog] = useState<{
     open: boolean;
     disputeId: number | null;
-  }>({ open: false, disputeId: null });
+    selectedAdminId: number | null;
+  }>({ open: false, disputeId: null, selectedAdminId: null });
   const [resolveDialog, setResolveDialog] = useState<{
     open: boolean;
     disputeId: number | null;
-  }>({ open: false, disputeId: null });
+    resolution: string;
+  }>({ open: false, disputeId: null, resolution: '' });
 
-  const { data, isLoading } = useAdminList<Dispute>({
+  const { data, isLoading, refetch } = useAdminList<Dispute>({
     endpoint: '/disputes',
     initialSearchTerm: '',
   });
 
-  const { update } = useAdminMutation<Dispute>({
-    endpoint: '/disputes',
-    invalidateQueries: ['admin-list', '/disputes'],
+  // Fetch admin users for assignment
+  const { data: adminUsersData } = useQuery({
+    queryKey: ['admin-users-list'],
+    queryFn: async () => {
+      try {
+        const response = await apiClient.request<any>('/admin/users?role=admin&per_page=100');
+        if ('data' in response && response.data) {
+          return response.data as AdminUser[];
+        }
+        return (response as any[]).filter((user: any) => 
+          user.user_roles?.some((ur: any) => ur.role?.slug === 'admin')
+        );
+      } catch {
+        return [];
+      }
+    },
   });
 
   const handleAssignModerator = (disputeId: number) => {
-    setAssignDialog({ open: true, disputeId });
+    setAssignDialog({ open: true, disputeId, selectedAdminId: null });
   };
 
   const handleResolve = (disputeId: number) => {
-    setResolveDialog({ open: true, disputeId });
+    setResolveDialog({ open: true, disputeId, resolution: '' });
   };
 
   const confirmAssign = async () => {
-    if (assignDialog.disputeId) {
+    if (assignDialog.disputeId && assignDialog.selectedAdminId) {
       try {
-        await update(assignDialog.disputeId, { state: 'in_review' });
+        // Use correct endpoint: POST /admin/disputes/:id/assign
+        await apiClient.request(`/admin/disputes/${assignDialog.disputeId}/assign`, {
+          method: 'POST',
+          body: JSON.stringify({ admin_id: assignDialog.selectedAdminId }),
+        });
         toast.success('Moderator Assigned', {
           description: 'A moderator has been assigned to this dispute.',
         });
+        refetch();
       } catch (error: any) {
         console.error('Failed to assign moderator:', error);
-        // Error is already handled by the hook
+        toast.error('Failed to assign moderator', {
+          description: error.message || 'An error occurred while assigning moderator.',
+        });
       }
+    } else if (!assignDialog.selectedAdminId) {
+      toast.error('Please select an admin');
+      return;
     }
-    setAssignDialog({ open: false, disputeId: null });
+    setAssignDialog({ open: false, disputeId: null, selectedAdminId: null });
   };
 
   const confirmResolve = async () => {
     if (resolveDialog.disputeId) {
       try {
-        await update(resolveDialog.disputeId, { state: 'resolved' });
+        // Use correct endpoint: PUT /admin/disputes/:id/status
+        await apiClient.request(`/admin/disputes/${resolveDialog.disputeId}/status`, {
+          method: 'PUT',
+          body: JSON.stringify({ 
+            status: 'RESOLVED',
+            resolution: resolveDialog.resolution || 'Dispute resolved by admin',
+          }),
+        });
         toast.success('Dispute Resolved', {
           description: 'The dispute has been marked as resolved.',
         });
+        refetch();
       } catch (error: any) {
         console.error('Failed to resolve dispute:', error);
-        // Error is already handled by the hook
+        toast.error('Failed to resolve dispute', {
+          description: error.message || 'An error occurred while resolving dispute.',
+        });
       }
     }
-    setResolveDialog({ open: false, disputeId: null });
+    setResolveDialog({ open: false, disputeId: null, resolution: '' });
   };
 
   const columns: Column<Dispute>[] = [
@@ -139,18 +188,28 @@ function DisputesList() {
       key: 'buyer',
       title: 'Buyer',
       dataIndex: 'buyer',
-      render: (value) => (
-        <div>
-          <p className="font-medium">{value.name}</p>
-          <p className="text-sm text-muted-foreground">{value.email}</p>
-        </div>
-      ),
+      render: (value) => {
+        if (!value || typeof value !== 'object') {
+          return <span className="text-muted-foreground">N/A</span>;
+        }
+        const name = value.name || value.username || 'Unknown';
+        const email = value.email || '';
+        return (
+          <div>
+            <p className="font-medium">{String(name)}</p>
+            {email && <p className="text-sm text-muted-foreground">{String(email)}</p>}
+          </div>
+        );
+      },
     },
     {
       key: 'amount',
       title: 'Amount',
       dataIndex: 'amount',
-      render: (value) => `$${value.toFixed(2)}`,
+      render: (value) => {
+        const numValue = typeof value === 'number' ? value : Number(value) || 0;
+        return `$${numValue.toFixed(2)}`;
+      },
     },
     {
       key: 'created_at',
@@ -218,23 +277,81 @@ function DisputesList() {
         bulkActions={bulkActions}
       />
 
-      <ConfirmDialog
-        open={assignDialog.open}
-        onOpenChange={(open) => setAssignDialog({ open, disputeId: null })}
-        title="Assign Moderator"
-        description="Are you sure you want to assign a moderator to this dispute?"
-        confirmText="Assign"
-        onConfirm={confirmAssign}
-      />
+      {/* Assign Moderator Dialog */}
+      <Dialog open={assignDialog.open} onOpenChange={(open) => setAssignDialog({ open, disputeId: null, selectedAdminId: null })}>
+        <DialogContent>
+          <DialogHeader>
+            <DialogTitle>Assign Moderator</DialogTitle>
+            <DialogDescription>
+              Select an admin user to assign to this dispute.
+            </DialogDescription>
+          </DialogHeader>
+          <div className="space-y-4 py-4">
+            <div className="space-y-2">
+              <Label htmlFor="admin-select">Select Admin</Label>
+              <Select
+                value={assignDialog.selectedAdminId?.toString() || ''}
+                onValueChange={(value) => setAssignDialog(prev => ({ ...prev, selectedAdminId: parseInt(value) }))}
+              >
+                <SelectTrigger id="admin-select">
+                  <SelectValue placeholder="Select an admin..." />
+                </SelectTrigger>
+                <SelectContent>
+                  {adminUsersData && adminUsersData.length > 0 ? (
+                    adminUsersData.map((admin) => (
+                      <SelectItem key={admin.id} value={admin.id.toString()}>
+                        {admin.name} ({admin.email})
+                      </SelectItem>
+                    ))
+                  ) : (
+                    <SelectItem value="" disabled>No admins available</SelectItem>
+                  )}
+                </SelectContent>
+              </Select>
+            </div>
+          </div>
+          <DialogFooter>
+            <Button variant="outline" onClick={() => setAssignDialog({ open: false, disputeId: null, selectedAdminId: null })}>
+              Cancel
+            </Button>
+            <Button onClick={confirmAssign} disabled={!assignDialog.selectedAdminId}>
+              Assign
+            </Button>
+          </DialogFooter>
+        </DialogContent>
+      </Dialog>
 
-      <ConfirmDialog
-        open={resolveDialog.open}
-        onOpenChange={(open) => setResolveDialog({ open, disputeId: null })}
-        title="Resolve Dispute"
-        description="Are you sure you want to mark this dispute as resolved?"
-        confirmText="Resolve"
-        onConfirm={confirmResolve}
-      />
+      {/* Resolve Dispute Dialog */}
+      <Dialog open={resolveDialog.open} onOpenChange={(open) => setResolveDialog({ open, disputeId: null, resolution: '' })}>
+        <DialogContent>
+          <DialogHeader>
+            <DialogTitle>Resolve Dispute</DialogTitle>
+            <DialogDescription>
+              Enter resolution details and mark this dispute as resolved.
+            </DialogDescription>
+          </DialogHeader>
+          <div className="space-y-4 py-4">
+            <div className="space-y-2">
+              <Label htmlFor="resolution">Resolution Notes</Label>
+              <Textarea
+                id="resolution"
+                placeholder="Enter resolution details..."
+                value={resolveDialog.resolution}
+                onChange={(e) => setResolveDialog(prev => ({ ...prev, resolution: e.target.value }))}
+                rows={4}
+              />
+            </div>
+          </div>
+          <DialogFooter>
+            <Button variant="outline" onClick={() => setResolveDialog({ open: false, disputeId: null, resolution: '' })}>
+              Cancel
+            </Button>
+            <Button onClick={confirmResolve}>
+              Resolve Dispute
+            </Button>
+          </DialogFooter>
+        </DialogContent>
+      </Dialog>
     </div>
   );
 }

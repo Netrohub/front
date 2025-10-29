@@ -5,13 +5,13 @@ import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { useToast } from '@/hooks/use-toast';
-import { useAuth } from '@/contexts/AuthContext';
+import { useAdminAuth } from '@/contexts/AdminAuthContext';
 import { Loader2, Shield } from 'lucide-react';
 
 const AdminLogin = () => {
   const navigate = useNavigate();
   const { toast } = useToast();
-  const { login } = useAuth();
+  const { login: adminLogin } = useAdminAuth();
   const [isLoading, setIsLoading] = useState(false);
   const [formData, setFormData] = useState({
     email: 'admin@nxoland.com',
@@ -23,16 +23,17 @@ const AdminLogin = () => {
     setIsLoading(true);
     
     try {
-      const result = await login(formData.email, formData.password);
+      await adminLogin(formData.email, formData.password);
       toast({
         title: 'Admin Login Successful',
-        description: `Welcome back, ${result.user.name}!`,
+        description: 'Welcome back! Redirecting to dashboard...',
       });
-      navigate('/admin/dashboard');
+      // Redirect to admin dashboard after successful login
+      navigate('/admin/dashboard', { replace: true });
     } catch (error: any) {
       toast({
         title: 'Login Failed',
-        description: error.message || 'Invalid credentials',
+        description: error.message || 'Invalid credentials or insufficient permissions',
         variant: 'destructive',
       });
     } finally {

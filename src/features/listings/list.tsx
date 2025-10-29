@@ -128,22 +128,32 @@ function ListingsList() {
       key: 'seller',
       title: 'Seller',
       dataIndex: 'seller',
-      render: (value) => (
-        <div>
-          <p className="font-medium">{value?.name || 'N/A'}</p>
-          <p className="text-sm text-muted-foreground">{value?.email}</p>
-        </div>
-      ),
+      render: (value) => {
+        if (!value || typeof value !== 'object') {
+          return <span className="text-muted-foreground">N/A</span>;
+        }
+        const name = value.name || value.username || 'Unknown';
+        const email = value.email || '';
+        return (
+          <div>
+            <p className="font-medium">{String(name)}</p>
+            {email && <p className="text-sm text-muted-foreground">{String(email)}</p>}
+          </div>
+        );
+      },
     },
     {
       key: 'price',
       title: 'Price',
       dataIndex: 'price',
-      render: (value) => (
-        <div>
-          <p className="font-medium">${value?.toFixed(2)}</p>
-        </div>
-      ),
+      render: (value) => {
+        const numValue = typeof value === 'number' ? value : Number(value) || 0;
+        return (
+          <div>
+            <p className="font-medium">${numValue.toFixed(2)}</p>
+          </div>
+        );
+      },
     },
     {
       key: 'stock',

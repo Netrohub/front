@@ -93,16 +93,21 @@ export const AdminAuthProvider: React.FC<AdminAuthProviderProps> = ({ children }
         const token = getSecureToken('auth_token');
         if (token) {
           console.log('🔍 AdminAuth: Checking existing token');
-          // Verify token by calling /auth/me endpoint
-          const response = await apiClient.request('/auth/me', {
-            headers: {
-              'Authorization': `Bearer ${token}`
-            }
-          });
+          // Verify token by calling getCurrentUser - handles auth properly
+          const user = await apiClient.getCurrentUser();
           
-          if (response && response.roles && response.roles.includes('admin')) {
+          // Check if user has admin role
+          if (user && user.roles && Array.isArray(user.roles) && user.roles.includes('admin')) {
             console.log('✅ AdminAuth: Valid admin token found');
-            setAdminUser(response);
+            // Map to AdminUser interface
+            setAdminUser({
+              id: user.id,
+              name: user.name || user.username || '',
+              email: user.email || '',
+              username: user.username || '',
+              roles: user.roles || [],
+              is_active: user.is_active ?? true,
+            });
           } else {
             console.log('❌ AdminAuth: Invalid or non-admin token');
             logout();

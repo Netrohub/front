@@ -1,6 +1,9 @@
-import React, { useState } from 'react';
-import { useNavigate } from 'react-router-dom';
+import React, { useState, useEffect } from 'react';
+import { useNavigate, useParams } from 'react-router-dom';
+import { useQuery } from '@tanstack/react-query';
 import { DataTable, Column } from '@/components/ui/DataTable';
+import { Card } from '@/components/ui/card';
+import { apiClient } from '@/lib/api';
 import { ConfirmDialog } from '@/components/ui/ConfirmDialog';
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
@@ -22,16 +25,112 @@ interface User {
 
 function UsersList() {
   const navigate = useNavigate();
+  const { id } = useParams();
   const [deleteDialog, setDeleteDialog] = useState<{
     open: boolean;
     userId: number | null;
   }>({ open: false, userId: null });
   const [selectedRows, setSelectedRows] = useState<string[]>([]);
 
+  // If ID is provided, show user detail view
+  const { data: userDetail, isLoading: isLoadingDetail } = useQuery({
+    queryKey: ['admin-user-detail', id],
+    queryFn: async () => {
+      if (!id) return null;
+      const response = await apiClient.request<User>(`/admin/users/${id}`);
+      return 'data' in response ? response.data : response;
+    },
+    enabled: !!id && !isNaN(Number(id)),
+  });
+
   const { data, isLoading } = useAdminList<User>({
     endpoint: '/users',
     initialSearchTerm: '',
   });
+
+  // Transform backend user data
+  const transformedUserDetail = userDetail ? {
+    ...userDetail,
+    role: userDetail.user_roles?.[0]?.role?.slug || 'user',
+    status: userDetail.is_active ? 'active' : 'inactive',
+  } : null;
+
+  // If viewing a detail, show detail view
+  if (id && !isNaN(Number(id))) {
+    if (isLoadingDetail) {
+      return (
+        <div className="flex items-center justify-center min-h-[400px]">
+          <div className="text-center">
+            <p className="text-muted-foreground">Loading user details...</p>
+          </div>
+        </div>
+      );
+    }
+
+    if (!transformedUserDetail) {
+      return (
+        <div className="space-y-6">
+          <Button variant="ghost" onClick={() => navigate('/admin/users')}>
+            ← Back to Users
+          </Button>
+          <Card className="p-6">
+            <p className="text-destructive">User not found</p>
+          </Card>
+        </div>
+      );
+    }
+
+    return (
+      <div className="space-y-6">
+        <div className="flex items-center justify-between">
+          <Button variant="ghost" onClick={() => navigate('/admin/users')}>
+            ← Back to Users
+          </Button>
+          <div className="flex gap-2">
+            <Button variant="outline" onClick={() => navigate(`/admin/users/${id}/edit`)}>
+              Edit User
+            </Button>
+          </div>
+        </div>
+
+        <Card className="p-6">
+          <div className="space-y-6">
+            <div>
+              <h1 className="text-3xl font-bold">{transformedUserDetail.name}</h1>
+              <p className="text-muted-foreground">{transformedUserDetail.email}</p>
+            </div>
+
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+              <div>
+                <label className="text-sm font-medium text-muted-foreground">Username</label>
+                <p className="text-foreground">{transformedUserDetail.username || transformedUserDetail.email}</p>
+              </div>
+              <div>
+                <label className="text-sm font-medium text-muted-foreground">Role</label>
+                <p className="text-foreground capitalize">{transformedUserDetail.role}</p>
+              </div>
+              <div>
+                <label className="text-sm font-medium text-muted-foreground">Status</label>
+                <Badge variant={transformedUserDetail.status === 'active' ? 'default' : 'destructive'}>
+                  {transformedUserDetail.status}
+                </Badge>
+              </div>
+              <div>
+                <label className="text-sm font-medium text-muted-foreground">Created</label>
+                <p className="text-foreground">{safeFormatDate(transformedUserDetail.created_at)}</p>
+              </div>
+              {transformedUserDetail.phone && (
+                <div>
+                  <label className="text-sm font-medium text-muted-foreground">Phone</label>
+                  <p className="text-foreground">{transformedUserDetail.phone}</p>
+                </div>
+              )}
+            </div>
+          </div>
+        </Card>
+      </div>
+    );
+  }
 
   const { remove } = useAdminMutation<User>({
     endpoint: '/users',

@@ -2,6 +2,7 @@ import { useState, useCallback, useMemo } from 'react';
 import { toast } from 'sonner';
 import { useQuery, useQueryClient } from '@tanstack/react-query';
 import { apiClient } from '@/lib/api';
+import { transformUsers, transformProducts, transformOrders, transformDisputes } from '@/utils/adminDataTransform';
 
 interface UseAdminListOptions<T> {
   endpoint: string;
@@ -70,20 +71,33 @@ export function useAdminList<T extends { id: number }>({
           totalPages: 0,
         };
 
+        let rawItems: any[] = [];
         if (Array.isArray(response)) {
-          items = response;
+          rawItems = response;
           paginationData = {
             total: response.length,
             totalPages: Math.ceil(response.length / pagination.limit),
           };
         } else if (response && response.data) {
-          items = Array.isArray(response.data) ? response.data : [];
+          rawItems = Array.isArray(response.data) ? response.data : [];
           if (response.pagination) {
             paginationData = {
               total: response.pagination.total || 0,
               totalPages: response.pagination.total_pages || 0,
             };
           }
+        }
+
+        // Transform data structures to match frontend interfaces
+        let items: T[] = rawItems;
+        if (endpoint === '/users') {
+          items = transformUsers(rawItems) as T[];
+        } else if (endpoint === '/products' || endpoint === '/listings') {
+          items = transformProducts(rawItems) as T[];
+        } else if (endpoint === '/orders') {
+          items = transformOrders(rawItems) as T[];
+        } else if (endpoint === '/disputes') {
+          items = transformDisputes(rawItems) as T[];
         }
 
         return {

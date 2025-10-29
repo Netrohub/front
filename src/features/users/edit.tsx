@@ -1,8 +1,9 @@
-import React from 'react';
-import { useNavigate } from 'react-router-dom';
+import React, { useEffect } from 'react';
+import { useNavigate, useParams } from 'react-router-dom';
 import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { z } from 'zod';
+import { useQuery } from '@tanstack/react-query';
 import { Form, FormField } from '@/components/ui/form';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
@@ -10,24 +11,36 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@
 import { toast } from 'sonner';
 import { ArrowLeft } from 'lucide-react';
 import { useAdminMutation } from '@/hooks/useAdminMutation';
+import { apiClient } from '@/lib/api';
 
 const userSchema = z.object({
   name: z.string().min(1, 'Name is required'),
   email: z.string().email('Invalid email address'),
   username: z.string().min(3, 'Username must be at least 3 characters'),
-  password: z.string().min(6, 'Password must be at least 6 characters'),
   role: z.enum(['admin', 'seller', 'user']),
   status: z.enum(['active', 'inactive', 'suspended']),
   phone: z.string().optional(),
+  password: z.string().optional(),
 });
 
 type UserFormData = z.infer<typeof userSchema>;
 
-function UsersCreate() {
+function UsersEdit() {
   const navigate = useNavigate();
-  const { create, isPending } = useAdminMutation<any>({
+  const { id } = useParams();
+  const { update, isPending } = useAdminMutation<any>({
     endpoint: '/users',
-    invalidateQueries: ['admin-list', '/users'],
+    invalidateQueries: ['admin-list', '/users', 'admin-user-detail'],
+  });
+
+  const { data: userData, isLoading } = useQuery({
+    queryKey: ['admin-user-detail', id],
+    queryFn: async () => {
+      if (!id) return null;
+      const response = await apiClient.request<any>(`/admin/users/${id}`);
+      return 'data' in response ? response.data : response;
+    },
+    enabled: !!id && !isNaN(Number(id)),
   });
 
   const form = useForm<UserFormData>({
@@ -36,35 +49,83 @@ function UsersCreate() {
       name: '',
       email: '',
       username: '',
-      password: '',
       role: 'user',
       status: 'active',
       phone: '',
+      password: '',
     },
   });
 
+  useEffect(() => {
+    if (userData) {
+      // Transform backend data to form format
+      const userRoles = userData.user_roles || [];
+      const role = userRoles.length > 0 ? userRoles[0]?.role?.slug || 'user' : 'user';
+      const status = userData.is_active ? 'active' : 'inactive';
+
+      form.reset({
+        name: userData.name || '',
+        email: userData.email || '',
+        username: userData.username || '',
+        role: role as 'admin' | 'seller' | 'user',
+        status: status as 'active' | 'inactive' | 'suspended',
+        phone: userData.phone || '',
+        password: '', // Don't prefill password
+      });
+    }
+  }, [userData, form]);
+
   const onSubmit = async (data: UserFormData) => {
+    if (!id) return;
+
     try {
       // Map form data to backend format
-      const createData = {
+      const updateData: any = {
         name: data.name,
         email: data.email,
         username: data.username,
-        password: data.password,
-        role: data.role,
-        is_active: data.status === 'active',
         phone: data.phone || undefined,
+        role: data.role, // Backend handles role assignment
+        is_active: data.status === 'active',
       };
-      await create(createData);
-      toast.success('User created', {
-        description: 'User has been successfully created.',
+
+      // Only include password if provided
+      if (data.password && data.password.length > 0) {
+        updateData.password = data.password;
+      }
+
+      await update(Number(id), updateData);
+      toast.success('User updated', {
+        description: 'User has been successfully updated.',
       });
       navigate('/admin/users');
     } catch (error: any) {
-      console.error('Failed to create user:', error);
+      console.error('Failed to update user:', error);
       // Error is already handled by the hook
     }
   };
+
+  if (isLoading) {
+    return (
+      <div className="flex items-center justify-center min-h-[400px]">
+        <div className="text-center">
+          <p className="text-muted-foreground">Loading user data...</p>
+        </div>
+      </div>
+    );
+  }
+
+  if (!userData) {
+    return (
+      <div className="space-y-6">
+        <Button variant="ghost" onClick={() => navigate('/admin/users')}>
+          <ArrowLeft className="h-4 w-4 mr-2" />
+          Back
+        </Button>
+        <div className="text-destructive">User not found</div>
+      </div>
+    );
+  }
 
   return (
     <div className="space-y-6">
@@ -78,8 +139,8 @@ function UsersCreate() {
           Back
         </Button>
         <div>
-          <h1 className="text-3xl font-bold text-foreground">Create User</h1>
-          <p className="text-muted-foreground">Add a new user to the system</p>
+          <h1 className="text-3xl font-bold text-foreground">Edit User</h1>
+          <p className="text-muted-foreground">Update user information</p>
         </div>
       </div>
 
@@ -127,24 +188,13 @@ function UsersCreate() {
             </div>
 
             <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-              <FormField
-                form={form}
-                name="password"
-                label="Password"
-                placeholder="Enter password"
-                type="password"
-                required
-              />
-            </div>
-
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
               <div className="space-y-2">
                 <label className="text-sm font-medium text-foreground">
                   Role <span className="text-destructive">*</span>
                 </label>
                 <Select
                   value={form.watch('role')}
-                  onValueChange={(value) => form.setValue('role', value as any)}
+                  onValueChange={(value) => form.setValue('role', value as 'admin' | 'seller' | 'user')}
                 >
                   <SelectTrigger>
                     <SelectValue placeholder="Select role" />
@@ -155,11 +205,6 @@ function UsersCreate() {
                     <SelectItem value="admin">Admin</SelectItem>
                   </SelectContent>
                 </Select>
-                {form.formState.errors.role && (
-                  <p className="text-sm text-destructive">
-                    {form.formState.errors.role.message}
-                  </p>
-                )}
               </div>
 
               <div className="space-y-2">
@@ -168,7 +213,7 @@ function UsersCreate() {
                 </label>
                 <Select
                   value={form.watch('status')}
-                  onValueChange={(value) => form.setValue('status', value as any)}
+                  onValueChange={(value) => form.setValue('status', value as 'active' | 'inactive' | 'suspended')}
                 >
                   <SelectTrigger>
                     <SelectValue placeholder="Select status" />
@@ -179,12 +224,34 @@ function UsersCreate() {
                     <SelectItem value="suspended">Suspended</SelectItem>
                   </SelectContent>
                 </Select>
-                {form.formState.errors.status && (
-                  <p className="text-sm text-destructive">
-                    {form.formState.errors.status.message}
-                  </p>
-                )}
               </div>
+            </div>
+
+            <div className="space-y-2">
+              <label className="text-sm font-medium text-foreground">
+                New Password (leave blank to keep current)
+              </label>
+              <Input
+                type="password"
+                placeholder="Enter new password"
+                {...form.register('password')}
+              />
+              <p className="text-xs text-muted-foreground">
+                Only fill this if you want to change the password
+              </p>
+            </div>
+
+            <div className="flex justify-end gap-2">
+              <Button
+                type="button"
+                variant="outline"
+                onClick={() => navigate('/admin/users')}
+              >
+                Cancel
+              </Button>
+              <Button type="submit" disabled={isPending}>
+                {isPending ? 'Updating...' : 'Update User'}
+              </Button>
             </div>
           </div>
         )}
@@ -193,4 +260,5 @@ function UsersCreate() {
   );
 }
 
-export default UsersCreate;
+export default UsersEdit;
+

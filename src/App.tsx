@@ -73,6 +73,7 @@ const AdminPanel = lazy(() => import("./pages/admin/AdminPanel"));
 const AdminDashboard = lazy(() => import("./features/dashboard/DashboardPage"));
 const AdminUsers = lazy(() => import("./features/users/list"));
 const AdminUsersCreate = lazy(() => import("./features/users/create"));
+const AdminUsersEdit = lazy(() => import("./features/users/edit"));
 const AdminListings = lazy(() => import("./features/listings/list"));
 const AdminOrders = lazy(() => import("./features/orders/list"));
 const AdminDisputesNew = lazy(() => import("./features/disputes/list"));
@@ -81,6 +82,8 @@ const AdminCategories = lazy(() => import("./features/categories/list"));
 const AdminCoupons = lazy(() => import("./features/coupons/list"));
 const AdminTickets = lazy(() => import("./features/tickets/list"));
 const AdminAuditLogs = lazy(() => import("./features/audit-logs/list"));
+const AdminProfile = lazy(() => import("./pages/admin/AdminProfile"));
+const AdminSettings = lazy(() => import("./pages/admin/AdminSettings"));
 
 // Loading component
 const PageLoader = () => (
@@ -207,14 +210,22 @@ const App = () => {
             <Route path="dashboard" element={<AdminDashboard />} />
             <Route path="users" element={<AdminUsers />} />
             <Route path="users/create" element={<AdminUsersCreate />} />
+            <Route path="users/:id" element={<AdminUsers />} />
+            <Route path="users/:id/edit" element={<AdminUsersEdit />} />
             <Route path="listings" element={<AdminListings />} />
+            <Route path="listings/:id" element={<AdminListings />} />
             <Route path="orders" element={<AdminOrders />} />
+            <Route path="orders/:id" element={<AdminOrders />} />
             <Route path="disputes" element={<AdminDisputesNew />} />
+            <Route path="disputes/:id" element={<AdminDisputesNew />} />
             <Route path="payouts" element={<AdminPayouts />} />
+            <Route path="payouts/:id" element={<AdminPayouts />} />
             <Route path="categories" element={<AdminCategories />} />
             <Route path="coupons" element={<AdminCoupons />} />
             <Route path="tickets" element={<AdminTickets />} />
             <Route path="audit-logs" element={<AdminAuditLogs />} />
+            <Route path="profile" element={<AdminProfile />} />
+            <Route path="settings" element={<AdminSettings />} />
           </Route>
           
           {/* ADD ALL CUSTOM ROUTES ABOVE THE CATCH-ALL "*" ROUTE */}

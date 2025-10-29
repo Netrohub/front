@@ -1,9 +1,15 @@
 import React, { useState } from 'react';
+import { useNavigate } from 'react-router-dom';
 import { Card } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
 import { Input } from '@/components/ui/input';
+import { Label } from '@/components/ui/label';
+import { Textarea } from '@/components/ui/textarea';
+import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription, DialogFooter } from '@/components/ui/dialog';
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { toast } from 'sonner';
+import { apiClient } from '@/lib/api';
 import { 
   Table, 
   TableBody, 
@@ -51,40 +57,91 @@ interface Payout {
 }
 
 function PayoutsList() {
+  const navigate = useNavigate();
   const [searchTerm, setSearchTerm] = useState('');
+  const [processDialog, setProcessDialog] = useState<{
+    open: boolean;
+    payoutId: number | null;
+    amount: string;
+    method: string;
+    reference: string;
+    description: string;
+  }>({
+    open: false,
+    payoutId: null,
+    amount: '',
+    method: '',
+    reference: '',
+    description: '',
+  });
   
   const { data: payouts, isLoading, refetch } = useAdminList<Payout>({
     endpoint: '/payouts',
     initialSearchTerm: '',
   });
 
-  const { update } = useAdminMutation<Payout>({
-    endpoint: '/payouts',
-    invalidateQueries: ['admin-list', '/payouts'],
-  });
+  const handleProcessPayout = (payoutId: number) => {
+    const payout = payouts?.find(p => p.id === payoutId);
+    if (payout) {
+      setProcessDialog({
+        open: true,
+        payoutId,
+        amount: String(payout.amount || ''),
+        method: payout.method || '',
+        reference: payout.reference || '',
+        description: payout.description || '',
+      });
+    }
+  };
 
-  const handleProcessPayout = () => {
-    toast.info('Process Payout', {
-      description: 'Opening payout processing form...',
-    });
+  const confirmProcessPayout = async () => {
+    if (processDialog.payoutId) {
+      try {
+        // Use correct endpoint: PUT /admin/payouts/:id/status
+        await apiClient.request(`/admin/payouts/${processDialog.payoutId}/status`, {
+          method: 'PUT',
+          body: JSON.stringify({
+            status: 'PROCESSING',
+            method: processDialog.method,
+            reference: processDialog.reference,
+            description: processDialog.description,
+          }),
+        });
+        toast.success('Payout Processing Started', {
+          description: 'Payout processing has been initiated.',
+        });
+        refetch();
+        setProcessDialog({ open: false, payoutId: null, amount: '', method: '', reference: '', description: '' });
+      } catch (error: any) {
+        console.error('Failed to process payout:', error);
+        toast.error('Failed to process payout', {
+          description: error.message || 'An error occurred while processing payout.',
+        });
+      }
+    }
   };
 
   const handleUpdateStatus = async (payoutId: number, status: string) => {
     try {
-      await update(payoutId, { status });
+      // Use correct endpoint: PUT /admin/payouts/:id/status
+      await apiClient.request(`/admin/payouts/${payoutId}/status`, {
+        method: 'PUT',
+        body: JSON.stringify({ status }),
+      });
       toast.success('Payout updated', {
         description: `Payout status updated to ${status}`,
       });
+      refetch();
     } catch (error: any) {
       console.error('Failed to update payout:', error);
-      // Error is already handled by the hook
+      toast.error('Failed to update payout', {
+        description: error.message || 'An error occurred while updating payout.',
+      });
     }
   };
 
   const handleViewPayout = (payoutId: number) => {
-    toast.info('Viewing payout', {
-      description: `Opening payout #${payoutId}`,
-    });
+    navigate(`/admin/payouts/${payoutId}`);
   };
 
   const getStatusBadge = (status: string) => {
@@ -128,11 +185,6 @@ function PayoutsList() {
           <h1 className="text-3xl font-bold text-foreground">Payouts</h1>
           <p className="text-muted-foreground">Manage seller payouts and transactions</p>
         </div>
-        <Button onClick={handleProcessPayout} disabled={false}>
-          {false && <Loader2 className="w-4 h-4 mr-2 animate-spin" />}
-          <CreditCard className="w-4 h-4 mr-2" />
-          Process Payout
-        </Button>
       </div>
 
       {/* Summary Cards */}
@@ -249,11 +301,18 @@ function PayoutsList() {
                         <Button 
                           variant="ghost" 
                           size="sm"
-                          onClick={() => handleUpdateStatus(payout.id, 'processing')}
-                          disabled={false}
+                          onClick={() => handleProcessPayout(payout.id)}
                         >
-                          {false && <Loader2 className="w-4 h-4 animate-spin" />}
-                          <MoreHorizontal className="w-4 h-4" />
+                          <CreditCard className="w-4 h-4" />
+                        </Button>
+                      )}
+                      {payout.status === 'processing' && (
+                        <Button 
+                          variant="ghost" 
+                          size="sm"
+                          onClick={() => handleUpdateStatus(payout.id, 'COMPLETED')}
+                        >
+                          <CheckCircle className="w-4 h-4" />
                         </Button>
                       )}
                     </div>
@@ -264,6 +323,79 @@ function PayoutsList() {
           </Table>
         )}
       </Card>
+
+      {/* Process Payout Dialog */}
+      <Dialog open={processDialog.open} onOpenChange={(open) => !open && setProcessDialog({ open: false, payoutId: null, amount: '', method: '', reference: '', description: '' })}>
+        <DialogContent className="max-w-2xl">
+          <DialogHeader>
+            <DialogTitle>Process Payout</DialogTitle>
+            <DialogDescription>
+              Enter payout details to process this payout request.
+            </DialogDescription>
+          </DialogHeader>
+          <div className="space-y-4 py-4">
+            <div className="grid grid-cols-2 gap-4">
+              <div className="space-y-2">
+                <Label htmlFor="amount">Amount</Label>
+                <Input
+                  id="amount"
+                  type="number"
+                  step="0.01"
+                  value={processDialog.amount}
+                  onChange={(e) => setProcessDialog(prev => ({ ...prev, amount: e.target.value }))}
+                  disabled
+                  className="bg-muted"
+                />
+              </div>
+              <div className="space-y-2">
+                <Label htmlFor="method">Payment Method</Label>
+                <Select
+                  value={processDialog.method}
+                  onValueChange={(value) => setProcessDialog(prev => ({ ...prev, method: value }))}
+                >
+                  <SelectTrigger id="method">
+                    <SelectValue placeholder="Select method" />
+                  </SelectTrigger>
+                  <SelectContent>
+                    <SelectItem value="bank_transfer">Bank Transfer</SelectItem>
+                    <SelectItem value="paypal">PayPal</SelectItem>
+                    <SelectItem value="stripe">Stripe</SelectItem>
+                    <SelectItem value="crypto">Cryptocurrency</SelectItem>
+                    <SelectItem value="other">Other</SelectItem>
+                  </SelectContent>
+                </Select>
+              </div>
+            </div>
+            <div className="space-y-2">
+              <Label htmlFor="reference">Transaction Reference</Label>
+              <Input
+                id="reference"
+                placeholder="Enter transaction reference or tracking number"
+                value={processDialog.reference}
+                onChange={(e) => setProcessDialog(prev => ({ ...prev, reference: e.target.value }))}
+              />
+            </div>
+            <div className="space-y-2">
+              <Label htmlFor="description">Description (Optional)</Label>
+              <Textarea
+                id="description"
+                placeholder="Add any notes or additional information"
+                value={processDialog.description}
+                onChange={(e) => setProcessDialog(prev => ({ ...prev, description: e.target.value }))}
+                rows={3}
+              />
+            </div>
+          </div>
+          <DialogFooter>
+            <Button variant="outline" onClick={() => setProcessDialog({ open: false, payoutId: null, amount: '', method: '', reference: '', description: '' })}>
+              Cancel
+            </Button>
+            <Button onClick={confirmProcessPayout} disabled={!processDialog.method || !processDialog.reference}>
+              Process Payout
+            </Button>
+          </DialogFooter>
+        </DialogContent>
+      </Dialog>
     </div>
   );
 }

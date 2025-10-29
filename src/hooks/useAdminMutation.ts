@@ -136,8 +136,44 @@ export function useAdminMutation<T extends { id: number }>({
     }
   }, [endpoint, onSuccess, onError, queryClient, invalidateQueries]);
 
+  const create = useCallback(async (data: Partial<T> | T) => {
+    try {
+      setIsMutating(true);
+      setError(null);
+      
+      // Sanitize input data
+      const sanitizedData = sanitizeObject(data as Record<string, any>) as T;
+      
+      // Rate limit the API call
+      const response = await rateLimitApiCall(
+        () => apiClient.request<T>(`${endpoint}`, {
+          method: 'POST',
+          body: JSON.stringify(sanitizedData),
+        }),
+        'write'
+      );
+      
+      // Invalidate related queries to refetch fresh data
+      queryClient.invalidateQueries({ queryKey: invalidateQueries });
+      
+      toast.success('Created successfully');
+      onSuccess?.(response);
+    } catch (err: any) {
+      const error = err instanceof Error ? err : new Error('Create failed');
+      setError(error);
+      toast.error('Create failed', {
+        description: err.message || error.message,
+      });
+      onError?.(error);
+      throw error;
+    } finally {
+      setIsMutating(false);
+    }
+  }, [endpoint, onSuccess, onError, queryClient, invalidateQueries]);
+
   return {
     mutate,
+    create,
     update,
     remove,
     isMutating,
