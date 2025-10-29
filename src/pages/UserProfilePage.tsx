@@ -61,6 +61,8 @@ const UserProfilePage = () => {
     queryKey: queryKeys.userByUsername(username!),
     queryFn: () => apiClient.getUserByUsername(username!),
     enabled: !!username,
+    retry: false, // Don't retry on 404 errors
+    throwOnError: false, // Let component handle error display
   });
 
   // Check if this is the current user's profile
@@ -108,6 +110,11 @@ const UserProfilePage = () => {
 
   // Show 404 if user not found
   if (isError || !profile) {
+    // Don't show error in console if it's a legitimate 404
+    if (error && import.meta.env.DEV) {
+      console.debug(`User profile not found for username: ${username}`, error);
+    }
+    
     return (
       <>
         <Helmet>

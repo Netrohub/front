@@ -359,13 +359,21 @@ class ApiClient {
   }
 
   async getUserByUsername(username: string): Promise<User> {
-    const apiResponse = await this.request<User>(`/users/${username}`);
-    
-    // Handle wrapped response from backend
-    if ('data' in apiResponse && apiResponse.data) {
-      return apiResponse.data as User;
+    try {
+      const apiResponse = await this.request<User>(`/users/${username}`);
+      
+      // Handle wrapped response from backend
+      if ('data' in apiResponse && apiResponse.data) {
+        return apiResponse.data as User;
+      }
+      return apiResponse as User;
+    } catch (error: any) {
+      // Re-throw with more context for React Query
+      if (error.message?.includes('404') || error.message?.includes('not found')) {
+        throw new Error(`User "${username}" not found`);
+      }
+      throw error;
     }
-    return apiResponse as User;
   }
 
   async getProductsByUser(username: string): Promise<Product[]> {
@@ -428,6 +436,30 @@ class ApiClient {
   async getFeaturedProducts(): Promise<Product[]> {
     const response = await this.request<Product[]>('/products?featured=true');
     return response;
+  }
+
+  async createProduct(productData: any): Promise<Product> {
+    // Map frontend data structure to backend CreateProductDto
+    const createProductDto = {
+      name: productData.name || productData.title,
+      description: productData.description || '',
+      price: productData.price,
+      categoryId: String(productData.category_id || productData.categoryId || 1),
+      images: Array.isArray(productData.images) ? productData.images : [],
+      condition: productData.condition || 'NEW' as const,
+      tags: productData.tags || productData.specifications?.platform ? [productData.specifications.platform] : [],
+    };
+
+    const response = await this.request<Product>('/products', {
+      method: 'POST',
+      body: JSON.stringify(createProductDto),
+    });
+    
+    // Handle wrapped response
+    if ('data' in response && response.data) {
+      return response.data as Product;
+    }
+    return response as Product;
   }
 
   // Cart Methods
