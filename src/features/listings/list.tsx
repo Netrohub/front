@@ -200,8 +200,8 @@ function ListingsList() {
   ];
 
   const filteredData = data?.filter((listing) => {
-    const matchesSearch = listing.title.toLowerCase().includes(searchTerm.toLowerCase()) ||
-      listing.seller?.name?.toLowerCase().includes(searchTerm.toLowerCase());
+    const matchesSearch = (listing.title || '').toLowerCase().includes(searchTerm.toLowerCase()) ||
+      (listing.seller?.name || '').toLowerCase().includes(searchTerm.toLowerCase());
     const matchesStatus = statusFilter === 'all' || listing.status === statusFilter;
     return matchesSearch && matchesStatus;
   });

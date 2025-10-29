@@ -60,44 +60,72 @@ export function useAdminList<T extends { id: number }>({
         params.append('search', searchTerm);
       }
 
-      const response = await apiClient.request<any>(`/admin${endpoint}?${params}`);
-      
-      // Handle both array and wrapped responses
-      let items: T[] = [];
-      let paginationData = {
-        total: 0,
-        totalPages: 0,
-      };
-
-      if (Array.isArray(response)) {
-        items = response;
-        paginationData = {
-          total: response.length,
-          totalPages: Math.ceil(response.length / pagination.limit),
+      try {
+        const response = await apiClient.request<any>(`/admin${endpoint}?${params}`);
+        
+        // Handle both array and wrapped responses
+        let items: T[] = [];
+        let paginationData = {
+          total: 0,
+          totalPages: 0,
         };
-      } else if (response.data) {
-        items = response.data;
-        if (response.pagination) {
+
+        if (Array.isArray(response)) {
+          items = response;
           paginationData = {
-            total: response.pagination.total || 0,
-            totalPages: response.pagination.total_pages || 0,
+            total: response.length,
+            totalPages: Math.ceil(response.length / pagination.limit),
+          };
+        } else if (response && response.data) {
+          items = Array.isArray(response.data) ? response.data : [];
+          if (response.pagination) {
+            paginationData = {
+              total: response.pagination.total || 0,
+              totalPages: response.pagination.total_pages || 0,
+            };
+          }
+        }
+
+        return {
+          items,
+          pagination: paginationData,
+        };
+      } catch (error: any) {
+        // If endpoint doesn't exist (404), return empty data gracefully
+        if (error.message?.includes('404') || error.message?.includes('Cannot GET')) {
+          if (import.meta.env.DEV) {
+            console.debug(`Admin endpoint ${endpoint} not found, returning empty data`);
+          }
+          return {
+            items: [],
+            pagination: {
+              total: 0,
+              totalPages: 0,
+            },
           };
         }
+        // Re-throw other errors
+        throw error;
       }
-
-      return {
-        items,
-        pagination: paginationData,
-      };
     },
     staleTime: 30 * 1000, // 30 seconds - data is fresh for 30s
     gcTime: 5 * 60 * 1000, // 5 minutes - cache for 5 minutes
-    retry: 1,
+    retry: (failureCount, error: any) => {
+      // Don't retry on 404 errors
+      if (error?.message?.includes('404') || error?.message?.includes('Cannot GET')) {
+        return false;
+      }
+      // Retry once for other errors
+      return failureCount < 1;
+    },
     onError: (error: any) => {
-      console.error(`Failed to fetch ${endpoint}:`, error);
-      toast.error('Failed to load data', {
-        description: error.message || 'An error occurred while loading data',
-      });
+      // Don't show error toast for 404s - they're handled gracefully
+      if (!error?.message?.includes('404') && !error?.message?.includes('Cannot GET')) {
+        console.error(`Failed to fetch ${endpoint}:`, error);
+        toast.error('Failed to load data', {
+          description: error.message || 'An error occurred while loading data',
+        });
+      }
     },
   });
 

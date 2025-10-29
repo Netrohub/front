@@ -28,19 +28,29 @@ export function display(value: any): string | number | React.ReactElement {
 
   // Handle objects - convert to string in dev, fallback in prod
   if (typeof value === 'object') {
-    if (process.env.NODE_ENV === 'development') {
-      console.warn('Display helper: Converting object to string for debugging:', value);
-      return JSON.stringify(value, null, 2);
+    // Try to extract meaningful string representation first
+    if (value && typeof value === 'object') {
+      if ('title' in value && value.title) return String(value.title);
+      if ('name' in value && value.name) return String(value.name);
+      if ('label' in value && value.label) return String(value.label);
+      if ('email' in value && value.email) return String(value.email);
+      if ('username' in value && value.username) return String(value.username);
+      if ('id' in value && value.id) return String(value.id);
+      
+      // For nested objects, try to get a summary
+      const keys = Object.keys(value);
+      if (keys.length > 0) {
+        if (process.env.NODE_ENV === 'development') {
+          console.warn('Display helper: Object has no stringifiable properties:', value);
+          return JSON.stringify(value, null, 2);
+        }
+        // In production, return empty string or a safe placeholder
+        return '';
+      }
     }
     
-    // In production, try to extract meaningful string representation
-    if (value.title) return String(value.title);
-    if (value.name) return String(value.name);
-    if (value.label) return String(value.label);
-    if (value.id) return String(value.id);
-    
     // Last resort fallback
-    return '[Object]';
+    return '';
   }
 
   // Handle functions
