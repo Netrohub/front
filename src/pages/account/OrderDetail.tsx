@@ -156,12 +156,14 @@ const OrderDetail = () => {
                   <p className="text-sm text-foreground/60">Order completed successfully</p>
                 </div>
               </div>
-              <Button asChild className="btn-glow">
-                <Link to={`/products/${order.items[0].id}`}>
-                  <Star className="h-4 w-4 mr-2" />
-                  Leave Review
-                </Link>
-              </Button>
+              {order.items && order.items.length > 0 && (
+                <Button asChild className="btn-glow">
+                  <Link to={`/products/${order.items[0].id}`}>
+                    <Star className="h-4 w-4 mr-2" />
+                    Leave Review
+                  </Link>
+                </Button>
+              )}
             </div>
           </Card>
         )}

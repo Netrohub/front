@@ -354,7 +354,7 @@ const Products = () => {
                     id={product.id}
                     name={product.title}
                     price={product.price}
-                    image={product.images[0] || "/placeholder.svg"}
+                    image={product.images?.[0] || "/placeholder.svg"}
                     category={product.category}
                     rating={product.rating}
                     reviews={product.reviews_count}
