@@ -118,7 +118,11 @@ function ListingsList() {
           <div>
             <p className="font-medium">{value}</p>
             {record.category && (
-              <p className="text-sm text-muted-foreground">{record.category}</p>
+              <p className="text-sm text-muted-foreground">
+                {typeof record.category === 'object' 
+                  ? (record.category?.name || record.category?.title || '') 
+                  : String(record.category)}
+              </p>
             )}
           </div>
         </div>

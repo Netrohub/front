@@ -26,18 +26,57 @@ interface Product {
 }
 
 interface ProductCardProps {
-  product: Product;
+  product?: Product;
+  // Support legacy props format for backward compatibility
+  id?: number;
+  name?: string;
+  title?: string;
+  price?: number;
+  discount_price?: number;
+  image?: string;
+  images?: string[];
+  category?: string | { id?: number; name?: string; title?: string };
+  rating?: number;
+  reviews?: number;
+  reviews_count?: number;
+  featured?: boolean;
   variant?: "default" | "compact" | "featured";
   showStatus?: boolean;
 }
 
-const ProductCard = ({ product, variant = "default", showStatus = false }: ProductCardProps) => {
+const ProductCard = (props: ProductCardProps) => {
+  const { variant = "default", showStatus = false } = props;
   const [isWishlisted, setIsWishlisted] = useState(false);
   const [imageError, setImageError] = useState(false);
 
+  // Support both formats: product object or individual props
+  let product: Product | null = null;
+  
+  if (props.product) {
+    product = props.product;
+  } else if (props.id) {
+    // Build product object from individual props
+    const categoryValue = props.category;
+    const categoryString = typeof categoryValue === 'object' 
+      ? (categoryValue?.name || categoryValue?.title || '') 
+      : (categoryValue || '');
+    
+    product = {
+      id: props.id,
+      title: props.title || props.name || '',
+      description: '',
+      price: props.price || 0,
+      discount_price: props.discount_price,
+      category: categoryString,
+      images: props.images || (props.image ? [props.image] : []),
+      status: 'active',
+      created_at: new Date().toISOString(),
+      updated_at: new Date().toISOString(),
+    };
+  }
+
   // Safety check: if product is undefined or null, return null
-  if (!product) {
-    console.warn('ProductCard: product is undefined or null');
+  if (!product || !product.id) {
     return null;
   }
 
