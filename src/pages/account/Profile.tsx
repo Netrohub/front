@@ -15,10 +15,12 @@ import {
 } from "lucide-react";
 import { useState, useRef, useEffect } from "react";
 import { useToast } from "@/hooks/use-toast";
+import { useAuth } from "@/contexts/AuthContext";
 import { Check, ChevronsUpDown } from "lucide-react";
 import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover";
 import { Command, CommandInput, CommandList, CommandEmpty, CommandGroup, CommandItem } from "@/components/ui/command";
 import { cn } from "@/lib/utils";
+import { safeRender } from "@/lib/display";
 
 // Countries with dial codes
 const countries = [
@@ -31,6 +33,7 @@ const countries = [
 
 const Profile = () => {
   const { toast } = useToast();
+  const { user } = useAuth();
   const [avatar, setAvatar] = useState<string>("https://api.dicebear.com/7.x/avataaars/svg?seed=user");
   const fileInputRef = useRef<HTMLInputElement>(null);
   const [selectedCountry, setSelectedCountry] = useState(countries[0]);
@@ -44,13 +47,19 @@ const Profile = () => {
   const [newPassword, setNewPassword] = useState("");
   const [confirmPassword, setConfirmPassword] = useState("");
 
-  // Load saved avatar on mount
+  // Load user data on mount
   useEffect(() => {
     const savedAvatar = localStorage.getItem('user_avatar');
     if (savedAvatar) {
       setAvatar(savedAvatar);
     }
-  }, []);
+    
+    // Load phone number from user data (ensure it's a string, not an object)
+    if (user?.phone) {
+      const phone = typeof user.phone === 'string' ? user.phone : String(user.phone);
+      setPhoneNumber(phone);
+    }
+  }, [user]);
 
   const handleAvatarUpload = async (event: React.ChangeEvent<HTMLInputElement>) => {
     const file = event.target.files?.[0];

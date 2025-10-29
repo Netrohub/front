@@ -4,6 +4,7 @@ import { Card } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { useAdminAuth } from '@/contexts/AdminAuthContext';
 import { ArrowLeft, User, Mail, Shield } from 'lucide-react';
+import { safeRender } from '@/lib/display';
 
 function AdminProfile() {
   const navigate = useNavigate();
@@ -38,8 +39,8 @@ function AdminProfile() {
             <User className="h-8 w-8 text-primary" />
           </div>
           <div>
-            <h1 className="text-2xl font-bold">{adminUser.name}</h1>
-            <p className="text-muted-foreground">{adminUser.email}</p>
+            <h1 className="text-2xl font-bold">{safeRender(adminUser.name)}</h1>
+            <p className="text-muted-foreground">{safeRender(adminUser.email)}</p>
           </div>
         </div>
 
@@ -47,11 +48,11 @@ function AdminProfile() {
           <div className="space-y-4">
             <div>
               <label className="text-sm font-medium text-muted-foreground">Username</label>
-              <p className="text-foreground">{adminUser.username}</p>
+              <p className="text-foreground">{safeRender(adminUser.username)}</p>
             </div>
             <div>
               <label className="text-sm font-medium text-muted-foreground">Email</label>
-              <p className="text-foreground">{adminUser.email}</p>
+              <p className="text-foreground">{safeRender(adminUser.email)}</p>
             </div>
             <div>
               <label className="text-sm font-medium text-muted-foreground">Roles</label>

@@ -104,13 +104,13 @@ function OrdersList() {
               <div>
                 <label className="text-sm font-medium text-muted-foreground">Buyer</label>
                 <p className="text-foreground">
-                  {orderDetail.buyer?.name || 'N/A'} ({orderDetail.buyer?.email || 'N/A'})
+                  {orderDetail.buyer?.name ? String(orderDetail.buyer.name) : 'N/A'} ({orderDetail.buyer?.email ? String(orderDetail.buyer.email) : 'N/A'})
                 </p>
               </div>
               <div>
                 <label className="text-sm font-medium text-muted-foreground">Seller</label>
                 <p className="text-foreground">
-                  {orderDetail.seller?.name || 'N/A'} ({orderDetail.seller?.email || 'N/A'})
+                  {orderDetail.seller?.name ? String(orderDetail.seller.name) : 'N/A'} ({orderDetail.seller?.email ? String(orderDetail.seller.email) : 'N/A'})
                 </p>
               </div>
               <div>

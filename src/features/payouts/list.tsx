@@ -273,7 +273,7 @@ function PayoutsList() {
               {filteredPayouts.map((payout) => (
                 <TableRow key={payout.id}>
                   <TableCell className="font-medium">
-                    {payout.seller?.name || `Seller #${payout.seller_id}`}
+                    {payout.seller?.name ? String(payout.seller.name) : `Seller #${payout.seller_id}`}
                   </TableCell>
                   <TableCell>${Number(payout.amount).toFixed(2)}</TableCell>
                   <TableCell>{payout.method || '-'}</TableCell>

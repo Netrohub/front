@@ -30,17 +30,27 @@ export function display(value: any): string | number | React.ReactElement {
   if (typeof value === 'object') {
     // Try to extract meaningful string representation first
     if (value && typeof value === 'object') {
+      // Common properties to extract (in priority order)
       if ('title' in value && value.title) return String(value.title);
       if ('name' in value && value.name) return String(value.name);
       if ('label' in value && value.label) return String(value.label);
       if ('email' in value && value.email) return String(value.email);
       if ('username' in value && value.username) return String(value.username);
-      if ('id' in value && value.id) return String(value.id);
+      if ('phone' in value && value.phone) return String(value.phone);
+      if ('address' in value && value.address) return String(value.address);
+      if ('city' in value && value.city) return String(value.city);
+      if ('country' in value && value.country) return String(value.country);
+      if ('method' in value && value.method) return String(value.method);
+      if ('status' in value && value.status) return String(value.status);
+      if ('amount' in value && typeof value.amount === 'number') return String(value.amount.toFixed(2));
+      if ('price' in value && typeof value.price === 'number') return String(value.price.toFixed(2));
+      if ('rating' in value && typeof value.rating === 'number') return String(value.rating);
+      if ('id' in value && value.id != null) return String(value.id);
       
       // For nested objects, try to get a summary
       const keys = Object.keys(value);
       if (keys.length > 0) {
-        if (process.env.NODE_ENV === 'development') {
+        if (import.meta.env.DEV) {
           console.warn('Display helper: Object has no stringifiable properties:', value);
           return JSON.stringify(value, null, 2);
         }

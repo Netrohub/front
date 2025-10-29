@@ -374,7 +374,7 @@ function DashboardPage() {
                       <div>
                         <p className="text-sm font-medium">New order received</p>
                         <p className="text-xs text-muted-foreground">
-                          Order #{order.order_number || order.id} • {order.buyer?.name || order.buyer?.username || 'Unknown Buyer'}
+                          Order #{order.order_number || order.id} • {order.buyer?.name ? String(order.buyer.name) : order.buyer?.username ? String(order.buyer.username) : 'Unknown Buyer'}
                         </p>
                       </div>
                     </div>

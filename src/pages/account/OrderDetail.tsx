@@ -4,6 +4,7 @@ import AccountLayout from "@/components/AccountLayout";
 import { Card } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
+import { safeRender } from "@/lib/display";
 import { 
   Package, 
   MapPin, 
@@ -272,10 +273,10 @@ const OrderDetail = () => {
               <h3 className="font-bold text-foreground">Shipping Address</h3>
             </div>
             <div className="space-y-1 text-foreground/70">
-              <p className="font-medium text-foreground">{order.shipping.name}</p>
-              <p>{order.shipping.address}</p>
-              <p>{order.shipping.city}, {order.shipping.zip}</p>
-              <p>{order.shipping.country}</p>
+              <p className="font-medium text-foreground">{safeRender(order.shipping?.name || order.shipping?.name || 'N/A')}</p>
+              <p>{safeRender(order.shipping?.address || 'N/A')}</p>
+              <p>{safeRender(order.shipping?.city || 'N/A')}, {safeRender(order.shipping?.zip || '')}</p>
+              <p>{safeRender(order.shipping?.country || 'N/A')}</p>
             </div>
           </Card>
 
@@ -288,8 +289,8 @@ const OrderDetail = () => {
               <h3 className="font-bold text-foreground">Payment Method</h3>
             </div>
             <div className="space-y-1 text-foreground/70">
-              <p className="font-medium text-foreground">{order.payment.method}</p>
-              <p>Ending in {order.payment.last4}</p>
+              <p className="font-medium text-foreground">{safeRender(order.payment?.method || 'N/A')}</p>
+              <p>Ending in {safeRender(order.payment?.last4 || 'N/A')}</p>
             </div>
           </Card>
 
@@ -322,11 +323,11 @@ const OrderDetail = () => {
             </div>
             <div className="space-y-3">
               <div>
-                <p className="font-medium text-foreground">{order.seller.name}</p>
+                <p className="font-medium text-foreground">{safeRender(order.seller?.name || 'Unknown Seller')}</p>
                 <div className="flex items-center gap-2 mt-1">
                   <Star className="h-4 w-4 text-yellow-500 fill-yellow-500" />
                   <span className="text-sm text-foreground/70">
-                    {order.seller.rating} ({order.seller.reviews.toLocaleString()} reviews)
+                    {typeof order.seller?.rating === 'number' ? order.seller.rating : '0'} ({typeof order.seller?.reviews === 'number' ? order.seller.reviews.toLocaleString() : '0'} reviews)
                   </span>
                 </div>
               </div>
